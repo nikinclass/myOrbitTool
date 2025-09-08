@@ -1,5 +1,6 @@
 import express from "express";
 import exampleRoute from "./routes/example";
+import userTableRoute from "./routes/userTable"
 import cookieSession from "cookie-session";
 
 const app = express();
@@ -29,7 +30,8 @@ app.use(
   })
 );
 
-app.use("/api/example", exampleRoute);
+app.use("/api/user_table", userTableRoute);
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);

@@ -61,11 +61,11 @@ services:
       - app-network
 
     # Uncomment the following lines to enable live code updates
-    # volumes:
-    #   - type: bind
-    #     source: ./ui
-    #     target: /app
-    #   - /app/node_modules
+    volumes:
+      - type: bind
+        source: ./ui
+        target: /app
+      - /app/node_modules
 
 networks:
   app-network:
