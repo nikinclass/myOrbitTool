@@ -1,6 +1,8 @@
 import express from "express";
 import exampleRoute from "./routes/example";
+import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
+import cors from "cors";
 
 const app = express();
 const port = 8080;
@@ -13,6 +15,8 @@ app.set("trust proxy", 1);
 //     credentials: true,
 //   })
 // );
+//remove if using proxied server
+app.use(cors());
 
 app.use(express.json());
 
@@ -30,6 +34,7 @@ app.use(
 );
 
 app.use("/api/example", exampleRoute);
+app.use("/api/scenario", scenarioRoute);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
