@@ -42,7 +42,8 @@ export default function Login() {
                 alert("incorect password");
               } else {
                 setIsLoggedIn(true);
-                localStorage.setItem("user", JSON.stringify(data[0]));
+                //localStorage.setItem("user", JSON.stringify(data[0]));
+                document.cookie = `username=${username};path=/;max-age=3600;SameSite=Strict`;
                 navigate("/");
               }
             }
@@ -84,16 +85,18 @@ export default function Login() {
         <div>
           <button
             className="bg-white rounded-[4px] w-[80px] mr-5"
-            onClick={() => handleSignUp()}
-          >
-            Sign Up
-          </button>
-          <button
-            className="bg-white rounded-[4px] w-[80px] mr-5"
             onClick={() => handleSubmit()}
           >
-            Submit
+            Sign in
           </button>
+
+          <button
+            className="bg-white rounded-[4px] w-[80px] mr-5"
+            onClick={() => handleSignUp()}
+          >
+            Sign up
+          </button>
+          
           <button
             className="bg-white rounded-[4px] w-[150px] mr-5"
             onClick={() => handleAllItems()}

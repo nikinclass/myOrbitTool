@@ -43,6 +43,36 @@ app.get("/api/user_table/:username", async (req, res) => {
   }
 });
 
+app.post('/api/user_table', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    try {
+
+        const existingUser = await knex('user_table').where('username', username).first();
+        if (existingUser) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+
+        const inserted = await knex('user_table').insert({
+            username,
+            password
+        });
+
+        return res.status(201).json({
+            message: 'User created successfully',
+            userId: inserted[0]
+        });
+
+    } catch (err) {
+        console.error('Database insert error:', err);
+        return res.status(500).json({ message: 'Database error', error: err });
+    }
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });

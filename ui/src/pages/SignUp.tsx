@@ -5,14 +5,12 @@ import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 
 function SignUp() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit() {
-    if (!firstName || !lastName || !username || !password) {
+    if (!username || !password) {
       alert("Please fill out all fields");
       return;
     }
@@ -20,13 +18,11 @@ function SignUp() {
       const hashedPassword = await bcrypt.hash(password, 12);
 
       const userToAdd = {
-        first_name: firstName,
-        last_name: lastName,
         username: username,
         password: hashedPassword,
       };
 
-      const res = await fetch("http://localhost:8000/users", {
+      const res = await fetch("http://localhost:8080/api/user_table", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userToAdd),
@@ -38,7 +34,7 @@ function SignUp() {
       }
 
       alert("User registered successfull");
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error(error);
       alert(error.message || "Error signing up");
@@ -48,18 +44,6 @@ function SignUp() {
   return (
     <div className="signup-page bg-white dark:bg-gray-800 rounded-lg px-6 py-8 shadow-xl ring ring-gray-900/5 mt-50">
       <h1 className="text-xl mb-4">Sign Up</h1>
-      <input
-        className="border rounded-sm mb-2 w-full px-2 py-1"
-        type="text"
-        placeholder="First Name"
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      <input
-        className="border rounded-sm mb-2 w-full px-2 py-1"
-        type="text"
-        placeholder="Last Name"
-        onChange={(e) => setLastName(e.target.value)}
-      />
       <input
         className="border rounded-sm mb-2 w-full px-2 py-1"
         type="text"
