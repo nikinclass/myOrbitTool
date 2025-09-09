@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useContext, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import bcrypt from "bcryptjs";
 import { AppContext } from "../main.tsx";
 import type { AppContextType } from "../main.tsx";
@@ -11,42 +11,47 @@ export default function Login() {
     AppContext
   ) as AppContextType;
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState("");
   // const [hashedPassword, setHashedPassword] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(`user: ${user}`);
+  }, [user]);
 
   function handleSignUp() {
     navigate("/signup");
   }
-  function handleSubmit() {
+
+  async function handleSubmit() {
     if (!username || !password) {
       alert("Please enter username and password");
     }
-    fetch(`http://localhost:8080/user_table/username/${username}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Username not found");
-        } else {
-          return res.json();
-        }
-      })
-      .then((user) => {
-        console.log(user);
-        bcrypt.compare(password, user[0].password, function (err, result) {
-          if (err) {
-            console.log("Error comparing passwords:", err);
-          } else {
-            console.log("Password match: ", result);
-            if (!result) {
-              alert("incorect password");
+    try {
+      const fetchData = await fetch(
+        `http://localhost:8080/api/user_table/${username}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          bcrypt.compare(password, data[0].password, function (err, result) {
+            if (err) {
+              console.log("Error comparing passwords:", err);
             } else {
-              setIsLoggedIn(true);
-              // localStorage.setItem('username', username);
-              localStorage.setItem("user", JSON.stringify(user[0]));
-              navigate("/items");
+              console.log("Password match: ", result);
+              if (!result) {
+                alert("incorect password");
+              } else {
+                setIsLoggedIn(true);
+                localStorage.setItem("user", JSON.stringify(data[0]));
+                navigate("/");
+              }
             }
-          }
+          });
         });
-      });
+    } catch (err) {
+      console.log(`Username not found.`, err);
+    }
+
     return;
   }
 
@@ -65,12 +70,14 @@ export default function Login() {
           type="text"
           name="username"
           placeholder=" Enter Username "
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
         ></input>
         <input
           className="bg-gray-200"
           type="password"
           name="password"
+          value={password}
           placeholder=" Enter Password "
           onChange={(e) => setPassword(e.target.value)}
         ></input>
