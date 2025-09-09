@@ -2,9 +2,13 @@
 import express from "express";
 import exampleRoute from "./routes/example";
 import cookieSession from "cookie-session";
+
 require('dotenv').config()
-var myUsername = process.env.SPACETRACK_USERNAME || "username"
-var myPassword = process.env.SPACETRACK_PASSWORD || "password"
+var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING"
+var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING"
+const knex = require("knex")(
+  require("./knexfile.ts")[process.env.NODE_ENV || "development"]
+);
 
 console.log(myUsername)
 console.log(myPassword)
@@ -36,12 +40,13 @@ function refreshSpaceTrack(username: string, password: string) {
     })
   })
     .then((response) => {
+      console.log(response)
       console.log(response.status)
       return response.headers.getSetCookie()
     })
     .then((cookies) => {
       console.log(cookies[0].split(';')[0])
-      fetch(`https://www.space-track.org/basicspacedata/query/class/gp/NORAD_CAT_ID/0--1000/format/json`, {
+      fetch(`https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -53,7 +58,18 @@ function refreshSpaceTrack(username: string, password: string) {
         .then((response) => {
           toJSON(response.body)
             .then((data) => {
-              console.log(data)
+              let length = data.length;
+              for (var item in data) {
+                console.log(`Adding ${item} of ${length} to database`);
+                knex('space_track')
+                  .insert(data[item])
+                  .catch((err) => {
+                    console.log(err)
+                  })
+              }
+            })
+            .then(() => {
+              console.log("Database Updated!")
             })
         })
     })
@@ -76,6 +92,10 @@ async function toJSON(body: ReadableStream) {
   return read();
 }
 
+app.get('/refresh', (req, res) => {
+  refreshSpaceTrack(myUsername, myPassword)
+  res.status(200).send(data)
+});
 
 refreshSpaceTrack(myUsername, myPassword)
 
