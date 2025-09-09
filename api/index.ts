@@ -1,7 +1,8 @@
 import express from "express";
 import exampleRoute from "./routes/example";
-import userTableRoute from "./routes/userTable"
+import userTableRoute from "./routes/userTable";
 import cookieSession from "cookie-session";
+import cors from "cors";
 
 const app = express();
 const port = 8080;
@@ -14,6 +15,8 @@ app.set("trust proxy", 1);
 //     credentials: true,
 //   })
 // );
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -31,7 +34,6 @@ app.use(
 );
 
 app.use("/api/user_table", userTableRoute);
-
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
