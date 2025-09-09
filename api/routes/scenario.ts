@@ -4,7 +4,7 @@ import { body, checkSchema, validationResult } from "express-validator";
 const router = Router();
 
 // POST api/scenario
-router.post("/", async (req, res) => {
+router.post("/", async (req: Request, res: Response) => {
   //this will make a new scenario
   const id = 10;
 
@@ -23,7 +23,6 @@ router.post(
   async (req: Request, res: Response) => {
     //this will make a new satellite
     const result = validationResult(req);
-    console.log(result);
     if (result.isEmpty()) {
       return res.send(200);
     }
@@ -37,15 +36,12 @@ const createStationChain = () => {
       .notEmpty()
       .withMessage("Ground station name cannot be empty!"),
     body("latitude")
-      .notEmpty()
       .isFloat()
       .withMessage("Latitude must be a floating point number"),
     body("longitude")
-      .notEmpty()
       .isFloat()
       .withMessage("Longitude must be a floating point number"),
     body("altitude")
-      .notEmpty()
       .isFloat()
       .withMessage("Altitude must be a floating point number"),
   ];
@@ -57,8 +53,6 @@ router.post(
   async (req: Request, res: Response) => {
     //this will make a new station
     const result = validationResult(req);
-    console.log("Hey!!");
-    console.log(result);
     if (result.isEmpty()) {
       return res.send(200);
     }

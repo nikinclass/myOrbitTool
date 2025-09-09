@@ -5,9 +5,9 @@ const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
   const [stationName, setStationName] = useState<string>("");
-  const [stationLatitude, setStationLatitude] = useState<number>(0);
-  const [stationLongitude, setStationLongitude] = useState<number>(0);
-  const [stationAltitude, setStationAltitude] = useState<number>(0);
+  const [stationLatitude, setStationLatitude] = useState<number>();
+  const [stationLongitude, setStationLongitude] = useState<number>();
+  const [stationAltitude, setStationAltitude] = useState<number>();
 
   const [tleLine0, settleLine0] = useState<string>("");
   const [tleLine1, settleLine1] = useState<string>("");
