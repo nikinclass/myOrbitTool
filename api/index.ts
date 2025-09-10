@@ -1,5 +1,9 @@
 // @ts-nocheck
 import express from "express";
+import exampleRoute from "./routes/example";
+import scenarioRoute from "./routes/scenario";
+import cookieSession from "cookie-session";
+import cors from "cors";
 import userTableRoute from "./routes/userTable";
 import cookieSession from "cookie-session";
 import czmlConverter from './czmlConverter.ts';
@@ -16,6 +20,15 @@ var testData = ["1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0
 const app = express();
 const port = 8080;
 app.set("trust proxy", 1);
+
+// const cors = require("cors");
+// app.use(
+//   cors({
+//     origin: "http://127.0.0.1:5173",
+//     credentials: true,
+//   })
+// );
+//remove if using proxied server
 
 app.use(cors());
 
@@ -149,6 +162,9 @@ app.use(
   })
 );
 
+
+app.use("/api/example", exampleRoute);
+app.use("/api/scenario", scenarioRoute);
 app.use("/api/user_table", userTableRoute);
 
 app.get("/api/user_table/:username", async (req, res) => {
@@ -194,6 +210,7 @@ app.post('/api/user_table', async (req, res) => {
         return res.status(500).json({ message: 'Database error', error: err });
     }
 });
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
