@@ -12,6 +12,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NoPage } from "./pages/NoPage";
 import { Home } from "./pages/Home";
 import { Layout } from "./pages/Layout";
+import { Orbit } from "./pages/Orbit";
+
 // import Login from "./pages/Login";
 // import SignUp from "./pages/SignUp";
 import LoginForm from "./components/login-form";
@@ -40,18 +42,21 @@ function App() {
   }, []);
 
   return (
+
     <AppContext.Provider value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="*" element={<NoPage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/signup" element={<SignUpForm />} />
+            <Route path="login" element={<LoginForm />} />
+            <Route path="signup" element={<SignUpForm />} />
           </Route>
+          <Route path="/orbit" element={<Orbit />} />
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
+
   );
 }
 
