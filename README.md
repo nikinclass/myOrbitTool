@@ -90,6 +90,10 @@ To get a local copy up and running follow these simple example steps.
 
 You will need [to install Docker](https://docs.docker.com/engine/install/) to run this project. I am using Docker version 28.3.2.
 
+You need your own username and password for https://www.space-track.org in order to get all the already existing satellites.
+  - Enter your username in the docker-compose.yaml on line 10 and 41
+  - Enter your password in the docker-compose.yaml on line 11 and 42
+
 ### Installation
 
 1. Clone the repo
