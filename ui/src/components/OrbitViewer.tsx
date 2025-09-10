@@ -32,5 +32,5 @@ export function OrbitViewer() {
       });
   }, []);
 
-  return <Viewer full>{czmlArray}</Viewer>;
+  return <Viewer>{czmlArray}</Viewer>;
 }

@@ -24,7 +24,7 @@ const app = express();
 const port = 8080;
 app.set("trust proxy", 1);
 
-const cors = require("cors");
+app.use(cors());
 // app.use(
 //   cors({
 //     origin: "http://127.0.0.1:5173",
@@ -35,8 +35,8 @@ const cors = require("cors");
 
 // app.use(cors());
 
-function refreshSpaceTrack(username: string, password: string) {
-  fetch("https://www.space-track.org/ajaxauth/login", {
+async function refreshSpaceTrack(username: string, password: string) {
+  await fetch("https://www.space-track.org/ajaxauth/login", {
     method: "POST",
     credentials: "include",
     headers: {
@@ -50,8 +50,8 @@ function refreshSpaceTrack(username: string, password: string) {
     }),
   })
     .then((response) => {
-      console.log(response);
-      console.log(response.status);
+      // console.log(response);
+      // console.log(response.status);
       return response.headers.getSetCookie();
     })
     .then((cookies) => {
@@ -84,6 +84,10 @@ function refreshSpaceTrack(username: string, password: string) {
             console.log("Database Updated!");
           });
       });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send(400);
     });
 }
 
@@ -138,7 +142,7 @@ app.get("/api/czml/:SATNO", (req, res) => {
   }
 });
 
-refreshSpaceTrack(myUsername, myPassword);
+// refreshSpaceTrack(myUsername, myPassword);
 
 // async function fetchWithHeaders(url: string): Promise<Response> {
 //   const headers = new Headers();

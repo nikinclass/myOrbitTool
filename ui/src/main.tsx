@@ -48,6 +48,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
+            <Route index element={<ScenarioLoader />} />
             <Route index path="scenario" element={<ScenarioLoader />} />
             <Route path="scenario/:id" element={<Scenario />} />
             <Route path="login" element={<LoginForm />} />
@@ -60,8 +61,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+createRoot(document.getElementById("root")!).render(<App />);
