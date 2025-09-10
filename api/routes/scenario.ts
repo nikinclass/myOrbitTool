@@ -1,15 +1,30 @@
 import { Request, Response, Router } from "express";
 import { body, checkSchema, validationResult } from "express-validator";
+const knex = require("knex")(
+  require("../knexfile.ts")[process.env.NODE_ENV || "development"]
+);
 // import { body } from "express-validator";
 const router = Router();
 
 // POST api/scenario
 router.post("/", async (req: Request, res: Response) => {
   //this will make a new scenario
-  const id = 10;
-
+  try {
+    const payload = await knex("scenarios").insert({}).returning("id");
+    if (!payload && payload.length === 0) {
+      throw new Error("No record found");
+    }
+    return res.status(200).json({ id: payload[0].id });
+  } catch (err) {
+    return res.status(500);
+  }
+  //   .catch((e: unknown) => {
+  //     return e;
+  //   });
+  // if (!payload.hasOwnProperty("id")) {
+  //   return res.status(500).json({ error: { ...payload } });
+  // }
   //return scenario id
-  res.status(200).json({ id: id });
 });
 const createSatelliteChain = () => {
   return body(["tle_line0", "tle_line1", "tle_line2"])
@@ -47,6 +62,19 @@ const createStationChain = () => {
   ];
 };
 
+const createEntityScenarioRecord = async (scenario_id: number) => {
+  try {
+    const entity = (
+      await knex("scenario_entities")
+        .insert({ scenario_id: scenario_id })
+        .returning("id")
+    )[0];
+    return entity.id ?? null;
+  } catch (err) {
+    return null;
+  }
+};
+
 router.post(
   "/station",
   createStationChain(),
@@ -54,6 +82,9 @@ router.post(
     //this will make a new station
     const result = validationResult(req);
     if (result.isEmpty()) {
+      const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+      const { scenario_id, ...payload } = req.body;
+      await knex("stations").insert({ ...payload, id: entity_id });
       return res.send(200);
     }
     res.status(400).json({ errors: result.array() });

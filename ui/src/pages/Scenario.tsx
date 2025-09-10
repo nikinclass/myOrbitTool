@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
@@ -14,6 +14,7 @@ export function Scenario() {
   const [tleLine2, settleLine2] = useState<string>("");
 
   const navigate = useNavigate();
+  const id = useParams().id;
 
   const onSatelliteAdd = async () => {
     const payload = {
@@ -33,6 +34,7 @@ export function Scenario() {
 
   const onStationAdd = async () => {
     const payload = {
+      scenario_id: id,
       name: stationName,
       latitude: stationLatitude,
       longitude: stationLongitude,
