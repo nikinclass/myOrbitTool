@@ -6,22 +6,25 @@ import cookieSession from "cookie-session";
 import cors from "cors";
 import userTableRoute from "./routes/userTable";
 import cookieSession from "cookie-session";
-import czmlConverter from './czmlConverter.ts';
+import czmlConverter from "./czmlConverter.ts";
 import cors from "cors";
 
-require('dotenv').config()
-var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING"
-var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING"
+require("dotenv").config();
+var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
+var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
 const knex = require("knex")(
   require("./knexfile.ts")[process.env.NODE_ENV || "development"]
 );
-var testData = ["1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990", "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195"]
+var testData = [
+  "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
+  "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
+];
 
 const app = express();
 const port = 8080;
 app.set("trust proxy", 1);
 
-// const cors = require("cors");
+const cors = require("cors");
 // app.use(
 //   cors({
 //     origin: "http://127.0.0.1:5173",
@@ -30,56 +33,58 @@ app.set("trust proxy", 1);
 // );
 //remove if using proxied server
 
-app.use(cors());
+// app.use(cors());
 
 function refreshSpaceTrack(username: string, password: string) {
-  fetch('https://www.space-track.org/ajaxauth/login', {
+  fetch("https://www.space-track.org/ajaxauth/login", {
     method: "POST",
     credentials: "include",
     headers: {
-      "Accept": 'application/json',
-      "Content-Type": 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
 
     body: JSON.stringify({
       identity: username,
-      password: password
-    })
+      password: password,
+    }),
   })
     .then((response) => {
-      console.log(response)
-      console.log(response.status)
-      return response.headers.getSetCookie()
+      console.log(response);
+      console.log(response.status);
+      return response.headers.getSetCookie();
     })
     .then((cookies) => {
-      console.log(cookies[0].split(';')[0])
-      fetch(`https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Accept": 'application/json',
-          "Content-Type": 'application/json',
-          "Cookie": cookies[0].split(';')[0]
-        },
-      })
-        .then((response) => {
-          toJSON(response.body)
-            .then((data) => {
-              let length = data.length;
-              for (var item in data) {
-                console.log(`Adding ${item} of ${length} to database`);
-                knex('space_track')
-                  .insert(data[item])
-                  .catch((err) => {
-                    console.log(err)
-                  })
-              }
-            })
-            .then(() => {
-              console.log("Database Updated!")
-            })
-        })
-    })
+      console.log(cookies[0].split(";")[0]);
+      fetch(
+        `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Cookie: cookies[0].split(";")[0],
+          },
+        }
+      ).then((response) => {
+        toJSON(response.body)
+          .then((data) => {
+            let length = data.length;
+            for (var item in data) {
+              console.log(`Adding ${item} of ${length} to database`);
+              knex("space_track")
+                .insert(data[item])
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          })
+          .then(() => {
+            console.log("Database Updated!");
+          });
+      });
+    });
 }
 
 async function toJSON(body: ReadableStream) {
@@ -90,7 +95,7 @@ async function toJSON(body: ReadableStream) {
     const { done, value } = await reader.read();
     // all chunks have been read?
     if (done) {
-      return JSON.parse(chunks.join(''));
+      return JSON.parse(chunks.join(""));
     }
     const chunk = decoder.decode(value, { stream: true });
     chunks.push(chunk);
@@ -103,34 +108,37 @@ var testReturn = czmlConverter("ISS (Zarya)", testData);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
-app.get('/api/refresh', (req, res) => {
-  refreshSpaceTrack(myUsername, myPassword)
-  res.status(200)
+app.get("/api/refresh", (req, res) => {
+  refreshSpaceTrack(myUsername, myPassword);
+  res.status(200);
 });
 
 // RETURNS THE CZML FOR A TLE
 
-app.get('/api/czml/:SATNO', (req, res) => {
+app.get("/api/czml/:SATNO", (req, res) => {
   var SATNO = req.params.SATNO;
   if (SATNO == "???") {
     // USE TLE OR STUFF FROM BODY
   } else {
-    knex('space_track')
+    knex("space_track")
       .select("OBJECT_NAME", "TLE_LINE1", "TLE_LINE2")
       .where("NORAD_CAT_ID", "=", SATNO)
       .then((sat) => {
         console.log(sat);
-        var czml = czmlConverter(sat[0]["OBJECT_NAME"], [sat[0]["TLE_LINE1"], sat[0]["TLE_LINE2"]])
+        var czml = czmlConverter(sat[0]["OBJECT_NAME"], [
+          sat[0]["TLE_LINE1"],
+          sat[0]["TLE_LINE2"],
+        ]);
         res.status(200).json(czml);
       })
       .catch((err) => {
         console.log(err);
         res.status(400).send(err);
-      })
+      });
   }
-})
+});
 
-refreshSpaceTrack(myUsername, myPassword)
+refreshSpaceTrack(myUsername, myPassword);
 
 // async function fetchWithHeaders(url: string): Promise<Response> {
 //   const headers = new Headers();
@@ -162,7 +170,6 @@ app.use(
   })
 );
 
-
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
 app.use("/api/user_table", userTableRoute);
@@ -181,36 +188,35 @@ app.get("/api/user_table/:username", async (req, res) => {
   }
 });
 
-app.post('/api/user_table', async (req, res) => {
-    const { username, password } = req.body;
+app.post("/api/user_table", async (req, res) => {
+  const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Missing required fields' });
+  if (!username || !password) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const existingUser = await knex("user_table")
+      .where("username", username)
+      .first();
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
     }
 
-    try {
+    const inserted = await knex("user_table").insert({
+      username,
+      password,
+    });
 
-        const existingUser = await knex('user_table').where('username', username).first();
-        if (existingUser) {
-            return res.status(409).json({ message: 'User already exists' });
-        }
-
-        const inserted = await knex('user_table').insert({
-            username,
-            password
-        });
-
-        return res.status(201).json({
-            message: 'User created successfully',
-            userId: inserted[0]
-        });
-
-    } catch (err) {
-        console.error('Database insert error:', err);
-        return res.status(500).json({ message: 'Database error', error: err });
-    }
+    return res.status(201).json({
+      message: "User created successfully",
+      userId: inserted[0],
+    });
+  } catch (err) {
+    console.error("Database insert error:", err);
+    return res.status(500).json({ message: "Database error", error: err });
+  }
 });
-
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);

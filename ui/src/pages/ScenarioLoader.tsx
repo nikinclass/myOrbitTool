@@ -6,7 +6,7 @@ const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 export function ScenarioLoader() {
   const navigate = useNavigate();
   const createScenario = async () => {
-    const response = await fetch(LOCALHOST_URL, {
+    const response = await fetch(PROXIED_URL, {
       method: "POST",
       headers: {
         Accept: "application/json",

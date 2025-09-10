@@ -23,52 +23,52 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    volumes:
-      - pgdatasource:/var/lib/postgresql/data
-
-  api:
-    build: api/
-    container_name: myOrbitTool-api
-    restart: always
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    networks:
-      - app-network
-    environment:
-      - SPACETRACK_USERNAME=asdf # YOUR USERNAME HERE
-      - SPACETRACK_PASSWORD=asdf # YOUR PASSWORD HERE
-      - NODE_ENV=development
-      - DATABASE_HOST=myOrbitTool-db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=docker
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=myOrbitTool
     # volumes:
-    #   - type: bind
-    #     source: ./api
-    #     target: /app
+    #   - pgdatasource:/var/lib/postgresql/data
 
-  ui:
-    build: ui/
-    tty: true
-    container_name: myOrbitTool-ui
-    environment:
-      - FAST_REFRESH=true
-    depends_on:
-      - "api"
-    ports:
-      - "3000:3000"
-    networks:
-      - app-network
-     # Uncomment the following lines to enable live code updates
-     # volumes:
-     #   - type: bind
-     #     source: ./ui
-     #     target: /app
-     #   - /app/node_modules
+  # api:
+  #   build: api/
+  #   container_name: myOrbitTool-api
+  #   restart: always
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - app-network
+  #   environment:
+  #     - SPACETRACK_USERNAME=asdf # YOUR USERNAME HERE
+  #     - SPACETRACK_PASSWORD=asdf # YOUR PASSWORD HERE
+  #     - NODE_ENV=development
+  #     - DATABASE_HOST=myOrbitTool-db
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=docker
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_DB=myOrbitTool
+  # volumes:
+  #   - type: bind
+  #     source: ./api
+  #     target: /app
+
+  # ui:
+  #   build: ui/
+  #   tty: true
+  #   container_name: myOrbitTool-ui
+  #   environment:
+  #     - FAST_REFRESH=true
+  #   depends_on:
+  #     - "api"
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - app-network
+  # Uncomment the following lines to enable live code updates
+  # volumes:
+  #   - type: bind
+  #     source: ./ui
+  #     target: /app
+  #   - /app/node_modules
 
 networks:
   app-network:
