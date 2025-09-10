@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NoPage } from "./pages/NoPage";
 import { Home } from "./pages/Home";
 import { Layout } from "./pages/Layout";
+import { Orbit } from "./pages/Orbit";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="*" element={<NoPage />} />
         </Route>
+        <Route path="/orbit" element={<Orbit />} />
       </Routes>
     </BrowserRouter>
   );

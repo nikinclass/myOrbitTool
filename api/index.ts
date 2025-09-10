@@ -2,6 +2,7 @@
 import express from "express";
 import exampleRoute from "./routes/example";
 import cookieSession from "cookie-session";
+import czmlConverter from './czmlConverter.ts';
 
 require('dotenv').config()
 var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING"
@@ -9,9 +10,8 @@ var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING"
 const knex = require("knex")(
   require("./knexfile.ts")[process.env.NODE_ENV || "development"]
 );
+var testData = ["1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990", "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195"]
 
-console.log(myUsername)
-console.log(myPassword)
 
 const app = express();
 const port = 8080;
@@ -92,12 +92,25 @@ async function toJSON(body: ReadableStream) {
   return read();
 }
 
-app.get('/refresh', (req, res) => {
+var testReturn = czmlConverter("ISS (Zarya)", testData);
+
+// FORCES A REFRESH OF THE SPACE-TRACK DB
+
+app.get('/api/refresh', (req, res) => {
   refreshSpaceTrack(myUsername, myPassword)
-  res.status(200).send(data)
+  res.status(200)
 });
 
-refreshSpaceTrack(myUsername, myPassword)
+// RETURNS THE CZML FOR A TLE
+
+// CURRENTLY ONLY RETURNS THE ISS FOR TESTING PURPOSES
+
+app.get('/api/czml', (req, res) => {
+  console.log(testReturn)
+  res.status(200).json(testReturn)
+})
+
+// refreshSpaceTrack(myUsername, myPassword)
 
 // async function fetchWithHeaders(url: string): Promise<Response> {
 //   const headers = new Headers();

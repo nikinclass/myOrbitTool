@@ -7,8 +7,8 @@ services:
     container_name: myOrbitTool-db
     restart: always
     environment:
-      - SPACETRACK_USERNAME = "USERNAME"  # YOUR USERNAME HERE
-      - SPACETRACK_PASSWORD = "PASSWORD"  # YOUR PASSWORD HERE
+      - SPACETRACK_USERNAME=payton.o.rogers@gmail.com  # YOUR USERNAME HERE
+      - SPACETRACK_PASSWORD=JoD117baq3kdLoN2k3  # YOUR PASSWORD HERE
       - DATABASE_HOST=127.0.0.1
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=docker
@@ -38,8 +38,8 @@ services:
     networks:
       - app-network
     environment:
-      - SPACETRACK_USERNAME = "USERNAME"  # YOUR USERNAME HERE
-      - SPACETRACK_PASSWORD = "PASSWORD"  # YOUR PASSWORD HERE
+      - SPACETRACK_USERNAME=payton.o.rogers@gmail.com  # YOUR USERNAME HERE
+      - SPACETRACK_PASSWORD=JoD117baq3kdLoN2k3  # YOUR PASSWORD HERE
       - NODE_ENV=development
       - DATABASE_HOST=myOrbitTool-db
       - POSTGRES_USER=postgres
