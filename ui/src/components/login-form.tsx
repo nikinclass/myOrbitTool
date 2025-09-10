@@ -157,15 +157,13 @@ export default function LoginForm({
                             </div>
                             <div className="flex flex-col gap-3">
                                 <Button type="submit">Login</Button>
+                                <div className="mt-4 text-center text-sm">
+                                    Don&apos;t have an account?
+                                </div>
                                 <Button onClick={() => handleSignUp()}>Sign Up</Button>
                             </div>
                         </div>
-                        <div className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
-                            <a href="#" className="underline underline-offset-4">
-                                Sign up
-                            </a>
-                        </div>
+                        
                     </form>
                 </CardContent>
             </Card>
