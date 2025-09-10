@@ -6,10 +6,8 @@ const moment = require('moment')
 const julian = require('julian')
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
-const czmlConverter = (sat_name = "", tleLine = []) => {
+const czmlConverter = (sat_name = "", tleLine = [], color = { "rgba": [255, 0, 255, 255] }) => {
   let iterations = [];
-
-
 
   for (let count = 0; count < iterations.length; count++) {
     tleLine.push(iterations[count].substring(0, iterations[count].length - 1)) //XXX SUCCESS
@@ -107,11 +105,7 @@ const czmlConverter = (sat_name = "", tleLine = []) => {
     "availability": `${initialTime}/${endTime}`,
     "description": "Insert the altitude here??",
     "label": {
-      "fillColor": {
-        "rgba": [
-          255, 0, 255, 255
-        ]
-      },
+      "fillColor": color,
       "font": "11pt Lucida Console",
       "horizontalOrigin": "LEFT",
       "outlineColor": {
@@ -140,12 +134,8 @@ const czmlConverter = (sat_name = "", tleLine = []) => {
       "width": 1,
       "material": {
         "solidColor": {
-          "color": {
-            "rgba": [
-              255, 0, 255, 255
-            ]
-          }
-        }
+          "color": color,
+        },
       },
       "resolution": 120,
       "leadTime": leadIntervalArray,
@@ -155,6 +145,11 @@ const czmlConverter = (sat_name = "", tleLine = []) => {
       "show": false,
       //Animation(s).
       "minimumPixelSize": 99,
+    },
+    "point": {
+      "show": true,
+      "pixelSize": 10,
+      "color": color
     },
     "position": {
       "interpolationAlgorithm": "LAGRANGE",

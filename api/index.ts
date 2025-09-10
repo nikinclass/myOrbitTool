@@ -103,14 +103,27 @@ app.get('/api/refresh', (req, res) => {
 
 // RETURNS THE CZML FOR A TLE
 
-// CURRENTLY ONLY RETURNS THE ISS FOR TESTING PURPOSES
-
-app.get('/api/czml', (req, res) => {
-  console.log(testReturn)
-  res.status(200).json(testReturn)
+app.get('/api/czml/:SATNO', (req, res) => {
+  var SATNO = req.params.SATNO;
+  if (SATNO == "???") {
+    // USE TLE OR STUFF FROM BODY
+  } else {
+    knex('space_track')
+      .select("OBJECT_NAME", "TLE_LINE1", "TLE_LINE2")
+      .where("NORAD_CAT_ID", "=", SATNO)
+      .then((sat) => {
+        console.log(sat);
+        var czml = czmlConverter(sat[0]["OBJECT_NAME"], [sat[0]["TLE_LINE1"], sat[0]["TLE_LINE2"]])
+        res.status(200).json(czml);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).send(err);
+      })
+  }
 })
 
-// refreshSpaceTrack(myUsername, myPassword)
+refreshSpaceTrack(myUsername, myPassword)
 
 // async function fetchWithHeaders(url: string): Promise<Response> {
 //   const headers = new Headers();

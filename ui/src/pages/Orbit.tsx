@@ -23,7 +23,7 @@ export function Orbit() {
   const [czmlArray, setCzmlArray] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/czml')
+    fetch(`http://localhost:3000/api/czml/${33376}`)
       .then(res => res.json())
       .then(data => {
         setCzmlArray([<CzmlDataSource data={data}/>])
