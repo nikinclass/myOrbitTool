@@ -12,8 +12,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NoPage } from "./pages/NoPage";
 import { Home } from "./pages/Home";
 import { Layout } from "./pages/Layout";
-import Login from "./pages/Login";
+// import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import LoginForm from "./components/login-form";
 
 export type AppContextType = {
   username: string;
@@ -38,15 +39,13 @@ function App() {
   }, []);
 
   return (
-    <AppContext.Provider
-      value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
-    >
+    <AppContext.Provider value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="*" element={<NoPage />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignUp />} />
           </Route>
         </Routes>
