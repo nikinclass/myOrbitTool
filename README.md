@@ -1,4 +1,5 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a id="readme-top"></a>
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -27,8 +28,6 @@
   </p>
 </div>
 
-
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -55,9 +54,8 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
@@ -66,18 +64,14 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
+
 [![Postgres][Postgres]][Postgres-url]
 [![Express.js][Express.js]][Express-url]
 [![React][React.js]][React-url]
 [![Node.js][Node.js]][Node-url]
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- GETTING STARTED -->
 
@@ -91,8 +85,9 @@ To get a local copy up and running follow these simple example steps.
 You will need [to install Docker](https://docs.docker.com/engine/install/) to run this project. I am using Docker version 28.3.2.
 
 You need your own username and password for https://www.space-track.org in order to get all the already existing satellites.
-  - Enter your username in the docker-compose.yaml on line 10 and 41
-  - Enter your password in the docker-compose.yaml on line 11 and 42
+
+- Enter your username in the docker-compose.yaml on line 10 and 41
+- Enter your password in the docker-compose.yaml on line 11 and 42
 
 ### Installation
 
@@ -101,29 +96,59 @@ You need your own username and password for https://www.space-track.org in order
    git clone https://github.com/nikinclass/myOrbitTool.git
    ```
 1. Start the docker container
+
    ```sh
    docker compose up
    ```
 
+#### For running microservices independently
+
+1. Clone the repo
+
+   ```sh
+   git clone https://github.com/nikinclass/myOrbitTool.git
+   ```
+
+1. Ensure all fetches are using LOCALHOST_URL (not PROXIED_URL)
+
+1. Start the docker container
+
+   ```sh
+   docker compose up
+   ```
+
+1. Start the ui service
+
+   ```sh
+   cd ./ui
+   npm i
+   npm run dev
+   ```
+
+1. Start the api server
+   ```sh
+   cd ./api
+   npm i
+   npm run dev
+   ```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [ ] Feature 1
 - [ ] Feature 2
 - [ ] Feature 3
-    - [ ] Nested Feature
+  - [ ] Nested Feature
 
 See the [open issues](https://github.com/nikinclass/myOrbitTool/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -145,19 +170,17 @@ Don't forget to give the project a star! Thanks again!
   <img src="https://contrib.rocks/image?repo=nikinclass/myOrbitTool" alt="contrib.rocks image" />
 </a>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT license. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/nikinclass/myOrbitTool.svg?style=for-the-badge
 [contributors-url]: https://github.com/nikinclass/myOrbitTool/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/nikinclass/myOrbitTool.svg?style=for-the-badge
