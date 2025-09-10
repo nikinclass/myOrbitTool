@@ -18,18 +18,21 @@ export function Scenario() {
 
   const onSatelliteAdd = async () => {
     const payload = {
+      scenario_id: id,
       tle_line0: tleLine0,
       tle_line1: tleLine1,
       tle_line2: tleLine2,
     };
-    fetch(`${LOCALHOST_URL}/satellite`, {
+
+    const response = await fetch(`${LOCALHOST_URL}/satellite`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    });
+    }).then((res) => res.json());
+    console.log(response);
   };
 
   const onStationAdd = async () => {

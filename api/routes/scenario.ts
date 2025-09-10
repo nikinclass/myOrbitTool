@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, response, Response, Router } from "express";
 import { body, checkSchema, validationResult } from "express-validator";
 const knex = require("knex")(
   require("../knexfile.ts")[process.env.NODE_ENV || "development"]
@@ -39,7 +39,12 @@ router.post(
     //this will make a new satellite
     const result = validationResult(req);
     if (result.isEmpty()) {
-      return res.send(200);
+      const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+      const { scenario_id, ...payload } = req.body;
+      const response = await knex("satellites")
+        .insert({ ...payload, id: entity_id })
+        .returning("*");
+      return res.status(200).json(response);
     }
     res.status(400).json({ errors: result.array() });
   }
@@ -84,8 +89,10 @@ router.post(
     if (result.isEmpty()) {
       const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
       const { scenario_id, ...payload } = req.body;
-      await knex("stations").insert({ ...payload, id: entity_id });
-      return res.send(200);
+      const response = await knex("station")
+        .insert({ ...payload, id: entity_id })
+        .returning("*");
+      return res.status(200).json(response);
     }
     res.status(400).json({ errors: result.array() });
   }
