@@ -2,6 +2,7 @@ import { OrbitViewer } from "@/components/OrbitViewer";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Viewer, CzmlDataSource } from "resium";
 import { Plus, Satellite, SatelliteDish } from "lucide-react";
 import {
   Tooltip,
@@ -23,19 +24,28 @@ export function Scenario() {
   const [stationLongitude, setStationLongitude] = useState<number>();
   const [stationAltitude, setStationAltitude] = useState<number>();
 
-  const [tleLine0, settleLine0] = useState<string>("");
+  const [commonName, setCommonName] = useState<string>("");
   const [tleLine1, settleLine1] = useState<string>("");
   const [tleLine2, settleLine2] = useState<string>("");
+  const [czmlArray, setCzmlArray] = useState<any>(null);
+  const [groundArray, setGroundArray] = useState<any>(null);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
+  // var testData = [
+  //   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
+  //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
+  // ];
+
+  useEffect(() => {}, [])
+
   const onSatelliteAdd = async () => {
     const payload = {
       scenario_id: id,
-      tle_line0: tleLine0,
-      tle_line1: tleLine1,
-      tle_line2: tleLine2,
+      OBJECT_NAME: commonName,
+      TLE_LINE1: tleLine1,
+      TLE_LINE2: tleLine2
     };
 
     const response = await fetch(`${LOCALHOST_URL}/satellite`, {
@@ -47,6 +57,23 @@ export function Scenario() {
       body: JSON.stringify(payload),
     }).then((res) => res.json());
     console.log(response);
+
+    fetch(`${LOCALHOST_URL}/czml`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (czmlArray == null) {
+          setCzmlArray([<CzmlDataSource data={data} />]);
+        } else {
+          setCzmlArray([...czmlArray, <CzmlDataSource data={data} />]);
+        }
+      });
   };
 
   const onStationAdd = async () => {
@@ -78,9 +105,9 @@ export function Scenario() {
             className="bg-white"
             type="text"
             placeholder="tle line 0"
-            value={tleLine0}
+            value={commonName}
             onChange={(e) => {
-              settleLine0(e.target.value);
+              setCommonName(e.target.value);
             }}
           />
           <input
@@ -188,8 +215,12 @@ export function Scenario() {
           </TooltipContent>
         </Tooltip>
       </div>
+
+      <Viewer className="flex-1 aspect-">
+        {czmlArray}
+        {groundArray}
+      </Viewer>
       <div className="flex-1 h-full bg-black w-full"></div>
-      {/*<OrbitViewer className="flex-1 aspect-" />*/}
     </div>
   );
 }
