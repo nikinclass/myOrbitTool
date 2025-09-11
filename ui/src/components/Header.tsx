@@ -11,6 +11,9 @@ type HeaderProps = {
   className?: string;
 };
 
+const PROXIED_URL = "/api/user_table";
+const LOCALHOST_URL = "http://localhost:8080/api/user_table";
+
 export const Header = ({ className }: HeaderProps) => {
   const [showLoginModal, setLoginModal] = useState(false);
 
@@ -30,7 +33,7 @@ export const Header = ({ className }: HeaderProps) => {
         <Button
           onClick={async () => {
             try {
-              await fetch("/api/sessions", {
+              await fetch(`${PROXIED_URL}/logout`, {
                 method: "DELETE",
                 headers: {
                   "Content-Type": "application/json",
@@ -40,6 +43,7 @@ export const Header = ({ className }: HeaderProps) => {
             } catch (err) {
               console.log(err.message);
             }
+            alert("Successful logout.");
           }}
         >
           Logout

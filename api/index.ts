@@ -4,13 +4,8 @@ import exampleRoute from "./routes/example";
 import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
 import cors from "cors";
-import userTableRoute from "./routes/userTable";
-import cookieSession from "cookie-session";
 import czmlConverter from "./czmlConverter.ts";
-import cors from "cors";
-
-const userRoutes = require("./routes/users");
-const { router: authRoutes } = require("./routes/auth");
+import userRoutes from "./routes/users";
 
 require("dotenv").config();
 var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
@@ -44,8 +39,6 @@ async function refreshSpaceTrack(username: string, password: string) {
     }),
   })
     .then((response) => {
-      // console.log(response);
-      // console.log(response.status);
       return response.headers.getSetCookie();
     })
     .then((cookies) => {
@@ -170,10 +163,8 @@ app.use(
 
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
-app.use("/api/user_table", userTableRoute);
 
-app.use("/api/users", userRoutes);
-app.use("/api/sessions", authRoutes);
+app.use("/api/user_table", userRoutes);
 
 app.get("/api/user_table/:username", async (req, res) => {
   const queriedUsername = req.params.username;
@@ -185,39 +176,39 @@ app.get("/api/user_table/:username", async (req, res) => {
 
     res.status(200).json(crap);
   } else {
-    res.status(400).send("Need a username dumbass.");
+    res.status(400).send("Need a username.");
   }
 });
 
-app.post("/api/user_table", async (req, res) => {
-  const { username, password } = req.body;
+// app.post("/api/user_table", async (req, res) => {
+//   const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+//   if (!username || !password) {
+//     return res.status(400).json({ message: "Missing required fields" });
+//   }
 
-  try {
-    const existingUser = await knex("user_table")
-      .where("username", username)
-      .first();
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
-    }
+//   try {
+//     const existingUser = await knex("user_table")
+//       .where("username", username)
+//       .first();
+//     if (existingUser) {
+//       return res.status(409).json({ message: "User already exists" });
+//     }
 
-    const inserted = await knex("user_table").insert({
-      username,
-      password,
-    });
+//     const inserted = await knex("user_table").insert({
+//       username,
+//       password,
+//     });
 
-    return res.status(201).json({
-      message: "User created successfully",
-      userId: inserted[0],
-    });
-  } catch (err) {
-    console.error("Database insert error:", err);
-    return res.status(500).json({ message: "Database error", error: err });
-  }
-});
+//     return res.status(201).json({
+//       message: "User created successfully",
+//       userId: inserted[0],
+//     });
+//   } catch (err) {
+//     console.error("Database insert error:", err);
+//     return res.status(500).json({ message: "Database error", error: err });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);

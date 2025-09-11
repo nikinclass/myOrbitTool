@@ -2,8 +2,6 @@
 
 import { useEffect, useContext, useState } from "react";
 import bcrypt from "bcryptjs";
-import { AppContext } from "../main.tsx";
-import type { AppContextType } from "../main.tsx";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 
+const PROXIED_URL = "/api/user_table";
+const LOCALHOST_URL = "http://localhost:8080/api/user_table";
+
 export function Login({ isVisible, closeModal }) {
   const [accountStage, setAccountStage] = useState("login");
   const [data, setData] = useState();
@@ -29,8 +30,6 @@ export function Login({ isVisible, closeModal }) {
       closeModal();
     }
   };
-
-  const { setAuthUser } = useAuth();
 
   useEffect(() => {
     if (isVisible) {
@@ -76,10 +75,8 @@ export function Login({ isVisible, closeModal }) {
     }
   };
 
-  function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-    const { username, setUsername, isLoggedIn, setIsLoggedIn } = useContext(
-      AppContext
-    ) as AppContextType;
+  function LoginForm({ swapView, ...props }: React.ComponentProps<"div">) {
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
@@ -87,13 +84,8 @@ export function Login({ isVisible, closeModal }) {
       e.preventDefault();
       // If missing details, fail
       if (!username || !password) {
-        let missing = [];
-
-        if (!username) missing = [missing.concat(["username"]).join(", ")];
-
-        if (!password) missing = [missing.concat(["password"]).join(", ")];
-
-        alert(`Cannot log in. You are missing: ${missing}`);
+        if (!username) alert("You must include username.");
+        if (!password) alert("You must include password.");
       } else {
         // Try to login
         try {
@@ -102,41 +94,49 @@ export function Login({ isVisible, closeModal }) {
             password: password,
           });
 
+          {
+            /* 
+            const PROXIED_URL = "/api/user_table";
+            const LOCALHOST_URL = "http://localhost:8080/api/user_table";
+          */
+          }
+
           setIsLoading(true);
-          const res = await fetch("/api/sessions", {
+          const res = await fetch(`${PROXIED_URL}/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: "include",
             body: payload,
           });
 
           if (!res.ok) {
+            console.log(`res error`);
             throw new Error("Server error");
           }
 
-          const userDat = await fetch("/api/users/me", {
+          const userDat = await fetch(`${PROXIED_URL}/login`, {
             method: "GET",
-            credentials: "include",
           });
+          console.log(`userDat: ${userDat}`);
 
-          if (!userDat.ok) throw new Error(userDat.error);
+          if (!userDat.ok) {
+            throw new Error(userDat.error);
+          }
 
           const json = await userDat.json();
-          setAuthUser(json);
+
           navigate("/loggedin");
           closeModal();
         } catch (err) {
           setError(err.message);
-          setAuthUser(null);
         } finally {
           setIsLoading(false);
         }
       }
     };
     return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className={cn("flex flex-col gap-6")} {...props}>
         <Card>
           <CardHeader>
             <CardTitle>Login to your account</CardTitle>
@@ -175,19 +175,10 @@ export function Login({ isVisible, closeModal }) {
                   />
                 </div>
                 <div className="mt-8 flex justify-evenly gap-8">
-                  <Button
-                    className="cursor-pointer p-2 pl-8 pr-8 bg-accent1 hover:bg-accent1-hover text-white rounded-xl"
-                    type="submit"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" disabled={isLoading}>
                     Log-In
                   </Button>
-                  <Button
-                    className="cursor-pointer p-2 pl-8 pr-8 bg-white hover:text-accent1-hover text-accent1 rounded-xl"
-                    onClick={swapView}
-                  >
-                    Create Account
-                  </Button>
+                  <Button onClick={swapView}>Create Account</Button>
                 </div>
               </div>
             </form>
@@ -201,6 +192,8 @@ export function Login({ isVisible, closeModal }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -224,7 +217,7 @@ export function Login({ isVisible, closeModal }) {
 
           setIsLoading(true);
           setData(
-            await fetch("/api/users", {
+            await fetch(`${LOCALHOST_URL}/create`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -235,12 +228,13 @@ export function Login({ isVisible, closeModal }) {
         } catch (err) {
           setError(err.message);
         } finally {
+          navigate(`${PROXIED_URL}`);
           setIsLoading(false);
         }
       }
     };
     return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Create an Account</CardTitle>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 
-const bcrypt = require("bcrypt");
+import bcrypt from "bcryptjs";
+import { appendFile } from "fs";
 const express = require("express");
 const router = express.Router();
 
@@ -10,21 +11,46 @@ const knex = require("knex")(
 
 const SALT_ROUNDS = 12;
 
-router.get("/me", async (req, res) => {
-  console.log(req.session);
-  if (!req.session || !req.session.id) {
-    return res.status(401).json({ error: "Unauthorized request" });
+// router.get("/me", async (req, res) => {
+//   console.log(req.session);
+//   if (!req.session || !req.session.id) {
+//     return res.status(401).json({ error: "Unauthorized request" });
+//   }
+
+//   const payload = await knex("user_table")
+//     .select("*")
+//     .where("id", "=", req.session.id)
+//     .first();
+
+//   res.status(200).json(payload);
+// });
+
+router.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    if (!username) return res.status(400).json({ error: "Missing username" });
+    if (!password) return res.status(400).json({ error: "Missing password" });
+
+    const user = await knex("user_table")
+      .select("id", "password")
+      .where("username", "=", username)
+      .first();
+
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+
+    const successful = await bcrypt.compare(password, user.password);
+
+    if (!successful)
+      return res.status(401).json({ error: "Invalid credentials" });
+    req.session.id = user.id;
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const payload = await knex("user_table")
-    .select("*")
-    .where("id", "=", req.session.id)
-    .first();
-
-  res.status(200).json(payload);
 });
 
-router.post("/", (req, res) => {
+router.post("/create", (req, res) => {
   try {
     const body = req.body;
     if (!body.username) {
@@ -44,9 +70,13 @@ router.post("/", (req, res) => {
         };
 
         // Save details
-        return knex("user_table")
+        knex("user_table")
           .insert(newRecord)
-          .then(() => res.send(newRecord))
+          .returning("id")
+          .then((id) => {
+            req.session.id = id[0];
+            res.send(200);
+          })
           .catch((err) =>
             res.status(400).json({ error: "Failed to save user to database" })
           );
@@ -61,5 +91,13 @@ router.post("/", (req, res) => {
     res.status(400).json({ error: "Bad request" });
   }
 });
+
+// Logout
+router.use("/logout", (req, res) => {
+  req.session = null;
+});
+
+// const PROXIED_URL = "/api/scenario";
+// const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 module.exports = router;
