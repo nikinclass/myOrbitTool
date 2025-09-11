@@ -21,7 +21,7 @@ var testData = [
 // NEEDS TO BE MOVED TO THE BACKEND AGAINST AN API ENDPOINT
 var testReturn = {};
 
-export function OrbitViewer() {
+export function OrbitViewer({ className }) {
   const [czmlArray, setCzmlArray] = useState(null);
 
   useEffect(() => {
@@ -32,5 +32,5 @@ export function OrbitViewer() {
       });
   }, []);
 
-  return <Viewer>{czmlArray}</Viewer>;
+  return <Viewer className={`${className}`}>{czmlArray}</Viewer>;
 }

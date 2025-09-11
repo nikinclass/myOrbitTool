@@ -56,8 +56,8 @@ export function Scenario() {
   };
 
   return (
-    <div className="flex">
-      <div className="flex flex-col border p-4 bg-green-500">
+    <div className="flex relative max-h-full border">
+      <div className="flex absolute z-10 flex-col max-w-[300px] h-fit border bg-white p-4">
         <h1>Scenario Page</h1>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Satellite</h3>
@@ -135,7 +135,7 @@ export function Scenario() {
           </button>
         </div>
       </div>
-      <OrbitViewer />
+      <OrbitViewer className="flex-1 aspect-" />
     </div>
   );
 }
