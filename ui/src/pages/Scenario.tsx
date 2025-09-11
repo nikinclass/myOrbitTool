@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/choicePopover";
+import { AddEntityForm } from "@/components/AddEntityForm";
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
@@ -38,14 +39,14 @@ export function Scenario() {
   //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
   // ];
 
-  useEffect(() => {}, [])
+  useEffect(() => {}, []);
 
   const onSatelliteAdd = async () => {
     const payload = {
       scenario_id: id,
       OBJECT_NAME: commonName,
       TLE_LINE1: tleLine1,
-      TLE_LINE2: tleLine2
+      TLE_LINE2: tleLine2,
     };
 
     const response = await fetch(`${LOCALHOST_URL}/satellite`, {
@@ -182,31 +183,8 @@ export function Scenario() {
                   <Plus />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="flex flex-col w-fit bg-black"
-                side="right"
-              >
-                <Button
-                  variant="secondary"
-                  className="rounded-lg flex h-8 w-fit"
-                >
-                  <Satellite />
-                  <p>Live Satellite</p>
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="rounded-lg flex h-8 w-fit"
-                >
-                  <Satellite />
-                  <p>Manual Satellite</p>
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="rounded-lg flex h-8 w-fit"
-                >
-                  <SatelliteDish />
-                  <p>Manual Ground Station</p>
-                </Button>
+              <PopoverContent className="flex flex-col w-fit" side="right">
+                <AddEntityForm></AddEntityForm>
               </PopoverContent>
             </Popover>
           </TooltipTrigger>
@@ -216,10 +194,10 @@ export function Scenario() {
         </Tooltip>
       </div>
 
-      <Viewer className="flex-1 aspect-">
+      {/* <Viewer className="flex-1 aspect-">
         {czmlArray}
         {groundArray}
-      </Viewer>
+      </Viewer> */}
       <div className="flex-1 h-full bg-black w-full"></div>
     </div>
   );
