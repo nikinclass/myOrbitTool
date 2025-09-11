@@ -1,6 +1,7 @@
 import { OrbitViewer } from "@/components/OrbitViewer";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Viewer, CzmlDataSource } from "resium";
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
@@ -10,9 +11,11 @@ export function Scenario() {
   const [stationLongitude, setStationLongitude] = useState<number>();
   const [stationAltitude, setStationAltitude] = useState<number>();
 
-  const [tleLine0, settleLine0] = useState<string>("");
+  const [commonName, setCommonName] = useState<string>("");
   const [tleLine1, settleLine1] = useState<string>("");
   const [tleLine2, settleLine2] = useState<string>("");
+  const [czmlArray, setCzmlArray] = useState<any>(null);
+  const [groundArray, setGroundArray] = useState<any>(null);
 
   const navigate = useNavigate();
   const id = useParams().id;
@@ -20,7 +23,7 @@ export function Scenario() {
   const onSatelliteAdd = async () => {
     const payload = {
       scenario_id: id,
-      tle_line0: tleLine0,
+      common_name: commonName,
       tle_line1: tleLine1,
       tle_line2: tleLine2,
     };
@@ -34,6 +37,18 @@ export function Scenario() {
       body: JSON.stringify(payload),
     }).then((res) => res.json());
     console.log(response);
+
+    fetch(`${PROXIED_URL}/${25544}`, {
+
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (czmlArray == null) {
+          setCzmlArray([<CzmlDataSource data={data} />]);
+        } else {
+          setCzmlArray([...czmlArray, <CzmlDataSource data={data} />]);
+        }
+      });
   };
 
   const onStationAdd = async () => {
@@ -65,9 +80,9 @@ export function Scenario() {
             className="bg-white"
             type="text"
             placeholder="tle line 0"
-            value={tleLine0}
+            value={commonName}
             onChange={(e) => {
-              settleLine0(e.target.value);
+              setCommonName(e.target.value);
             }}
           />
           <input
@@ -135,7 +150,10 @@ export function Scenario() {
           </button>
         </div>
       </div>
-      <OrbitViewer className="flex-1 aspect-" />
+      <Viewer className="flex-1 aspect-">
+        {czmlArray}
+        {groundArray}
+      </Viewer>
     </div>
   );
 }

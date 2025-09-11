@@ -22,15 +22,21 @@ var testData = [
 var testReturn = {};
 
 export function OrbitViewer({ className }) {
-  const [czmlArray, setCzmlArray] = useState(null);
+  const [czmlArray, setCzmlArray] = useRef(null);
+  const [groundArray, setGroundArray] = useState(null);
 
   useEffect(() => {
-    fetch(`${PROXIED_URL}/${33376}`)
+    fetch(`${PROXIED_URL}/${25544}`)
       .then((res) => res.json())
       .then((data) => {
         setCzmlArray([<CzmlDataSource data={data} />]);
       });
   }, []);
 
-  return <Viewer className={`${className}`}>{czmlArray}</Viewer>;
+  return (
+    <Viewer className={`${className}`}>
+      {czmlArray}
+      {entityArray}
+    </Viewer>
+    );
 }
