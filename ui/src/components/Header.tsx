@@ -1,32 +1,58 @@
+// @ts-nocheck
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { Login } from "./Login";
 import LogoutButton from "../components/Logout";
+import { Button } from "./ui/button";
 
 type HeaderProps = {
   className?: string;
 };
 
 export const Header = ({ className }: HeaderProps) => {
+  const [showLoginModal, setLoginModal] = useState(false);
+
   const navigate = useNavigate();
+
   return (
-    <>
-      <div className={`flex justify-evenly border p-4 ${className ?? ""}`}>
-        <h1>Logo</h1>
-        <button
-          className="rounded-full bg-black text-white cursor-pointer p-4 p-x-15"
-          onClick={() => navigate("/login")}
+    <div className="h-fit">
+      <div className="flex justify-between items-center p-2 pl-4 pr-4 border-b-2 border-foreground-light">
+        <Button
+          onClick={() => {
+            setLoginModal(true);
+          }}
         >
-          Login Page
-        </button>
+          Login
+        </Button>
 
-        <button
-          className="rounded-full bg-black text-white cursor-pointer p-4 p-x-15"
-          onClick={() => navigate("/signup")}
+        <Button
+          onClick={async () => {
+            try {
+              await fetch("/api/sessions", {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+              });
+            } catch (err) {
+              console.log(err.message);
+            }
+          }}
         >
-          SignUp Page
-        </button>
-
-        <LogoutButton />
+          Logout
+        </Button>
       </div>
-    </>
+      {showLoginModal && (
+        <Login
+          isVisible={showLoginModal}
+          closeModal={() => {
+            setLoginModal(false);
+          }}
+        />
+      )}
+    </div>
   );
 };

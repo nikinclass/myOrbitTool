@@ -29,16 +29,18 @@ export default function SignUpForm({
   ) as AppContextType;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   function handleSignUp() {
-    navigate("/signup");
+    alert("Logged in successfully!");
+    navigate("/");
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // If missing details, fail
     if (!username || !password) {
       let missing = [];
 
@@ -55,34 +57,20 @@ export default function SignUpForm({
           password: password,
         });
 
+        console.log(payload);
+
         setIsLoading(true);
-        const res = await fetch("/api/sessions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: payload,
-        });
-
-        if (!res.ok) {
-          throw new Error("Server error");
-        }
-
-        const userDat = await fetch("/api/users/me", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (!userDat.ok) throw new Error(userDat.error);
-
-        const json = await userDat.json();
-        setAuthUser(json);
-        navigate("/dashboard");
-        closeModal();
+        setData(
+          await fetch("/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: payload,
+          }).then((res) => res.json())
+        );
       } catch (err) {
         setError(err.message);
-        setAuthUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -93,18 +81,12 @@ export default function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Sign up an account</CardTitle>
-          <CardDescription>
-            Enter your username and password below to create your account
-          </CardDescription>
+          <CardTitle>Create an Account</CardTitle>
+          <CardDescription>Fill in the form.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-          >
+          {error && <p>Invalid Credentials!</p>}
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="username">Username</Label>
@@ -131,9 +113,22 @@ export default function SignUpForm({
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+
+                <div className="flex items-center">
+                  <Label htmlFor="password">Confirm Password</Label>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  name="password"
+                  value={password}
+                  placeholder="Confirm Password"
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
               </div>
-              <div className="flex flex-col gap-3">
-                <Button onClick={() => handleSignUp()}>Sign Up</Button>
+              <div className="flex flex-col gap-3 cursor-pointer">
+                <Button onClick={() => handleSignUp()}>Submit</Button>
               </div>
             </div>
           </form>

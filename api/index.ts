@@ -9,6 +9,9 @@ import cookieSession from "cookie-session";
 import czmlConverter from "./czmlConverter.ts";
 import cors from "cors";
 
+const userRoutes = require("./routes/users");
+const { router: authRoutes } = require("./routes/auth");
+
 require("dotenv").config();
 var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
 var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
@@ -25,15 +28,6 @@ const port = 8080;
 app.set("trust proxy", 1);
 
 app.use(cors());
-// app.use(
-//   cors({
-//     origin: "http://127.0.0.1:5173",
-//     credentials: true,
-//   })
-// );
-//remove if using proxied server
-
-// app.use(cors());
 
 async function refreshSpaceTrack(username: string, password: string) {
   await fetch("https://www.space-track.org/ajaxauth/login", {
@@ -177,6 +171,9 @@ app.use(
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
 app.use("/api/user_table", userTableRoute);
+
+app.use("/api/users", userRoutes);
+app.use("/api/sessions", authRoutes);
 
 app.get("/api/user_table/:username", async (req, res) => {
   const queriedUsername = req.params.username;
