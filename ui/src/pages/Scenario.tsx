@@ -20,12 +20,19 @@ export function Scenario() {
   const navigate = useNavigate();
   const id = useParams().id;
 
+  // var testData = [
+  //   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
+  //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
+  // ];
+
+  useEffect(() => {}, [])
+
   const onSatelliteAdd = async () => {
     const payload = {
       scenario_id: id,
-      common_name: commonName,
-      tle_line1: tleLine1,
-      tle_line2: tleLine2,
+      OBJECT_NAME: commonName,
+      TLE_LINE1: tleLine1,
+      TLE_LINE2: tleLine2
     };
 
     const response = await fetch(`${LOCALHOST_URL}/satellite`, {
@@ -38,8 +45,13 @@ export function Scenario() {
     }).then((res) => res.json());
     console.log(response);
 
-    fetch(`${PROXIED_URL}/${25544}`, {
-
+    fetch(`${LOCALHOST_URL}/czml`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     })
       .then((res) => res.json())
       .then((data) => {
