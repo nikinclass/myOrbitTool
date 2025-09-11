@@ -1,7 +1,20 @@
 import { OrbitViewer } from "@/components/OrbitViewer";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Viewer, CzmlDataSource } from "resium";
+import { Plus, Satellite, SatelliteDish } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/choicePopover";
+
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
@@ -83,7 +96,7 @@ export function Scenario() {
   };
 
   return (
-    <div className="flex relative max-h-full border">
+    <div className="flex relative h-full border">
       <div className="flex absolute z-10 flex-col max-w-[300px] h-fit border bg-white p-4">
         <h1>Scenario Page</h1>
         <div className="flex flex-col border-red-500 gap-2">
@@ -161,11 +174,53 @@ export function Scenario() {
             Add
           </button>
         </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger className="rounded-full w-8 h-8">
+                <Button variant="secondary" className="rounded-full w-8 h-8">
+                  <Plus />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="flex flex-col w-fit bg-black"
+                side="right"
+              >
+                <Button
+                  variant="secondary"
+                  className="rounded-lg flex h-8 w-fit"
+                >
+                  <Satellite />
+                  <p>Live Satellite</p>
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="rounded-lg flex h-8 w-fit"
+                >
+                  <Satellite />
+                  <p>Manual Satellite</p>
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="rounded-lg flex h-8 w-fit"
+                >
+                  <SatelliteDish />
+                  <p>Manual Ground Station</p>
+                </Button>
+              </PopoverContent>
+            </Popover>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>Add an entity to the scene!</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
+
       <Viewer className="flex-1 aspect-">
         {czmlArray}
         {groundArray}
       </Viewer>
+      <div className="flex-1 h-full bg-black w-full"></div>
     </div>
   );
 }
