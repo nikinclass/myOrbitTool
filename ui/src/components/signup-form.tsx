@@ -28,45 +28,67 @@ export default function SignUpForm({
     AppContext
   ) as AppContextType;
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useState("");
-  // const [hashedPassword, setHashedPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const navigate = useNavigate();
 
   function handleSignUp() {
     navigate("/signup");
   }
 
-  async function handleSubmit() {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // If missing details, fail
     if (!username || !password) {
-      alert("Please fill out all fields");
-      return;
-    }
-    try {
-      const hashedPassword = await bcrypt.hash(password, 12);
+      let missing = [];
 
-      const userToAdd = {
-        username: username,
-        password: hashedPassword,
-      };
+      if (!username) missing = [missing.concat(["username"]).join(", ")];
 
-      const res = await fetch(`${LOCALHOST_URL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userToAdd),
-      });
+      if (!password) missing = [missing.concat(["password"]).join(", ")];
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message);
+      alert(`Cannot log in. You are missing: ${missing}`);
+    } else {
+      // Try to login
+      try {
+        let payload = JSON.stringify({
+          username: username,
+          password: password,
+        });
+
+        setIsLoading(true);
+        const res = await fetch("/api/sessions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: payload,
+        });
+
+        if (!res.ok) {
+          throw new Error("Server error");
+        }
+
+        const userDat = await fetch("/api/users/me", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!userDat.ok) throw new Error(userDat.error);
+
+        const json = await userDat.json();
+        setAuthUser(json);
+        navigate("/dashboard");
+        closeModal();
+      } catch (err) {
+        setError(err.message);
+        setAuthUser(null);
+      } finally {
+        setIsLoading(false);
       }
-
-      alert("User registered successfull");
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-      alert(error.message || "Error signing up");
     }
-  }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
