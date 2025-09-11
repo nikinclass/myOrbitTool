@@ -1,6 +1,15 @@
-import { Satellite, SatelliteDish } from "lucide-react";
+import { Satellite, SatelliteDish, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Input } from "./ui/input";
+import { Search } from "./Search";
 
 function EntityChoices({
   setFormType,
@@ -42,9 +51,29 @@ function EntityChoices({
     </>
   );
 }
+function LiveSatForm() {
+  return <Search items={[1, 2, 3, 4]} />;
+}
+
+function ManualSatForm() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="w-fit">
+          Add Live Satellite From Space-Track
+        </CardTitle>
+        <CardDescription></CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Search items={[1, 2, 3, 4]} />
+      </CardContent>
+    </Card>
+  );
+}
 type FormType = "live-satellite" | "manual-satellite" | "manual-station";
 export function AddEntityForm() {
   const [formType, setFormType] = useState<FormType | null>(null);
   if (!formType) return <EntityChoices setFormType={setFormType} />;
+  if (formType === "live-satellite") return <LiveSatForm />;
   return <></>;
 }

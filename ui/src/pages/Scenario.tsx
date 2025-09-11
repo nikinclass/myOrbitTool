@@ -183,7 +183,7 @@ export function Scenario() {
                   <Plus />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="flex flex-col w-fit" side="right">
+              <PopoverContent className="flex flex-col w-fit shadow-none" side="right">
                 <AddEntityForm></AddEntityForm>
               </PopoverContent>
             </Popover>
