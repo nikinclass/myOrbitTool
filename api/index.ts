@@ -8,11 +8,14 @@ import czmlConverter from "./czmlConverter.ts";
 import userRoutes from "./routes/users";
 
 require("dotenv").config();
+
 var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
 var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
+
 const knex = require("knex")(
   require("./knexfile.ts")[process.env.NODE_ENV || "development"]
 );
+
 var testData = [
   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
@@ -20,9 +23,33 @@ var testData = [
 
 const app = express();
 const port = 8080;
-app.set("trust proxy", 1);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
+app.set("trust proxy", 1);
+app.use(express.json());
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: [process.env.SESSION_KEY ?? ""],
+    secure: false, // true for prod
+    httpOnly: true,
+    // path: "foo/bar",
+    // expires: expiryDate,
+    sameSite: "lax",
+  })
+);
+
+app.delete("/api/sessions", (req, res) => {
+  req.session = null;
+  return res.sendStatus(200);
+});
 
 async function refreshSpaceTrack(username: string, password: string) {
   await fetch("https://www.space-track.org/ajaxauth/login", {
@@ -146,20 +173,7 @@ app.get("/api/czml/:SATNO", (req, res) => {
 //   return response;
 // }
 
-app.use(express.json());
-
 // const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-app.use(
-  cookieSession({
-    name: "session",
-    keys: [process.env.SESSION_KEY ?? ""],
-    secure: false, // true for prod
-    httpOnly: true,
-    // path: "foo/bar",
-    // expires: expiryDate,
-    sameSite: "lax",
-  })
-);
 
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);

@@ -14,10 +14,6 @@ import { Layout } from "./pages/Layout";
 import { ScenarioLoader } from "./pages/ScenarioLoader";
 import { Scenario } from "./pages/Scenario";
 
-import LoginForm from "./components/login-form";
-import SignUpForm from "./components/signup-form";
-import TestPage from "./components/TestPage";
-
 export type AppContextType = {
   username: string;
   setUsername: Dispatch<SetStateAction<string>>;
@@ -51,7 +47,6 @@ function App() {
             <Route index path="scenario" element={<ScenarioLoader />} />
             <Route path="scenario/:id" element={<Scenario />} />
             <Route path="*" element={<NoPage />} />
-            <Route path="/loggedin" element={<TestPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

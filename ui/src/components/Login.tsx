@@ -108,6 +108,7 @@ export function Login({ isVisible, closeModal }) {
               "Content-Type": "application/json",
             },
             body: payload,
+            credentials: "include",
           });
 
           if (!res.ok) {
@@ -126,7 +127,6 @@ export function Login({ isVisible, closeModal }) {
 
           const json = await userDat.json();
 
-          navigate("/loggedin");
           closeModal();
         } catch (err) {
           setError(err.message);
@@ -223,6 +223,7 @@ export function Login({ isVisible, closeModal }) {
                 "Content-Type": "application/json",
               },
               body: payload,
+              credentials: "include",
             }).then((res) => res.json())
           );
         } catch (err) {

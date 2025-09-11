@@ -33,17 +33,22 @@ export const Header = ({ className }: HeaderProps) => {
         <Button
           onClick={async () => {
             try {
-              await fetch(`${PROXIED_URL}/logout`, {
+              const res = await fetch("/api/sessions", {
                 method: "DELETE",
-                headers: {
-                  "Content-Type": "application/json",
-                },
                 credentials: "include",
               });
+
+              if (!res.ok) {
+                console.log("Logout failed.", res.status);
+                return;
+              }
+
+              setUsername(null);
+              setIsLoggedIn(false);
+              navigate("/");
             } catch (err) {
-              console.log(err.message);
+              console.log(`Logout onClick error: ${err}`);
             }
-            alert("Successful logout.");
           }}
         >
           Logout
