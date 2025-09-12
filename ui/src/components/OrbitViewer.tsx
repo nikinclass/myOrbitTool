@@ -11,26 +11,29 @@ const LOCALHOST_URL = "http://localhost:8080/api/czml";
 
 // INITALIZED VIEWER AND ATTACHES TO DIV WITH "cesiumContainer" CLASS
 
-var testData = [
-  "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
-  "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
-];
+
 
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 // NEEDS TO BE MOVED TO THE BACKEND AGAINST AN API ENDPOINT
 var testReturn = {};
 
-export function OrbitViewer() {
-  const [czmlArray, setCzmlArray] = useState(null);
+export function OrbitViewer({ className }) {
+  const [czmlArray, setCzmlArray] = useRef(null);
+  const [groundArray, setGroundArray] = useState(null);
 
   useEffect(() => {
-    fetch(`${PROXIED_URL}/${33376}`)
+    fetch(`${PROXIED_URL}/${25544}`)
       .then((res) => res.json())
       .then((data) => {
         setCzmlArray([<CzmlDataSource data={data} />]);
       });
   }, []);
 
-  return <Viewer>{czmlArray}</Viewer>;
+  return (
+    <Viewer className={`${className}`}>
+      {czmlArray}
+      {entityArray}
+    </Viewer>
+    );
 }

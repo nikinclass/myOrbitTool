@@ -1,9 +1,13 @@
 import { Request, response, Response, Router } from "express";
 import { body, checkSchema, validationResult } from "express-validator";
+import czmlConverter from "../czmlConverter";
 const knex = require("knex")(
   require("../knexfile.ts")[process.env.NODE_ENV || "development"]
 );
-// import { body } from "express-validator";
+
+var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
+var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
+
 const router = Router();
 
 // POST api/scenario
@@ -26,8 +30,100 @@ router.post("/", async (req: Request, res: Response) => {
   // }
   //return scenario id
 });
+
+async function refreshSpaceTrack(username: string, password: string) {
+  await fetch("https://www.space-track.org/ajaxauth/login", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      identity: username,
+      password: password,
+    }),
+  })
+    .then((response) => {
+      // console.log(response);
+      // console.log(response.status);
+      return response.headers.getSetCookie();
+    })
+    .then((cookies) => {
+      console.log(cookies[0].split(";")[0]);
+      fetch(
+        `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Cookie: cookies[0].split(";")[0],
+          },
+        }
+      ).then((response) => {
+        toJSON(response.body)
+          .then((data) => {
+            let length = data.length;
+            for (var item in data) {
+              console.log(`Adding ${item} of ${length} to database`);
+              knex("space_track")
+                .insert(data[item])
+                .catch((err: unknown) => {
+                  console.log(err);
+                });
+            }
+          })
+          .then(() => {
+            console.log("Database Updated!");
+          });
+      });
+    })
+}
+
+async function toJSON(body: ReadableStream | null) {
+  if (body == null) {
+    return null;
+  }
+  const reader = body.getReader(); // `ReadableStreamDefaultReader`
+  const decoder = new TextDecoder();
+  const chunks: string[] = [];
+  async function read() {
+    const { done, value } = await reader.read();
+    // all chunks have been read?
+    if (done) {
+      return JSON.parse(chunks.join(""));
+    }
+    const chunk = decoder.decode(value, { stream: true });
+    chunks.push(chunk);
+    return read(); // read the next chunk
+  }
+  return read();
+}
+
+// FORCES A REFRESH OF THE SPACE-TRACK DB
+
+router.get("/refresh", (req, res) => {
+  refreshSpaceTrack(myUsername, myPassword);
+  res.status(200);
+});
+
+// RETURNS THE CZML FOR A TLE
+
+router.post("/czml", (req, res) => {
+  var sat = req.body
+  var czml = czmlConverter(
+    sat["OBJECT_NAME"], [
+    sat["TLE_LINE1"],
+    sat["TLE_LINE2"],
+  ]);
+  res.status(200).json(czml)
+});
+
 const createSatelliteChain = () => {
-  return body(["tle_line0", "tle_line1", "tle_line2"])
+  return body(["OBJECT_NAME", "TLE_LINE1", "TLE_LINE2"])
     .notEmpty()
     .withMessage("TLE line cannot be empty!");
 };
