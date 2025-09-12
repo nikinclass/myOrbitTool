@@ -16,6 +16,8 @@ export default defineConfig({
   //     },
   //   },
   // },
+  server: { proxy: { "/api": "http://localhost:8080" } },
+
   plugins: [react(), cesium(), tailwindcss()],
   resolve: {
     alias: {
