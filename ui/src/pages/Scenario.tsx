@@ -1,6 +1,9 @@
+// @ts-nocheck
+
+
 import { OrbitViewer } from "@/components/OrbitViewer";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Viewer, CzmlDataSource } from "resium";
 import { Plus, Satellite, SatelliteDish } from "lucide-react";
@@ -16,12 +19,16 @@ import {
 } from "@/components/ui/choicePopover";
 import { Cartographic } from "cesium";
 import { AddEntityForm } from "@/components/AddEntityForm";
+import { AppContext } from "../main";
+import { Header } from "../components/Header";
 
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
+  const { isLoggedIn } = useContext(AppContext);
+
   const [stationName, setStationName] = useState<string>("");
   const [stationLatitude, setStationLatitude] = useState<number>();
   const [stationLongitude, setStationLongitude] = useState<number>();
@@ -107,6 +114,7 @@ export function Scenario() {
   return (
     <div className="flex relative h-full border">
       <div className="flex absolute z-10 top-35 flex-col max-w-[300px] h-fit border bg-white p-4">
+        <Header />
         <h1>Scenario Page</h1>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Satellite</h3>
@@ -137,9 +145,12 @@ export function Scenario() {
               settleLine2(e.target.value);
             }}
           />
-          <button className="border rounded-full" onClick={onSatelliteAdd}>
+          {isLoggedIn ? <button className="border rounded-full" onClick={onSatelliteAdd} title="Add satellite">
             Add
-          </button>
+          </button> :
+          <button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onSatelliteAdd}  disabled="true" title="Please login">
+            Add
+          </button>}
         </div>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Ground Station</h3>
@@ -179,9 +190,12 @@ export function Scenario() {
               setStationAltitude(e.target.valueAsNumber);
             }}
           />
-          <button className="border rounded-full" onClick={onStationAdd}>
+          {isLoggedIn ? <button className="border rounded-full" onClick={onStationAdd} title="Add station">
             Add
-          </button>
+          </button> :
+          <button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onStationAdd} disabled="true" title="Please login">
+            Add
+          </button>}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>

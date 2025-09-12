@@ -1,59 +1,50 @@
 // @ts-nocheck
-
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../main";
 import { Button } from "./ui/button";
 
 export default function LogoutButton() {
-  const { setUsername, setIsLoggedIn } = useContext(AppContext);
+  const { username, isLoggedIn, setUsername, setIsLoggedIn } =
+    useContext(AppContext);
   const navigate = useNavigate();
-
-  function handleLogout() {
-    alert("Logged out.");
-    navigate("/");
-  }
 
   return (
     <div className="h-fit">
       <div className="flex justify-between items-center p-2 pl-4 pr-4 border-b-2 border-foreground-light">
-        <Button
-          onClick={() => {
-            setLoginModal(true);
-          }}
-        >
-          Login
-        </Button>
-        <Button
-          onClick={async () => {
-            try {
-              await fetch("/api/sessions", {
-                method: "DELETE",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                credentials: "include",
-              }).then((res) => {
-                if (res.ok) {
-                  setAuthUser(null);
+        {!isLoggedIn ? (
+          <span className="text-sm italic">Not logged in</span>
+        ) : (
+          <div className="flex items-center gap-3">
+            <span className="text-sm">
+              <strong>{username}</strong>
+            </span>
+            <Button
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/sessions", {
+                    method: "DELETE",
+                    credentials: "include",
+                  });
+
+                  if (res.ok) {
+                    localStorage.removeItem("user");
+                    setUsername("");
+                    setIsLoggedIn(false);
+                    navigate("/");
+                  } else {
+                    console.log("Logout failed", res.status);
+                  }
+                } catch (err) {
+                  console.log(err.message);
                 }
-              });
-            } catch (err) {
-              console.log(err.message);
-            }
-          }}
-        >
-          Logout
-        </Button>
+              }}
+            >
+              Logout
+            </Button>
+          </div>
+        )}
       </div>
-      {showLoginModal && (
-        <Login
-          isVisible={showLoginModal}
-          closeModal={() => {
-            setLoginModal(false);
-          }}
-        />
-      )}
     </div>
   );
 }
