@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {
   StrictMode,
   createContext,
@@ -13,6 +15,7 @@ import { NoPage } from "./pages/NoPage";
 import { Layout } from "./pages/Layout";
 import { ScenarioLoader } from "./pages/ScenarioLoader";
 import { Scenario } from "./pages/Scenario";
+import { ThemeProvider } from "./components/theme-provider"
 
 export type AppContextType = {
   username: string;
@@ -37,21 +40,24 @@ function App() {
   }, []);
 
   return (
-    <AppContext.Provider
-      value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
-    >
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<ScenarioLoader />} />
-            <Route index path="scenario" element={<ScenarioLoader />} />
-            <Route path="scenario/:id" element={<Scenario />} />
-            <Route path="*" element={<NoPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AppContext.Provider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AppContext.Provider
+        value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
+      >
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<ScenarioLoader />} />
+              <Route index path="scenario" element={<ScenarioLoader />} />
+              <Route path="scenario/:id" element={<Scenario />} />
+              <Route path="*" element={<NoPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AppContext.Provider>
+    </ThemeProvider>
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+// createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")).render(<App />);

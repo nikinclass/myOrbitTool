@@ -12,7 +12,7 @@ type SatItem = {
   OBJECT_NAME: string;
 };
 
-export function Search({ items }: { items: [] }) {
+export function Search({ items }: { items: [number, number, number, number] }) {
   const [search, setSearch] = useState<string>();
   const [filteredItems, setFilteredItems] = useState<SatItem[] | null>();
   useEffect(() => {
@@ -27,7 +27,6 @@ export function Search({ items }: { items: [] }) {
     };
     getSearchItems();
   }, [search]);
-
   return (
     <div className="text-card-foreground rounded-lg overflow-hidden w-[300px]">
       <div

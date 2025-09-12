@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import { useEffect, useContext, useState } from "react";
-import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
+import { AppContext } from "../main";
 
 const PROXIED_URL = "/api/user_table";
 const LOCALHOST_URL = "http://localhost:8080/api/user_table";
@@ -25,55 +25,9 @@ export function Login({ isVisible, closeModal }) {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      closeModal();
-    }
-  };
-
-  useEffect(() => {
-    if (isVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isVisible]);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        closeModal();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  const { setUsername, setIsLoggedIn } = useContext(AppContext);
 
   const modalRef = useRef(null);
-
-  const checkValidation = (e) => {
-    if (e.target.value.length === 0) {
-      e.target.classList.add(
-        "ring-4",
-        "ring-destructive",
-        "border-red-500",
-        "focus:border-destructive"
-      );
-    } else {
-      e.target.classList.remove(
-        "ring-4",
-        "ring-destructive",
-        "border-red-500",
-        "focus:border-destructive"
-      );
-    }
-  };
 
   function LoginForm({ swapView, ...props }: React.ComponentProps<"div">) {
     const [username, setUsername] = useState("");
@@ -94,13 +48,6 @@ export function Login({ isVisible, closeModal }) {
             password: password,
           });
 
-          {
-            /* 
-            const PROXIED_URL = "/api/user_table";
-            const LOCALHOST_URL = "http://localhost:8080/api/user_table";
-          */
-          }
-
           setIsLoading(true);
           const res = await fetch(`${PROXIED_URL}/login`, {
             method: "POST",
@@ -116,16 +63,9 @@ export function Login({ isVisible, closeModal }) {
             throw new Error("Server error");
           }
 
-          const userDat = await fetch(`${PROXIED_URL}/login`, {
-            method: "GET",
-          });
-          console.log(`userDat: ${userDat}`);
-
-          if (!userDat.ok) {
-            throw new Error(userDat.error);
-          }
-
-          const json = await userDat.json();
+          localStorage.setItem("user", JSON.stringify({ username }));
+          setUsername(username);
+          setIsLoggedIn(true);
 
           closeModal();
         } catch (err) {
@@ -135,6 +75,7 @@ export function Login({ isVisible, closeModal }) {
         }
       }
     };
+
     return (
       <div className={cn("flex flex-col gap-6")} {...props}>
         <Card>
@@ -303,10 +244,14 @@ export function Login({ isVisible, closeModal }) {
   }
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-1">
+    <div
+      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-1 bg-black/50"
+      onClick={closeModal}
+    >
       <div
         ref={modalRef}
         className="bg-white min-w-[500px] h-fit rounded-3xl drop-shadow-[0_0_200px_rgba(0,0,0,1)] flex flex-col justify-center items-center p-6"
+        onClick={(e) => e.stopPropagation()}
       >
         <h1 className="font-bold text-2xl gap-2 mb-6">
           {accountStage === "login" ? "Login" : "Create an Account"}
