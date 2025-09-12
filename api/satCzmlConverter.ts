@@ -19,7 +19,6 @@ const satCzmlConverter = (
   let res = []; //result for position
   let satrec; //Set satrec
   satrec = satellite.twoline2satrec(tleLine[0], tleLine[1]);
-  console.log(satrec);
   //to go from RAD/DAY -> REV/DAY: rad * 1440 * 0.159155
   //to go from REV/PER DAY to MINS/REV -> 1440/RevPerDay
   let totalIntervalsInDay = satrec.no * 1440 * 0.159155; //1440 = min && 0.159155 = 1turn

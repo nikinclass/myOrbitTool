@@ -14,8 +14,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/choicePopover";
-import { Cartographic } from "cesium";
 import { AddEntityForm } from "@/components/AddEntityForm";
+
+console.log(`0 ISS (ZARYA)
+1 25544U 98067A   25254.83778358  .00007850  00000-0  14414-3 0  9994
+2 25544  51.6331 237.5922 0004235 328.5405  31.5330 15.50244386528606`)
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
@@ -95,17 +98,18 @@ export function Scenario() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data)
         if (siteArray == null) {
-          setCzmlArray([<CzmlDataSource data={data} />]);
+          setSiteArray([<CzmlDataSource data={data} />]);
         } else {
-          setCzmlArray([...czmlArray, <CzmlDataSource data={data} />]);
+          setSiteArray([...siteArray, <CzmlDataSource data={data} />]);
         }
       });
   };
 
   return (
     <div className="flex relative h-full border">
-      <div className="flex absolute z-10 top-35 flex-col max-w-[300px] h-fit border bg-white p-4">
+      <div className="flex absolute z-10 top-[94px] flex-col max-w-[300px] h-fit border bg-white p-4">
         <h1>Scenario Page</h1>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Satellite</h3>
