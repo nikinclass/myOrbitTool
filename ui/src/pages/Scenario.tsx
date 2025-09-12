@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/choicePopover";
 import { Cartographic } from "cesium";
 import { AddEntityForm } from "@/components/AddEntityForm";
-import { PlusToX } from "@/components/ui/PlusToX";
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
