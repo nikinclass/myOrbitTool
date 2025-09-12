@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/choicePopover";
 import { Cartographic } from "cesium";
 import { AddEntityForm } from "@/components/AddEntityForm";
-
+import { PlusToX } from "@/components/ui/PlusToX";
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
@@ -191,7 +191,10 @@ export function Scenario() {
                   <Plus />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="flex flex-col w-fit shadow-none" side="right">
+              <PopoverContent
+                className="flex flex-col w-fit shadow-none"
+                side="right"
+              >
                 <AddEntityForm></AddEntityForm>
               </PopoverContent>
             </Popover>
@@ -206,7 +209,6 @@ export function Scenario() {
         {siteArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}
-
     </div>
   );
 }
