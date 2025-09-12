@@ -104,6 +104,8 @@ async function toJSON(body: ReadableStream | null) {
   return read();
 }
 
+refreshSpaceTrack(myUsername, myPassword);
+
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
 router.get("/refresh", (req, res) => {
