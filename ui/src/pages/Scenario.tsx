@@ -19,6 +19,7 @@ import { AddEntityForm } from "@/components/AddEntityForm";
 console.log(`0 ISS (ZARYA)
 1 25544U 98067A   25254.83778358  .00007850  00000-0  14414-3 0  9994
 2 25544  51.6331 237.5922 0004235 328.5405  31.5330 15.50244386528606`)
+
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
@@ -193,7 +194,10 @@ export function Scenario() {
                   <Plus />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="flex flex-col w-fit shadow-none" side="right">
+              <PopoverContent
+                className="flex flex-col w-fit shadow-none"
+                side="right"
+              >
                 <AddEntityForm></AddEntityForm>
               </PopoverContent>
             </Popover>
@@ -208,7 +212,6 @@ export function Scenario() {
         {siteArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}
-
     </div>
   );
 }

@@ -5,6 +5,7 @@ import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
 import cors from "cors";
 import userRoutes from "./routes/users";
+import spaceTrackRoute from "./routes/satellites";
 
 require("dotenv").config();
 
@@ -71,6 +72,7 @@ app.delete("/api/sessions", (req, res) => {
 
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
+app.use("/api/satellites", spaceTrackRoute);
 
 app.use("/api/user_table", userRoutes);
 
