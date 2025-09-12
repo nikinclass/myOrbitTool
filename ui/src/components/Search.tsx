@@ -2,7 +2,7 @@ import { Plus, SearchIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 
-export function Search({ items }: { items: [] }) {
+export function Search({ items }: { items: [number, number, number, number] }) {
   return (
     <div className="text-card-foreground rounded-lg overflow-hidden">
       <div

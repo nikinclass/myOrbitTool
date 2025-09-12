@@ -22,7 +22,6 @@ import { AddEntityForm } from "@/components/AddEntityForm";
 import { AppContext } from "../main";
 import { Header } from "../components/Header";
 
-
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
@@ -145,12 +144,12 @@ export function Scenario() {
               settleLine2(e.target.value);
             }}
           />
-          {isLoggedIn ? <button className="border rounded-full" onClick={onSatelliteAdd} title="Add satellite">
+          {isLoggedIn ? <Button className="border rounded-full" onClick={onSatelliteAdd} title="Add satellite">
             Add
-          </button> :
-          <button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onSatelliteAdd}  disabled="true" title="Please login">
+          </Button> :
+          <Button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onSatelliteAdd}  disabled={true} title="Please login">
             Add
-          </button>}
+          </Button>}
         </div>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Ground Station</h3>
@@ -190,20 +189,20 @@ export function Scenario() {
               setStationAltitude(e.target.valueAsNumber);
             }}
           />
-          {isLoggedIn ? <button className="border rounded-full" onClick={onStationAdd} title="Add station">
+          {isLoggedIn ? <Button className="border rounded-full" onClick={onStationAdd} title="Add station">
             Add
-          </button> :
-          <button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onStationAdd} disabled="true" title="Please login">
+          </Button> :
+          <Button className="bg-gray-300 text-gray-100 border rounded-full" onClick={onStationAdd} disabled={true} title="Please login">
             Add
-          </button>}
+          </Button>}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
             <Popover>
               <PopoverTrigger className="rounded-full w-8 h-8">
-                <Button variant="secondary" className="rounded-full w-8 h-8">
+                {/* <Button variant="secondary" className="rounded-full w-8 h-8"> */}
                   <Plus />
-                </Button>
+                {/* </Button> */}
               </PopoverTrigger>
               <PopoverContent className="flex flex-col w-fit shadow-none" side="right">
                 <AddEntityForm></AddEntityForm>
