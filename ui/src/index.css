@@ -130,6 +130,14 @@ body,
   right: 5px; /* ADJUST VIEWER TOOLBAR X POSITION HERE */
 }
 
+.cesium-infoBox {
+  position: absolute;
+  display: block;
+  y: 50;
+  x: 50;
+  z-index: 10;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

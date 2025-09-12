@@ -20,6 +20,22 @@ const satCzmlConverter = (site_name: string, latlongalt: string[], color = { "rg
       position: {
         cartographicDegrees: [latlongalt[0], latlongalt[1], latlongalt[2]],
       },
+      label: {
+        fillColor: color,
+        font: "11pt Lucida Console",
+        horizontalOrigin: "LEFT",
+        outlineColor: {
+          rgba: [0, 0, 0, 255],
+        },
+        outlineWidth: 2,
+        pixelOffset: {
+          cartesian2: [12, 0],
+        },
+        show: true,
+        style: "FILL_AND_OUTLINE",
+        text: `${site_name}`,
+        verticalOrigin: "CENTER",
+      },
       point: {
         color: color,
         outlineColor: color,
