@@ -4,11 +4,9 @@ import exampleRoute from "./routes/example";
 import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
 import cors from "cors";
-import czmlConverter from "./czmlConverter.ts";
 import userRoutes from "./routes/users";
 
 require("dotenv").config();
-
 
 var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
 var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
@@ -51,9 +49,6 @@ app.delete("/api/sessions", (req, res) => {
   req.session = null;
   return res.sendStatus(200);
 });
-
-
-var testReturn = czmlConverter("ISS (Zarya)", testData);
 
 // refreshSpaceTrack(myUsername, myPassword);
 

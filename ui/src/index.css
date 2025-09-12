@@ -123,10 +123,18 @@ body,
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+.cesium-viewer-toolbar {
+  display: block;
+  position: absolute;
+  top: 130px; /* ADJUST VIEWER TOOLBAR Y POSITION HERE */
+  right: 5px; /* ADJUST VIEWER TOOLBAR X POSITION HERE */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

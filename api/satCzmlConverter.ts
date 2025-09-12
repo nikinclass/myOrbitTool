@@ -5,7 +5,7 @@ const moment = require('moment')
 const julian = require('julian')
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
-const czmlConverter = (sat_name:string, tleLine:string[], color = { "rgba": [255, 0, 255, 255] }) => {
+const satCzmlConverter = (sat_name:string, tleLine:string[], color = { "rgba": [255, 0, 255, 255] }) => {
   let iterations:any[] = [];
 
   for (let count = 0; count < iterations.length; count++) {
@@ -163,4 +163,4 @@ const czmlConverter = (sat_name:string, tleLine:string[], color = { "rgba": [255
   return initialCZMLProps;
 }
 
-export default czmlConverter
+export default satCzmlConverter
