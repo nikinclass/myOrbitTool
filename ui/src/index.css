@@ -126,7 +126,7 @@ body,
 .cesium-viewer-toolbar {
   display: block;
   position: absolute;
-  top: 130px; /* ADJUST VIEWER TOOLBAR Y POSITION HERE */
+  top: 94px; /* ADJUST VIEWER TOOLBAR Y POSITION HERE */
   right: 5px; /* ADJUST VIEWER TOOLBAR X POSITION HERE */
 }
 
