@@ -4,16 +4,19 @@ import exampleRoute from "./routes/example";
 import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
 import cors from "cors";
-import userTableRoute from "./routes/userTable";
-import cookieSession from "cookie-session";
 import czmlConverter from "./czmlConverter.ts";
-import cors from "cors";
+import userRoutes from "./routes/users";
 
 require("dotenv").config();
+
+
+var myUsername = process.env.SPACETRACK_USERNAME || "USERNAME NOT LOADING";
+var myPassword = process.env.SPACETRACK_PASSWORD || "PASSWORD NOT LOADING";
 
 const knex = require("knex")(
   require("./knexfile.ts")[process.env.NODE_ENV || "development"]
 );
+
 var testData = [
   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
@@ -21,19 +24,33 @@ var testData = [
 
 const app = express();
 const port = 8080;
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
 app.set("trust proxy", 1);
+app.use(express.json());
 
-app.use(cors());
-// app.use(
-//   cors({
-//     origin: "http://127.0.0.1:5173",
-//     credentials: true,
-//   })
-// );
-//remove if using proxied server
+app.use(
+  cookieSession({
+    name: "session",
+    keys: [process.env.SESSION_KEY ?? ""],
+    secure: false, // true for prod
+    httpOnly: true,
+    // path: "foo/bar",
+    // expires: expiryDate,
+    sameSite: "lax",
+  })
+);
 
-// app.use(cors());
-
+app.delete("/api/sessions", (req, res) => {
+  req.session = null;
+  return res.sendStatus(200);
+});
 
 
 var testReturn = czmlConverter("ISS (Zarya)", testData);
@@ -55,24 +72,12 @@ var testReturn = czmlConverter("ISS (Zarya)", testData);
 //   return response;
 // }
 
-app.use(express.json());
-
 // const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-app.use(
-  cookieSession({
-    name: "session",
-    keys: [process.env.SESSION_KEY ?? ""],
-    secure: false, // true for prod
-    httpOnly: true,
-    // path: "foo/bar",
-    // expires: expiryDate,
-    sameSite: "lax",
-  })
-);
 
 app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
-app.use("/api/user_table", userTableRoute);
+
+app.use("/api/user_table", userRoutes);
 
 app.get("/api/user_table/:username", async (req, res) => {
   const queriedUsername = req.params.username;
@@ -84,39 +89,39 @@ app.get("/api/user_table/:username", async (req, res) => {
 
     res.status(200).json(crap);
   } else {
-    res.status(400).send("Need a username dumbass.");
+    res.status(400).send("Need a username.");
   }
 });
 
-app.post("/api/user_table", async (req, res) => {
-  const { username, password } = req.body;
+// app.post("/api/user_table", async (req, res) => {
+//   const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+//   if (!username || !password) {
+//     return res.status(400).json({ message: "Missing required fields" });
+//   }
 
-  try {
-    const existingUser = await knex("user_table")
-      .where("username", username)
-      .first();
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
-    }
+//   try {
+//     const existingUser = await knex("user_table")
+//       .where("username", username)
+//       .first();
+//     if (existingUser) {
+//       return res.status(409).json({ message: "User already exists" });
+//     }
 
-    const inserted = await knex("user_table").insert({
-      username,
-      password,
-    });
+//     const inserted = await knex("user_table").insert({
+//       username,
+//       password,
+//     });
 
-    return res.status(201).json({
-      message: "User created successfully",
-      userId: inserted[0],
-    });
-  } catch (err) {
-    console.error("Database insert error:", err);
-    return res.status(500).json({ message: "Database error", error: err });
-  }
-});
+//     return res.status(201).json({
+//       message: "User created successfully",
+//       userId: inserted[0],
+//     });
+//   } catch (err) {
+//     console.error("Database insert error:", err);
+//     return res.status(500).json({ message: "Database error", error: err });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
