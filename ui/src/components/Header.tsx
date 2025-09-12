@@ -20,9 +20,13 @@ export const Header = ({ className }: HeaderProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-fit flex absolute z-2 w-full bg-white justify-evenly border p-2 ${className ?? ""}">
+    <div
+      className={`h-fit flex absolute z-2 w-full bg-white justify-evenly border p-2 ${
+        className ?? ""
+      }`}
+    >
       <div className="flex justify-between items-center p-2 pl-4 pr-4 border-b-2 border-foreground-light">
-        <img src="/space.png" className="p-0 h-15"/>
+        <img src="/space.png" className="p-0 h-15" />
         <Button
           onClick={() => {
             setLoginModal(true);
