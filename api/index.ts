@@ -6,7 +6,7 @@ import cookieSession from "cookie-session";
 import cors from "cors";
 import userTableRoute from "./routes/userTable";
 import cookieSession from "cookie-session";
-import czmlConverter from "./czmlConverter.ts";
+import czmlConverter from "./satCzmlConverter";
 import cors from "cors";
 
 require("dotenv").config();

@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/choicePopover";
+import { Cartographic } from "cesium";
 
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
@@ -28,7 +29,7 @@ export function Scenario() {
   const [tleLine1, settleLine1] = useState<string>("");
   const [tleLine2, settleLine2] = useState<string>("");
   const [czmlArray, setCzmlArray] = useState<any>(null);
-  const [groundArray, setGroundArray] = useState<any>(null);
+  const [siteArray, setSiteArray] = useState<any>(null);
 
   const navigate = useNavigate();
   const id = useParams().id;
@@ -38,7 +39,7 @@ export function Scenario() {
   //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
   // ];
 
-  useEffect(() => {}, [])
+  useEffect(() => { }, [])
 
   const onSatelliteAdd = async () => {
     const payload = {
@@ -79,25 +80,33 @@ export function Scenario() {
   const onStationAdd = async () => {
     const payload = {
       scenario_id: id,
-      name: stationName,
-      latitude: stationLatitude,
-      longitude: stationLongitude,
-      altitude: stationAltitude,
+      OBJECT_NAME: stationName,
+      LAT: stationLatitude,
+      LONG: stationLongitude,
+      ALT: stationAltitude,
     };
     console.log("hey!");
-    fetch(`${LOCALHOST_URL}/station`, {
+    fetch(`${LOCALHOST_URL}/site`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (siteArray == null) {
+          setCzmlArray([<CzmlDataSource data={data} />]);
+        } else {
+          setCzmlArray([...czmlArray, <CzmlDataSource data={data} />]);
+        }
+      });
   };
 
   return (
     <div className="flex relative h-full border">
-      <div className="flex absolute z-10 flex-col max-w-[300px] h-fit border bg-white p-4">
+      <div className="flex absolute z-10 top-35 flex-col max-w-[300px] h-fit border bg-white p-4">
         <h1>Scenario Page</h1>
         <div className="flex flex-col border-red-500 gap-2">
           <h3>Add a Satellite</h3>
@@ -215,12 +224,10 @@ export function Scenario() {
           </TooltipContent>
         </Tooltip>
       </div>
-
-      <Viewer className="flex-1 aspect-">
+      <Viewer className="flex-1 w-full">
         {czmlArray}
-        {groundArray}
+        {siteArray}
       </Viewer>
-      <div className="flex-1 h-full bg-black w-full"></div>
     </div>
   );
 }
