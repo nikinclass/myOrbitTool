@@ -33,8 +33,8 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
       e.preventDefault();
       // If missing details, fail
       if (!username || !password) {
-        if (!username) alert("You must include username.");
-        if (!password) alert("You must include password.");
+        if (!username) setError("You must include username.");
+        if (!password) setError("You must include password.");
       } else {
         // Try to login
         try {
@@ -50,18 +50,16 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
               "Content-Type": "application/json",
             },
             body: payload,
-            credentials: "include",
           });
 
           if (!res.ok) {
-            console.log(`res error`);
-            throw new Error("Server error");
+            const body = await res.json();
+            throw new Error(body.error);
           }
 
           localStorage.setItem("user", JSON.stringify({ username }));
           setUsername(username);
           setIsLoggedIn(true);
-
           closeModal();
         } catch (err: any) {
           setError(err?.message);
@@ -72,47 +70,57 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
     };
 
     return (
-      <form onSubmit={handleLoginSubmit}>
-        <div className="flex flex-col gap-6 w-full">
-          <div className="grid gap-3">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              name="username"
-              id="username"
-              autoComplete="username"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
+      <>
+        {error && <p className="text-destructive text-center pb-3">{error}</p>}
+
+        <form onSubmit={handleLoginSubmit}>
+          <div className="flex flex-col gap-6 w-full">
+            <div className="grid gap-3">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                name="username"
+                id="username"
+                autoComplete="username"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-2 w-full">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                name="password"
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            </div>
+            <div
+              className="w-fit self-end cursor-pointer"
+              onClick={() => {
+                setError("");
+                setIsLoading(false);
+                swapView();
               }}
-            />
+            >
+              <span>Don't have an account?</span>{" "}
+              <span className="italic hover:text-primary/75">
+                Create Account
+              </span>
+            </div>
+            <Button type="submit" disabled={isLoading}>
+              Log-In
+            </Button>
           </div>
-          <div className="flex flex-col gap-2 w-full">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              name="password"
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
-          <div
-            className="w-fit self-end cursor-pointer"
-            onClick={() => swapView()}
-          >
-            <span>Don't have an account?</span>{" "}
-            <span className="italic hover:text-primary/75">Create Account</span>
-          </div>
-          <Button type="submit" disabled={isLoading}>
-            Log-In
-          </Button>
-        </div>
-      </form>
+        </form>
+      </>
     );
   }
 
@@ -216,7 +224,11 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
 
             <div
               className="w-fit self-end cursor-pointer"
-              onClick={() => swapView()}
+              onClick={() => {
+                setError("");
+                setIsLoading(false);
+                swapView();
+              }}
             >
               <span>Already have an account?</span>{" "}
               <span className="italic hover:text-primary/75">Login</span>
