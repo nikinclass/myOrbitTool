@@ -1,7 +1,4 @@
-// @ts-nocheck
-
 import {
-  StrictMode,
   createContext,
   useEffect,
   useState,
@@ -15,16 +12,23 @@ import { NoPage } from "./pages/NoPage";
 import { Layout } from "./pages/Layout";
 import { ScenarioLoader } from "./pages/ScenarioLoader";
 import { Scenario } from "./pages/Scenario";
-import { ThemeProvider } from "./components/theme-provider"
+import { ThemeProvider } from "./components/theme-provider";
 
-export type AppContextType = {
+export type AppState = {
   username: string;
   setUsername: Dispatch<SetStateAction<string>>;
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
 };
 
-export const AppContext = createContext<AppContextType | undefined>(undefined);
+const initialState: AppState = {
+  username: "",
+  setUsername: () => null,
+  isLoggedIn: false,
+  setIsLoggedIn: () => null,
+};
+
+export const AppContext = createContext<AppState>(initialState);
 
 function App() {
   const [username, setUsername] = useState<string>("");
@@ -58,6 +62,6 @@ function App() {
     </ThemeProvider>
   );
 }
+const root = document.getElementById("root") as Element;
 
-// createRoot(document.getElementById("root")!).render(<App />);
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(root).render(<App />);
