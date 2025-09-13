@@ -16,7 +16,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/choicePopover";
 import { AddEntityForm } from "@/components/AddEntityForm";
-import { AppContext } from "../main";
 import type { Satellite } from "@/types";
 
 console.log(`0 ISS (ZARYA)

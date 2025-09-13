@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -13,41 +7,12 @@ import { Layout } from "./pages/Layout";
 import { ScenarioLoader } from "./pages/ScenarioLoader";
 import { Scenario } from "./pages/Scenario";
 import { ThemeProvider } from "./components/theme-provider";
-
-export type AppState = {
-  username: string;
-  setUsername: Dispatch<SetStateAction<string>>;
-  isLoggedIn: boolean;
-  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-};
-
-const initialState: AppState = {
-  username: "",
-  setUsername: () => null,
-  isLoggedIn: false,
-  setIsLoggedIn: () => null,
-};
-
-export const AppContext = createContext<AppState>(initialState);
+import { AppSessionProvider } from "./components/AppSessionProvider";
 
 function App() {
-  const [username, setUsername] = useState<string>("");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setUsername(user.username);
-      setIsLoggedIn(true);
-    }
-  }, []);
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AppContext.Provider
-        value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
-      >
+      <AppSessionProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -58,10 +23,15 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
-      </AppContext.Provider>
+      </AppSessionProvider>
     </ThemeProvider>
   );
 }
-const root = document.getElementById("root") as Element;
+const rootElem = document.getElementById("root");
 
-createRoot(root).render(<App />);
+if (rootElem) {
+  const root = createRoot(rootElem);
+  root.render(<App />);
+} else {
+  console.error("Failed to find root element.");
+}

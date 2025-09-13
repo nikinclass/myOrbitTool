@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
-import { AppContext, type AppState } from "../main";
+import { useAppSession } from "./AppSessionProvider";
 
 const PROXIED_URL = "/api/user_table";
 const LOCALHOST_URL = "http://localhost:8080/api/user_table";
@@ -21,7 +21,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { setIsLoggedIn } = useContext<AppState>(AppContext);
+  const { setIsLoggedIn } = useAppSession();
 
   const modalRef = useRef(null);
 
@@ -245,11 +245,11 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-1 bg-black/50"
+      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-1 bg-black/50 "
       onClick={() => closeModal()}
     >
       <Card
-        className="min-w-[500px] h-fit rounded-3xl drop-shadow-[0_0_200px_rgba(0,0,0,1)]"
+        className="min-w-[500px] h-fit rounded-3xl drop-shadow-[0_0_200px_rgba(0,0,0,1)] backdrop-blur-lg"
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
       >

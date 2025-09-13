@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
 import { Button } from "./ui/button";
-import { AppContext } from "@/main";
 import { LoginModal } from "./LoginModal";
 import { useNavigate } from "react-router-dom";
+import { useAppSession } from "./AppSessionProvider";
 
 export function LoginButton() {
   const [showLoginModal, setLoginModal] = useState(false);
-  const { username, isLoggedIn, setUsername, setIsLoggedIn } =
-    useContext(AppContext);
+  const { username, isLoggedIn, setUsername, setIsLoggedIn } = useAppSession();
+
   const navigate = useNavigate();
   if (!isLoggedIn) {
     return (

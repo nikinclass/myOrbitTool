@@ -4,7 +4,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/choicePopover";
 import { Plus } from "lucide-react";
 import { AddEntityForm } from "./AddEntityForm";
-import { AppContext, type AppState } from "@/main";
 import { AddEntityButton } from "./AddEntityButton";
 
 export const Controls = () => {
