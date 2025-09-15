@@ -37,6 +37,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [satellites, setSatellites] = useState<Satellite[]>([]);
 
+
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
