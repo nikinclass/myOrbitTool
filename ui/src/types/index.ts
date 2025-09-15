@@ -23,8 +23,8 @@ export type Satellite = {
 export type Site = {
   id: string;
   OBJECT_NAME: string;
-  LAT: string;
-  LONG: string;
-  ALT: string;
+  LAT: number;
+  LONG: number;
+  ALT: number;
   COLOR: [number, number, number, number];
 }

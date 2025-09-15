@@ -17,6 +17,8 @@ export type Satellite = {
   BSTAR: string;
   MEAN_MOTION_DOT: string;
   MEAN_MOTION_DDOT: string;
+  TLE_LINE1: string;
+  TLE_LINE2: string;
   COLOR: [number, number, number, number];
 };
 
