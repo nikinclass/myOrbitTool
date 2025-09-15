@@ -4,6 +4,17 @@ import { LoginModal } from "./LoginModal";
 import { useNavigate } from "react-router-dom";
 import { useAppSession } from "./AppSessionProvider";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useRef } from "react";
+
 export function LoginButton() {
   const [showLoginModal, setLoginModal] = useState(false);
   const { username, isLoggedIn, setUsername, setIsLoggedIn } = useAppSession();
