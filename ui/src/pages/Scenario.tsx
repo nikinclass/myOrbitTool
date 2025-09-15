@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/choicePopover";
 import { AddEntityForm } from "@/components/AddEntityForm";
 import type { Satellite } from "@/types";
+import { useAppSession } from "@/components/AppSessionProvider";
+
 
 console.log(`0 ISS (ZARYA)
 1 25544U 98067A   25254.83778358  .00007850  00000-0  14414-3 0  9994
@@ -26,16 +28,19 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const [satellites, setSatellites] = useState<Satellite[] | null>();
-  const [sites, setSites] = useState<Site[] | null>();
-  const [satCzmlArray, setSatCzmlArray] = useState<any>(null);
-  const [siteCzmlArray, setSiteCzmlArray] = useState<any>(null);
+  const [current, setCurrent] = useState<any>(null);
+  const { satellites, sites } = useAppSession();
+  const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
+  const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
   useEffect(() => {
-    setSatCzmlArray(null);
+    console.log(satCzmlArray[0]);
+  }, [satCzmlArray])
+
+  useEffect(() => {
     satellites?.map((sat, index) => {
       fetch(`${PROXIED_URL}/satczml`, {
         method: "POST",
@@ -47,11 +52,8 @@ export function Scenario() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (SatCzmlArray == null) {
-            setSatCzmlArray([<CzmlDataSource data={data} />]);
-          } else {
-            setSatCzmlArray([...SatCzmlArray, <CzmlDataSource data={data} />])
-          }
+          setCurrent(<CzmlDataSource data={data} />)
+          setSatCzmlArray([...satCzmlArray, <CzmlDataSource data={data} />])
         });
     })
   }, [satellites])
@@ -69,12 +71,15 @@ export function Scenario() {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data)
           if (siteCzmlArray == null) {
             setSiteCzmlArray([<CzmlDataSource data={data} />]);
           } else {
             setSiteCzmlArray([...siteCzmlArray, <CzmlDataSource data={data} />])
           }
-        });
+
+        })
+        .catch((err) => { console.log(err) });
     })
   }, [sites])
 
@@ -86,8 +91,9 @@ export function Scenario() {
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {czmlArray}
-        {siteArray}
+        {current}
+        {satCzmlArray}
+        {siteCzmlArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}
     </div>

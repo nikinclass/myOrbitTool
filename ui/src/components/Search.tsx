@@ -72,6 +72,8 @@ export function Search() {
                       );
 
                       const fullItem = await response.json();
+                      fullItem.COLOR = [255, 0, 255, 255]
+                      console.log(fullItem)
                       setSatellites((previous) => [...previous, fullItem]);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
