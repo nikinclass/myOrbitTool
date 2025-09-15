@@ -16,11 +16,47 @@ import { useAppSession } from "./AppSessionProvider";
 const PROXIED_URL = "/api/user_table";
 const LOCALHOST_URL = "http://localhost:8080/api/user_table";
 
-export function ScenarioDetailsModal({
-  closeModal,
-}: {
-  closeModal: () => void;
-}) {
+export function ScenarioDetailsModal() {
+  const [showLoginModal, setLoginModal] = useState(true);
+
+  function handleClick() {
+    setLoginModal(true);
+  }
+
+  return (
+    <>
+      <div className="opacity-75 p-4 border-[2px] text-black bg-red-200 rounded-[10px]">
+        <Label
+          htmlFor="scenario-title"
+          className="!text-3xl font-bold"
+          onClick={handleClick}
+        >
+          ?
+        </Label>
+      </div>
+
+      {showLoginModal && (
+        <div className="absolute top-90 z-10 flex justify-center items-center z-1 bg-black/50 ">
+          <Card
+            className="min-w-[500px] h-fit rounded-3xl drop-shadow-[0_0_200px_rgba(0,0,0,1)] backdrop-blur-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CardHeader>
+              <CardTitle>Change Scenario Details</CardTitle>
+              <CardDescription>Modify details.</CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <Input placeholder="Scenario Title" value="scenario" />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
+  );
+}
+
+function detailsFormModal({ closeModal }: { closeModal: () => void }) {
   const [accountStage, setAccountStage] = useState<"login" | "create">("login");
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
