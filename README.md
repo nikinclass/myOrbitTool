@@ -11,7 +11,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/nikinclass/myOrbitTool">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/nikinclass/myOrbitTool/blob/main/ui/src/assets/logo-dark.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">myOrbitTool</h3>
