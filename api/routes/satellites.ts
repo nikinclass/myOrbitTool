@@ -17,4 +17,13 @@ router.get("/", async (req, res) => {
   res.json(payload);
 });
 
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const payload = await knex("space_track")
+    .select("*")
+    .where({ id: id })
+    .limit(1);
+  res.json(payload[0]);
+});
 export = router;
