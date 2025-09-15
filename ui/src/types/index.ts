@@ -18,6 +18,7 @@ export type Satellite = {
   MEAN_MOTION_DOT: string;
   MEAN_MOTION_DDOT: string;
   COLOR: [number, number, number, number]; // DEFAULT TO SOMETHING LIKE [255, 0, 255, 255] but we shoudl give this to the user somehow
+  VISIBLE: boolean;
 };
 
 export type Site = {
@@ -27,4 +28,4 @@ export type Site = {
   LONG: number;
   ALT: number;
   COLOR: [number, number, number, number];
-}
+};

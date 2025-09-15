@@ -11,38 +11,13 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { useRef, useState } from "react";
-
-type RecordType = {
-  visible: boolean;
-  SATNO: string;
-  name: string;
-  color: string;
-};
+import { useAppSession } from "./AppSessionProvider";
+import type { Satellite } from "@/types";
 
 export function ManageSatellitesTable() {
-  const initialRecords: RecordType[] = [
-    {
-      visible: true,
-      SATNO: "123",
-      name: "Sat1",
-      color: "123",
-    },
-    {
-      visible: true,
-      SATNO: "1223",
-      name: "Sat1",
-      color: "123",
-    },
-    {
-      visible: true,
-      SATNO: "1243",
-      name: "Sat1",
-      color: "123",
-    },
-  ];
+  const { satellites, setSatellites } = useAppSession();
 
-  const [records, updateRecords] = useState<RecordType[]>(initialRecords);
-  const someSatsVisible = records.some((item) => item.visible);
+  const someSatsVisible = satellites.some((item) => item.VISIBLE);
 
   return (
     <Table>
@@ -53,8 +28,8 @@ export function ManageSatellitesTable() {
             <button
               className="cursor-pointer hover:bg-none flex justify-center items-center text-center"
               onClick={() => {
-                updateRecords(
-                  records.map((originalItem) => ({
+                setSatellites(
+                  satellites.map((originalItem) => ({
                     ...originalItem,
                     visible: !someSatsVisible,
                   }))
@@ -72,34 +47,34 @@ export function ManageSatellitesTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {records.map((record: RecordType, index: number) => (
+        {satellites.map((record: Satellite, index: number) => (
           <TableRow className="cursor-pointer select-none" key={index}>
             <TableCell className="font-medium">
               {
                 <button
                   className="cursor-pointer hover:bg-none flex justify-center items-center"
                   onClick={() => {
-                    const newRecord: RecordType = {
+                    const newRecord: Satellite = {
                       ...record,
-                      visible: !record.visible,
+                      VISIBLE: !record.VISIBLE,
                     };
 
-                    updateRecords(
-                      records.map((originalItem) =>
-                        originalItem.SATNO === record.SATNO
+                    setSatellites(
+                      satellites.map((originalItem) =>
+                        originalItem.NORAD_CAT_ID === record.NORAD_CAT_ID
                           ? newRecord
                           : originalItem
                       )
                     );
                   }}
                 >
-                  {record.visible && <Eye size={20} />}
-                  {!record.visible && <EyeClosed size={20} />}
+                  {record.VISIBLE && <Eye size={20} />}
+                  {!record.VISIBLE && <EyeClosed size={20} />}
                 </button>
               }
             </TableCell>
-            <TableCell>{record.SATNO}</TableCell>
-            <TableCell>{record.name}</TableCell>
+            <TableCell>{record.NORAD_CAT_ID}</TableCell>
+            <TableCell>{record.OBJECT_NAME}</TableCell>
             <TableCell className="text-right">
               {
                 <input
