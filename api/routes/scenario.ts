@@ -51,8 +51,9 @@ async function refreshSpaceTrack(username: string, password: string) {
       // console.log(response.status);
       return response.headers.getSetCookie();
     })
-    .then((cookies) => {
-      console.log(cookies[0].split(";")[0]);
+    .then(async (cookies) => {
+      await knex("space_track").del();
+      console.log("Updating Space-Track Database!");
       fetch(
         `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
         {
@@ -65,17 +66,22 @@ async function refreshSpaceTrack(username: string, password: string) {
           },
         }
       ).then((response) => {
-        toJSON(response.body)
+        return toJSON(response.body)
           .then((data) => {
             let length = data.length;
-            for (var item in data) {
-              console.log(`Adding ${item} of ${length} to database`);
-              knex("space_track")
-                .insert(data[item])
-                .catch((err: unknown) => {
-                  console.log(err);
-                });
-            }
+            return knex
+              .batchInsert("space_track", data, 100)
+              .catch((err: unknown) => {
+                console.log(err);
+              });
+            // for (var item in data) {
+            //   console.log(`Adding ${item} of ${length} to database`);
+            //   await knex("space_track")
+            //     .insert(data[item])
+            //     .catch((err: unknown) => {
+            //       console.log(err);
+            //     });
+            // }
           })
           .then(() => {
             console.log("Database Updated!");
@@ -99,9 +105,9 @@ async function toJSON(body: ReadableStream | null) {
     }
     const chunk = decoder.decode(value, { stream: true });
     chunks.push(chunk);
-    return read(); // read the next chunk
+    return await read(); // read the next chunk
   }
-  return read();
+  return await read();
 }
 
 refreshSpaceTrack(myUsername, myPassword);
@@ -113,24 +119,17 @@ router.get("/refresh", (req, res) => {
   res.status(200);
 });
 
-router.post("/site", (req, res) => {
-  var site = req.body;
-  var czml = siteCzmlConverter(site["OBJECT_NAME"], [
-    site["LAT"],
-    site["LONG"],
-    site["ALT"],
-  ]);
+router.post("/siteczml", (req, res) => {
+  var czml = siteCzmlConverter(req.body);
   res.status(200).json(czml);
 });
 
 // RETURNS THE CZML FOR A TLE
 
-router.post("/czml", (req, res) => {
-  var sat = req.body;
-  var czml = satCzmlConverter(sat["OBJECT_NAME"], [
-    sat["TLE_LINE1"],
-    sat["TLE_LINE2"],
-  ]);
+router.post("/satczml", (req, res) => {
+  var sat = req.body
+  console.log(sat)
+  var czml = satCzmlConverter(sat);
   res.status(200).json(czml);
 });
 

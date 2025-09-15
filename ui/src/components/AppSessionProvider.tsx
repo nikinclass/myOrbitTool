@@ -1,3 +1,4 @@
+import type { Satellite, Site } from "@/types";
 import React, {
   createContext,
   useContext,
@@ -12,6 +13,10 @@ export type AppState = {
   setUsername: Dispatch<SetStateAction<string>>;
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  satellites: Satellite[];
+  setSatellites: Dispatch<SetStateAction<Satellite[]>>;
+  sites: Site[];
+  setSites: Dispatch<SetStateAction<Site[]>>;
 };
 
 const initialState: AppState = {
@@ -19,6 +24,10 @@ const initialState: AppState = {
   setUsername: () => null,
   isLoggedIn: false,
   setIsLoggedIn: () => null,
+  satellites: [],
+  setSatellites: () => null,
+  sites: [],
+  setSites: () => null,
 };
 
 type AppProviderProps = {
@@ -30,6 +39,17 @@ const AppSessionContext = createContext<AppState>(initialState);
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [username, setUsername] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [satellites, setSatellites] = useState<Satellite[]>([]);
+  const [sites, setSites] = useState<Site[]>([
+    {
+      "id": "1",
+      "OBJECT_NAME": "test site",
+      "LAT": 0,
+      "LONG": 0,
+      "ALT": 0,
+      "COLOR": [255, 0, 255, 255]
+    },
+  ]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -47,6 +67,10 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         setUsername: setUsername,
         isLoggedIn: isLoggedIn,
         setIsLoggedIn: setIsLoggedIn,
+        satellites: satellites,
+        setSatellites: setSatellites,
+        sites: sites,
+        setSites: setSites,
       }}
     >
       {children}

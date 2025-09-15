@@ -2,6 +2,8 @@ import { Plus, SearchIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useAppSession } from "./AppSessionProvider";
+import { toast } from "sonner";
 
 const PROXIED_URL = "/api/satellites";
 const LOCALHOST_URL = "http://localhost:8080/api/satellites";
@@ -12,9 +14,11 @@ type SatItem = {
   OBJECT_NAME: string;
 };
 
-export function Search({ items }: { items: [number, number, number, number] }) {
+export function Search() {
   const [search, setSearch] = useState<string>("");
   const [filteredItems, setFilteredItems] = useState<SatItem[] | null>();
+  const { setSatellites } = useAppSession();
+
   useEffect(() => {
     const getSearchItems = async () => {
       try {
@@ -61,6 +65,24 @@ export function Search({ items }: { items: [number, number, number, number] }) {
                   key={index}
                   className="p-1 pr-4 pl-4 hover:bg-accent-foreground/10 hover:text-accent-foreground dark:hover:bg-card rounded-lg w-full h-fit flex select-none cursor-pointer"
                   title={`#${item.NORAD_CAT_ID} ${item.OBJECT_NAME}`}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        `${LOCALHOST_URL}/${item.id}`
+                      );
+
+                      const fullItem = await response.json();
+                      fullItem.COLOR = [255, 0, 255, 255];
+                      fullItem.VISIBLE = true;
+                      console.log(fullItem);
+                      setSatellites((previous) => [...previous, fullItem]);
+                      toast.success("Satellite added!", {
+                        description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
+                      });
+                    } catch (error: any) {
+                      console.error(error);
+                    }
+                  }}
                 >
                   <div className="flex-1 flex text-sm gap-1 truncate pr-4">
                     <p>(#{item.NORAD_CAT_ID})</p>

@@ -1,3 +1,5 @@
+import { Site } from "./types"
+
 const satellite = require('satellite.js')
 const fs = require('fs')
 const path = require('path')
@@ -5,7 +7,7 @@ const moment = require('moment')
 const julian = require('julian')
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
-const satCzmlConverter = (site_name: string, latlongalt: string[], color = { "rgba": [255, 0, 255, 255] }) => {
+const siteCzmlConverter = (site: Site) => {
 
   //set initial object start for czml
   let initialCZMLProps = [
@@ -15,13 +17,15 @@ const satCzmlConverter = (site_name: string, latlongalt: string[], color = { "rg
       version: "1.0",
     },
     {
-      id: site_name,
+      id: site["OBJECT_NAME"],
       name: "point in cartographic degrees",
       position: {
-        cartographicDegrees: [latlongalt[0], latlongalt[1], latlongalt[2]],
+        cartographicDegrees: [site["LAT"], site["LONG"], site["ALT"]],
       },
       label: {
-        fillColor: color,
+        fillColor: {
+          rgba: site["COLOR"],
+        },
         font: "11pt Lucida Console",
         horizontalOrigin: "LEFT",
         outlineColor: {
@@ -33,12 +37,16 @@ const satCzmlConverter = (site_name: string, latlongalt: string[], color = { "rg
         },
         show: true,
         style: "FILL_AND_OUTLINE",
-        text: `${site_name}`,
+        text: `${site["OBJECT_NAME"]}`,
         verticalOrigin: "CENTER",
       },
       point: {
-        color: color,
-        outlineColor: color,
+        color: {
+          rgba: site["COLOR"],
+        },
+        outlineColor: {
+          rgba: site["COLOR"],
+        },
         pixelSize: {
           number: 10,
         },
@@ -48,4 +56,4 @@ const satCzmlConverter = (site_name: string, latlongalt: string[], color = { "rg
   return initialCZMLProps;
 }
 // 1216469.9357990976, -4736121.71856379, 4081386.8856866374
-export default satCzmlConverter
+export default siteCzmlConverter

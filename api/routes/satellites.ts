@@ -10,11 +10,26 @@ router.get("/", async (req, res) => {
 
   const payload = await knex("space_track")
     .select("id", "NORAD_CAT_ID", "OBJECT_NAME")
-    .whereILike("NORAD_CAT_ID", `${filter}%`)
-    .orWhereILike("OBJECT_NAME", `%${filter}%`)
+    .whereNull("DECAY_DATE")
+
+    // @ts-ignore
+    .andWhere((qB) =>
+      qB
+        .whereILike("NORAD_CAT_ID", `${filter}%`)
+        .orWhereILike("OBJECT_NAME", `%${filter}%`)
+    )
     .limit(10)
     .orderBy("NORAD_CAT_ID");
   res.json(payload);
 });
 
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const payload = await knex("space_track")
+    .select("*")
+    .where({ id: id })
+    .limit(1);
+  res.json(payload[0]);
+});
 export = router;

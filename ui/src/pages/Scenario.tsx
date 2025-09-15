@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/choicePopover";
 import { AddEntityForm } from "@/components/AddEntityForm";
 import type { Satellite } from "@/types";
+import { useAppSession } from "@/components/AppSessionProvider";
 
 console.log(`0 ISS (ZARYA)
 1 25544U 98067A   25254.83778358  .00007850  00000-0  14414-3 0  9994
@@ -26,12 +27,61 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const [czmlArray, setCzmlArray] = useState<any>(null);
-  const [siteArray, setSiteArray] = useState<any>(null);
-  const [satellites, setSatellites] = useState<Satellite[] | null>();
+  const { satellites, sites } = useAppSession();
+  const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
+  const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
+
+  useEffect(() => {
+    satellites?.map((sat, index) => {
+      fetch(`${PROXIED_URL}/satczml`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sat),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setSatCzmlArray([
+            ...satCzmlArray,
+            <CzmlDataSource key={data.id} data={data} />,
+          ]);
+        });
+    });
+  }, [satellites]);
+
+  useEffect(() => {
+    setSiteCzmlArray(null);
+    sites.map((site, index) => {
+      fetch(`${PROXIED_URL}/siteczml`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(site),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (siteCzmlArray == null) {
+            setSiteCzmlArray([<CzmlDataSource data={data} />]);
+          } else {
+            setSiteCzmlArray([
+              ...siteCzmlArray,
+              <CzmlDataSource data={data} />,
+            ]);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }, [sites]);
 
   // var testData = [
   //   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
@@ -41,8 +91,13 @@ export function Scenario() {
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {czmlArray}
-        {siteArray}
+        {satCzmlArray.filter((item, index) => {
+          return true;
+          return satellites.find((sat) => {
+            sat.id === item.key;
+          })?.VISIBLE;
+        })}
+        {siteCzmlArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}
     </div>
