@@ -113,7 +113,7 @@ router.get("/refresh", (req, res) => {
   res.status(200);
 });
 
-router.post("/site", (req, res) => {
+router.post("/siteczml", (req, res) => {
   var czml = siteCzmlConverter(req.body);
   res.status(200).json(czml);
 });
