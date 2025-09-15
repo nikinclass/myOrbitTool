@@ -1,9 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { LoginModal } from "./LoginModal";
-import { useNavigate } from "react-router-dom";
-import { useAppSession } from "./AppSessionProvider";
-
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,77 +8,39 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { useAppSession } from "./AppSessionProvider";
 
 export function ScenarioTitleModal() {
-  const [showTitleModal, setTitleModal] = useState(false);
-  const [titleLabel, setTitleLabel] = useState("Scenario Title");
-  const { username, isLoggedIn, setUsername, setIsLoggedIn } = useAppSession();
-  const [changed, setChange] = useState(true);
+  const { isLoggedIn } = useAppSession();
+  const [show, setShow] = useState(false);
+  const [title, setTitle] = useState("Scenario Title");
 
-  function handleClick() {
-    setTitleModal(true);
-  }
+  if (!isLoggedIn) return null;
 
-  function updateTitle() {
-    console.log("updated the title");
-  }
-
-  useEffect(() => {
-    console.log("test");
-  }, [changed]);
-
-  if (isLoggedIn) {
-    return (
-      <>
-        <div className="opacity-75 p-4 px-5 border-[2px] text-black bg-red-200 rounded-[10px]">
-          <Label
-            htmlFor="scenario-title"
-            className="!text-3xl"
-            onClick={handleClick}
-          >
-            Scenario Title
+  return (
+    <div className="relative inline-block">
+      {isLoggedIn && (
+        <div className="p-4 border rounded bg-red-200 cursor-pointer" onClick={() => setShow((bool) => !bool)}>
+          <Label className="!text-3xl">
+            {title}
           </Label>
         </div>
+      )}
 
-        {showTitleModal && <ChangeTitleModal closeModal={() => updateTitle} />}
-      </>
-    );
-  }
-}
-
-function ChangeTitleModal({ closeModal }: { closeModal: () => void }) {
-  return (
-    <div
-      className="absolute top-20 z-10 flex justify-center items-center z-1 bg-black/50 "
-      onClick={() => closeModal()}
-      onBlur={() => closeModal()}
-    >
-      <Card
-        className="min-w-[500px] h-fit rounded-3xl drop-shadow-[0_0_200px_rgba(0,0,0,1)] backdrop-blur-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CardHeader>
-          <CardTitle>Change Title</CardTitle>
-          <CardDescription>Change the damn title.</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <Input placeholder="Scenario Title" value="scenario" />
-        </CardContent>
-      </Card>
+      {show && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50">
+          <Card className="min-w-[300px] rounded-xl shadow-lg">
+            <CardHeader>
+              <CardTitle>Edit Title</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Button onClick={() => setShow(false)}>Save Title</Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
-/*
-<Input
-                name="username"
-                id="username"
-                autoComplete="username"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-              />
-*/
