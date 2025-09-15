@@ -13,6 +13,8 @@ export type AppState = {
   setUsername: Dispatch<SetStateAction<string>>;
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  satellites: Satellite[];
+  setSatellites: Dispatch<SetStateAction<Satellite[]>>;
 };
 
 const initialState: AppState = {
@@ -20,6 +22,8 @@ const initialState: AppState = {
   setUsername: () => null,
   isLoggedIn: false,
   setIsLoggedIn: () => null,
+  satellites: [],
+  setSatellites: () => null,
 };
 
 type AppProviderProps = {
@@ -31,6 +35,7 @@ const AppSessionContext = createContext<AppState>(initialState);
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [username, setUsername] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [satellites, setSatellites] = useState<Satellite[]>([]);
 
 
   useEffect(() => {
@@ -41,6 +46,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       setIsLoggedIn(true);
     }
   }, []);
+  useEffect(() => {
+    console.log(satellites);
+  }, [satellites])
   return (
     <AppSessionContext.Provider
       {...props}
@@ -49,6 +57,8 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         setUsername: setUsername,
         isLoggedIn: isLoggedIn,
         setIsLoggedIn: setIsLoggedIn,
+        satellites: satellites,
+        setSatellites: setSatellites,
       }}
     >
       {children}

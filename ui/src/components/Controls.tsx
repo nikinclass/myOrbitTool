@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/choicePopover";
 import { Plus } from "lucide-react";
 import { AddEntityForm } from "./AddEntityForm";
 import { AddEntityButton } from "./AddEntityButton";
+import { ManageSatellitesButton } from "./ManageSatellitesButton";
 
 export const Controls = () => {
   // const [stationName, setStationName] = useState<string>("");
@@ -191,6 +192,7 @@ export const Controls = () => {
           </div> */}
 
       <AddEntityButton className="absolute z-10 top-1/3 flex flex-col opacity-75 p-4" />
+      <ManageSatellitesButton className="absolute z-10 top-2/5 flex flex-col opacity-75 p-4" />
     </>
   );
 };
