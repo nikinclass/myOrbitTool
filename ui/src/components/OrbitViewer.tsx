@@ -26,7 +26,7 @@ export function OrbitViewer({ className }) {
     fetch(`${PROXIED_URL}/${25544}`)
       .then((res) => res.json())
       .then((data) => {
-        setCzmlArray([<CzmlDataSource data={data} />]);
+        setCzmlArray([<CzmlData Source data={data} />]);
       });
   }, []);
 

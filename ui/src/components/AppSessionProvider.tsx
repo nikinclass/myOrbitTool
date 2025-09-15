@@ -1,3 +1,4 @@
+import type { Satellite } from "@/types";
 import React, {
   createContext,
   useContext,
@@ -12,6 +13,8 @@ export type AppState = {
   setUsername: Dispatch<SetStateAction<string>>;
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  satellites: Satellite[];
+  setSatellites: Dispatch<SetStateAction<boolean>>;
 };
 
 const initialState: AppState = {
@@ -19,6 +22,8 @@ const initialState: AppState = {
   setUsername: () => null,
   isLoggedIn: false,
   setIsLoggedIn: () => null,
+  satellites: [],
+  setSatellites: () => null,
 };
 
 type AppProviderProps = {
@@ -30,6 +35,7 @@ const AppSessionContext = createContext<AppState>(initialState);
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [username, setUsername] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [satellites, setSatellites] = useState<Satellite[]>([]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
