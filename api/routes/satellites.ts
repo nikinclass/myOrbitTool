@@ -8,8 +8,6 @@ const knex = require("knex")(
 router.get("/", async (req, res) => {
   const filter = req.query.filter;
 
-  console.log("Triggered with", filter);
-
   const payload = await knex("space_track")
     .select("id", "NORAD_CAT_ID", "OBJECT_NAME")
     .whereILike("NORAD_CAT_ID", `${filter}%`)

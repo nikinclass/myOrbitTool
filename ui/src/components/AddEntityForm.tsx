@@ -20,7 +20,7 @@ function EntityChoices({
     <>
       <Button
         variant="secondary"
-        className="rounded-lg flex h-8 w-fit"
+        className="rounded-lg flex h-8 w-fit opacity-75"
         onClick={() => {
           setFormType("live-satellite");
         }}
@@ -30,7 +30,7 @@ function EntityChoices({
       </Button>
       <Button
         variant="secondary"
-        className="rounded-lg flex h-8 w-fit"
+        className="rounded-lg flex h-8 w-fit opacity-75"
         onClick={() => {
           setFormType("manual-satellite");
         }}
@@ -40,7 +40,7 @@ function EntityChoices({
       </Button>
       <Button
         variant="secondary"
-        className="rounded-lg flex h-8 w-fit"
+        className="rounded-lg flex h-8 w-fit opacity-75"
         onClick={() => {
           setFormType("manual-station");
         }}
