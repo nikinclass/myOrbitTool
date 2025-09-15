@@ -1,3 +1,5 @@
+import { Satellite } from "./types";
+
 const satellite = require("satellite.js");
 const fs = require("fs");
 const path = require("path");
@@ -6,19 +8,32 @@ const julian = require("julian");
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 const satCzmlConverter = (
-  sat_name: string,
-  tleLine: string[],
-  color = { rgba: [255, 0, 255, 255] }
+  sat: Satellite,
 ) => {
-  let iterations: any[] = [];
-
-  for (let count = 0; count < iterations.length; count++) {
-    tleLine.push(iterations[count].substring(0, iterations[count].length - 1)); //XXX SUCCESS
-  }
 
   let res = []; //result for position
   let satrec; //Set satrec
-  satrec = satellite.twoline2satrec(tleLine[0], tleLine[1]);
+  // const omm = {
+  //   "OBJECT_NAME": "HELIOS 2A",
+  //   "OBJECT_ID": "2004-049A",
+  //   "EPOCH": "2025-03-26T05:19:34.116960",
+  //   "MEAN_MOTION": 15.00555103,
+  //   "ECCENTRICITY": 0.000583,
+  //   "INCLINATION": 98.3164,
+  //   "RA_OF_ASC_NODE": 103.8411,
+  //   "ARG_OF_PERICENTER": 20.5667,
+  //   "MEAN_ANOMALY": 339.5789,
+  //   "EPHEMERIS_TYPE": 0,
+  //   "CLASSIFICATION_TYPE": "U",
+  //   "NORAD_CAT_ID": 28492,
+  //   "ELEMENT_SET_NO": 999,
+  //   "REV_AT_EPOCH": 8655,
+  //   "BSTAR": 0.00048021,
+  //   "MEAN_MOTION_DOT": 0.00005995,
+  //   "MEAN_MOTION_DDOT": 0
+  // };
+
+  satrec = satellite.json2satrec(sat);
   //to go from RAD/DAY -> REV/DAY: rad * 1440 * 0.159155
   //to go from REV/PER DAY to MINS/REV -> 1440/RevPerDay
   let totalIntervalsInDay = satrec.no * 1440 * 0.159155; //1440 = min && 0.159155 = 1turn
@@ -37,7 +52,7 @@ const satCzmlConverter = (
   let leadIntervalArray = [];
   let trailIntervalArray = [];
 
-  console.log(`Setting intervals for ${sat_name}...`);
+  console.log(`Setting intervals for ${sat["OBJECT_NAME"]}...`);
   for (let i = 0; i <= 7200; i += minsPerInterval) {
     //7200===120hours===5days(which is our end time)
     if (i === 0) {
@@ -81,7 +96,7 @@ const satCzmlConverter = (
   }
   for (let i = 0; i <= 432000; i++) {
     //iterates every second (86400sec in 1day)
-    satrec = satellite.twoline2satrec(tleLine[0], tleLine[1]);
+    satrec = satellite.json2satrec(sat);
     let positionAndVelocity = satellite.sgp4(satrec, i * 0.0166667); // 0.0166667min = 1sec
     let positionEci = positionAndVelocity.position;
     positionEci.x = positionEci.x * 1000;
@@ -106,12 +121,12 @@ const satCzmlConverter = (
     },
 
     {
-      id: `${sat_name}`,
-      name: `${sat_name}`,
+      id: `${sat["OBJECT_NAME"]}`,
+      name: `${sat["OBJECT_NAME"]}`,
       availability: `${initialTime}/${endTime}`,
       description: "Insert the altitude here??",
       label: {
-        fillColor: color,
+        fillColor: sat["COLOR"],
         font: "11pt Lucida Console",
         horizontalOrigin: "LEFT",
         outlineColor: {
@@ -123,7 +138,7 @@ const satCzmlConverter = (
         },
         show: true,
         style: "FILL_AND_OUTLINE",
-        text: `${sat_name}`,
+        text: `${sat["OBJECT_NAME"]}`,
         verticalOrigin: "CENTER",
       },
       path: {
@@ -136,31 +151,35 @@ const satCzmlConverter = (
         width: 1,
         material: {
           solidColor: {
-            color: color,
+            color: {
+              rgba: sat["COLOR"],
+            },
+          },
+          resolution: 120,
+          leadTime: leadIntervalArray,
+          trailTime: trailIntervalArray,
+        },
+        model: {
+          show: false,
+          //Animation(s).
+          minimumPixelSize: 99,
+        },
+        point: {
+          show: true,
+          pixelSize: 10,
+          color: {
+            rgba: sat["COLOR"],
           },
         },
-        resolution: 120,
-        leadTime: leadIntervalArray,
-        trailTime: trailIntervalArray,
+        position: {
+          interpolationAlgorithm: "LAGRANGE",
+          interpolationDegree: 2,
+          referenceFrame: "INERTIAL",
+          epoch: `${initialTime}`,
+          cartesian: res,
+        },
       },
-      model: {
-        show: false,
-        //Animation(s).
-        minimumPixelSize: 99,
-      },
-      point: {
-        show: true,
-        pixelSize: 10,
-        color: color,
-      },
-      position: {
-        interpolationAlgorithm: "LAGRANGE",
-        interpolationDegree: 2,
-        referenceFrame: "INERTIAL",
-        epoch: `${initialTime}`,
-        cartesian: res,
-      },
-    },
+    }
   ];
 
   return initialCZMLProps;

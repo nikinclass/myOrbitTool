@@ -114,23 +114,14 @@ router.get("/refresh", (req, res) => {
 });
 
 router.post("/site", (req, res) => {
-  var site = req.body;
-  var czml = siteCzmlConverter(site["OBJECT_NAME"], [
-    site["LAT"],
-    site["LONG"],
-    site["ALT"],
-  ]);
+  var czml = siteCzmlConverter(req.body);
   res.status(200).json(czml);
 });
 
 // RETURNS THE CZML FOR A TLE
 
-router.post("/czml", (req, res) => {
-  var sat = req.body;
-  var czml = satCzmlConverter(sat["OBJECT_NAME"], [
-    sat["TLE_LINE1"],
-    sat["TLE_LINE2"],
-  ]);
+router.post("/satczml", (req, res) => {
+  var czml = satCzmlConverter(req.body);
   res.status(200).json(czml);
 });
 

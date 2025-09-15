@@ -61,6 +61,7 @@ export function Search({ items }: { items: [number, number, number, number] }) {
                   key={index}
                   className="p-1 pr-4 pl-4 hover:bg-accent-foreground/10 hover:text-accent-foreground dark:hover:bg-card rounded-lg w-full h-fit flex select-none cursor-pointer"
                   title={`#${item.NORAD_CAT_ID} ${item.OBJECT_NAME}`}
+                  onClick={() => {}}
                 >
                   <div className="flex-1 flex text-sm gap-1 truncate pr-4">
                     <p>(#{item.NORAD_CAT_ID})</p>
