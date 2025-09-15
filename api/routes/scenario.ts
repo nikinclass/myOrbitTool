@@ -206,4 +206,18 @@ router.post(
   }
 );
 
+// SCENARIO TITLE EDIT
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const scenario = await knex("scenarios").where({ id }).first();
+    if (!scenario) return res.status(404).json({ error: "Scenario not found" });
+    return res.json(scenario);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: "Server error on scenario title edit" });
+  }
+});
+
 export = router;

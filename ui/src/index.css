@@ -147,3 +147,19 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+.cesium-baseLayerPicker-dropDown {
+  right: 40px;
+  left: auto;
+  margin-top: 6px;
+}
+
+/* adjust "top" to move it down below the login button*/
+.cesium-viewer-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  top: 80px;
+  right: 10px;
+  align-items: end;
+}

@@ -1,10 +1,7 @@
-import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/choicePopover";
-import { Plus } from "lucide-react";
-import { AddEntityForm } from "./AddEntityForm";
+
 import { AddEntityButton } from "./AddEntityButton";
+import { ScenarioTitleModal } from "./ScenarioTitleModal";
 
 export const Controls = () => {
   // const [stationName, setStationName] = useState<string>("");
