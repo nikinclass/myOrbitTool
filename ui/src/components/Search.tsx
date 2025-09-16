@@ -29,7 +29,7 @@ export function Search() {
         );
         const payload = await response.json();
         setFilteredItems(payload);
-      } catch (err: unknown) { }
+      } catch (err: unknown) {}
     };
     getSearchItems();
   }, [search]);
@@ -85,24 +85,25 @@ export function Search() {
                           Accept: "application/json",
                           "Content-Type": "application/json",
                         },
-                                                body: JSON.stringify({
+                        body: JSON.stringify({
                           ...fullItem,
                           scenario_id: scenario_id,
                         }),
                       });
+
                       await fetch(`${LOCALHOST_URL}/satczml`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",
                           "Content-Type": "application/json",
                         },
-
                         body: JSON.stringify(fullItem),
                       })
                         .then((res) => res.json())
                         .then((data) => {
                           fullItem.CZML = data;
                         });
+
                       setSatellites((previous) => [...previous, fullItem]);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,

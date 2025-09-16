@@ -48,14 +48,14 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [title, setTitle] = useState<string>("Scenario");
   const scenario_id = useParams().id;
   const [sites, setSites] = useState<Site[]>([
-    {
-      id: "1",
-      OBJECT_NAME: "test site",
-      LAT: 0,
-      LONG: 0,
-      ALT: 0,
-      COLOR: [255, 0, 255, 255],
-    },
+    // {
+    //   id: "1",
+    //   OBJECT_NAME: "test site",
+    //   LAT: 0,
+    //   LONG: 0,
+    //   ALT: 0,
+    //   COLOR: [255, 0, 255, 255],
+    // },
   ]);
 
   useEffect(() => {
@@ -69,7 +69,6 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
   useEffect(() => {
     // Update record when title changes
-    
   }, [title]);
 
   return (
