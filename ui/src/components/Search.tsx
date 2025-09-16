@@ -91,7 +91,7 @@ export function Search() {
                         }),
                       });
 
-                      await fetch(`${LOCALHOST_URL}/satczml`, {
+                      await fetch(`${LOCALHOST_URL}/satellites/satczml`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",
