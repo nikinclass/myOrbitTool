@@ -110,27 +110,13 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-refreshSpaceTrack(myUsername, myPassword);
+// refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
 router.get("/refresh", (req, res) => {
   refreshSpaceTrack(myUsername, myPassword);
   res.status(200);
-});
-
-router.post("/siteczml", (req, res) => {
-  var czml = siteCzmlConverter(req.body);
-  res.status(200).json(czml);
-});
-
-// RETURNS THE CZML FOR A TLE
-
-router.post("/satczml", (req, res) => {
-  var sat = req.body
-  console.log(sat)
-  var czml = satCzmlConverter(sat);
-  res.status(200).json(czml);
 });
 
 const createSatelliteChain = () => {

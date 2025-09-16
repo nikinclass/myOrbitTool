@@ -34,25 +34,22 @@ export function Scenario() {
   const navigate = useNavigate();
   const id = useParams().id;
 
-  useEffect(() => {
-    satellites?.map((sat, index) => {
-      fetch(`${PROXIED_URL}/satczml`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sat),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setSatCzmlArray([
-            ...satCzmlArray,
-            <CzmlDataSource key={data.id} data={data} />,
-          ]);
-        });
-    });
-  }, [satellites]);
+  // useEffect(() => {
+  //   satellites?.map((sat, index) => {
+  //     fetch(`${PROXIED_URL}/satczml`, {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(sat),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         sat.CZML = data;
+  //       });
+  //   });
+  // }, [satellites]);
 
   useEffect(() => {
     setSiteCzmlArray(null);
@@ -67,15 +64,7 @@ export function Scenario() {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          if (siteCzmlArray == null) {
-            setSiteCzmlArray([<CzmlDataSource data={data} />]);
-          } else {
-            setSiteCzmlArray([
-              ...siteCzmlArray,
-              <CzmlDataSource data={data} />,
-            ]);
-          }
+          site.CZML = data;
         })
         .catch((err) => {
           console.log(err);
@@ -91,11 +80,8 @@ export function Scenario() {
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {satCzmlArray.filter((item, index) => {
-          return true;
-          return satellites.find((sat) => {
-            sat.id === item.key;
-          })?.VISIBLE;
+        {satellites.map((item, index) => {
+          return (<CzmlDataSource data={item.CZML} />)
         })}
         {siteCzmlArray}
       </Viewer>

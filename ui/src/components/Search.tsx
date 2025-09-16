@@ -27,7 +27,7 @@ export function Search() {
         );
         const payload = await response.json();
         setFilteredItems(payload);
-      } catch (err: unknown) {}
+      } catch (err: unknown) { }
     };
     getSearchItems();
   }, [search]);
@@ -70,11 +70,22 @@ export function Search() {
                       const response = await fetch(
                         `${LOCALHOST_URL}/${item.id}`
                       );
-
                       const fullItem = await response.json();
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
                       console.log(fullItem);
+                      fetch(`${LOCALHOST_URL}/satczml`, {
+                        method: "POST",
+                        headers: {
+                          Accept: "application/json",
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(fullItem),
+                      })
+                        .then((res) => res.json())
+                        .then((data) => {
+                          fullItem.CZML = data;
+                        });
                       setSatellites((previous) => [...previous, fullItem]);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
