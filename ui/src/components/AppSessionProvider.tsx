@@ -7,6 +7,7 @@ import React, {
   type Dispatch,
   type SetStateAction,
 } from "react";
+import { useParams } from "react-router-dom";
 
 export type AppState = {
   username: string;
@@ -17,6 +18,8 @@ export type AppState = {
   setSatellites: Dispatch<SetStateAction<Satellite[]>>;
   sites: Site[];
   setSites: Dispatch<SetStateAction<Site[]>>;
+  title: string;
+  setTitle: Dispatch<SetStateAction<string>>;
 };
 
 const initialState: AppState = {
@@ -28,6 +31,8 @@ const initialState: AppState = {
   setSatellites: () => null,
   sites: [],
   setSites: () => null,
+  title: "Scenario",
+  setTitle: () => null,
 };
 
 type AppProviderProps = {
@@ -40,7 +45,18 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [username, setUsername] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [satellites, setSatellites] = useState<Satellite[]>([]);
-  const [sites, setSites] = useState<Site[]>([]);
+  const [title, setTitle] = useState<string>("Scenario");
+  const scenario_id = useParams().id;
+  const [sites, setSites] = useState<Site[]>([
+    {
+      id: "1",
+      OBJECT_NAME: "test site",
+      LAT: 0,
+      LONG: 0,
+      ALT: 0,
+      COLOR: [255, 0, 255, 255],
+    },
+  ]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -50,6 +66,12 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       setIsLoggedIn(true);
     }
   }, []);
+
+  useEffect(() => {
+    // Update record when title changes
+    
+  }, [title]);
+
   return (
     <AppSessionContext.Provider
       {...props}
@@ -62,6 +84,8 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         setSatellites: setSatellites,
         sites: sites,
         setSites: setSites,
+        title: title,
+        setTitle: setTitle,
       }}
     >
       {children}

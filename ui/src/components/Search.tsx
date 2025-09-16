@@ -1,12 +1,12 @@
 import { Plus, SearchIcon } from "lucide-react";
-import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useAppSession } from "./AppSessionProvider";
 import { toast } from "sonner";
+import { useParams } from "react-router-dom";
 
-const PROXIED_URL = "/api/satellites";
-const LOCALHOST_URL = "http://localhost:8080/api/satellites";
+const PROXIED_URL = "/api";
+const LOCALHOST_URL = "http://localhost:8080/api";
 
 type SatItem = {
   id: number;
@@ -19,11 +19,13 @@ export function Search() {
   const [filteredItems, setFilteredItems] = useState<SatItem[] | null>();
   const { setSatellites } = useAppSession();
 
+  const scenario_id = useParams().id;
+
   useEffect(() => {
     const getSearchItems = async () => {
       try {
         const response = await fetch(
-          `${LOCALHOST_URL}?filter=${search?.toLowerCase()}`
+          `${LOCALHOST_URL}/satellites?filter=${search?.toLowerCase()}`
         );
         const payload = await response.json();
         setFilteredItems(payload);
@@ -67,19 +69,34 @@ export function Search() {
                   title={`#${item.NORAD_CAT_ID} ${item.OBJECT_NAME}`}
                   onClick={async () => {
                     try {
+                      // Get entire record
                       const response = await fetch(
-                        `${LOCALHOST_URL}/${item.id}`
+                        `${LOCALHOST_URL}/satellites/${item.id}`
                       );
+                      // Add the data to the record
                       const fullItem = await response.json();
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
-                      console.log(fullItem);
-                      fetch(`${LOCALHOST_URL}/satczml`, {
+
+                      // Create record in db
+                      await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",
                           "Content-Type": "application/json",
                         },
+                                                body: JSON.stringify({
+                          ...fullItem,
+                          scenario_id: scenario_id,
+                        }),
+                      });
+                      await fetch(`${LOCALHOST_URL}/satczml`, {
+                        method: "POST",
+                        headers: {
+                          Accept: "application/json",
+                          "Content-Type": "application/json",
+                        },
+
                         body: JSON.stringify(fullItem),
                       })
                         .then((res) => res.json())

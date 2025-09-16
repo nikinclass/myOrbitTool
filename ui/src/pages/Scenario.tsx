@@ -27,29 +27,48 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const { satellites, sites } = useAppSession();
+  const { satellites, setSatellites, setSites, sites } = useAppSession();
   const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
   const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
-  // useEffect(() => {
-  //   satellites?.map((sat, index) => {
-  //     fetch(`${PROXIED_URL}/satczml`, {
-  //       method: "POST",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(sat),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         sat.CZML = data;
-  //       });
-  //   });
-  // }, [satellites]);
+  const loadScenario = async () => {
+    try {
+      const { scenario, scenarioSats, scenarioSites } = await (
+        await fetch(`${LOCALHOST_URL}/${id}`)
+      ).json();
+
+      setSatellites(scenarioSats);
+      setSites(scenarioSites);
+    } catch (err: any) {}
+  };
+
+  useEffect(() => {
+    loadScenario();
+  }, []);
+
+  useEffect(() => {
+    satellites?.map(async (sat, index) => {
+      await fetch(`${PROXIED_URL}/satczml`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sat),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setSatCzmlArray([
+            ...satCzmlArray,
+            <CzmlDataSource key={data.id} data={data} />,
+          ]);
+        });
+    });
+  }, [satellites]);
+
 
   useEffect(() => {
     setSiteCzmlArray(null);
