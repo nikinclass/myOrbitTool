@@ -188,6 +188,7 @@ const satCzmlConverter = (sat: Satellite) => {
       },
     },
   ];
+  console.log("checking for final")
   return initialCZMLProps;
 };
 

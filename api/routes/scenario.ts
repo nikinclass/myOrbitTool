@@ -146,7 +146,7 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-refreshSpaceTrack(myUsername, myPassword);
+// refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
@@ -166,6 +166,7 @@ router.post("/satczml", (req, res) => {
   var sat = req.body;
   // console.log(sat);
   var czml = satCzmlConverter(sat);
+  console.log(czml)
   res.status(200).json(czml);
 });
 

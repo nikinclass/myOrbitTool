@@ -8,6 +8,7 @@ import React, {
   type SetStateAction,
 } from "react";
 import { useParams } from "react-router-dom";
+import { CzmlDataSource } from "resium";
 
 export type AppState = {
   username: string;
@@ -20,6 +21,10 @@ export type AppState = {
   setSites: Dispatch<SetStateAction<Site[]>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
+  satCzmlArray: React.ReactNode[]
+  setSatCzmlArray: Dispatch<SetStateAction<React.ReactNode[]>>
+  siteCzmlArray: React.ReactNode[]
+  setSiteCzmlArray: Dispatch<SetStateAction<React.ReactNode[]>>
 };
 
 const initialState: AppState = {
@@ -33,6 +38,10 @@ const initialState: AppState = {
   setSites: () => null,
   title: "Scenario",
   setTitle: () => null,
+  satCzmlArray: [],
+  setSatCzmlArray: () => null,
+  siteCzmlArray: [],
+  setSiteCzmlArray: () => null,
 };
 
 type AppProviderProps = {
@@ -48,15 +57,28 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [title, setTitle] = useState<string>("Scenario");
   const scenario_id = useParams().id;
   const [sites, setSites] = useState<Site[]>([
-    // {
-    //   id: "1",
-    //   OBJECT_NAME: "test site",
-    //   LAT: 0,
-    //   LONG: 0,
-    //   ALT: 0,
-    //   COLOR: [255, 0, 255, 255],
-    // },
+    {
+      id: "1",
+      OBJECT_NAME: "test site",
+      LAT: 0,
+      LONG: 0,
+      ALT: 0,
+      COLOR: [255, 0, 255, 255],
+      CZML: [{}, {}]
+    },
   ]);
+  const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
+  const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
+
+  useEffect(() => {
+    setSiteCzmlArray(satellites.map((sat, index) => {
+      return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
+    }))
+  }, [satellites])
+
+  useEffect(() => {
+
+  }, [sites])
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -85,6 +107,10 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         setSites: setSites,
         title: title,
         setTitle: setTitle,
+        satCzmlArray: satCzmlArray,
+        setSatCzmlArray: setSatCzmlArray,
+        siteCzmlArray: siteCzmlArray,
+        setSiteCzmlArray: setSiteCzmlArray
       }}
     >
       {children}
