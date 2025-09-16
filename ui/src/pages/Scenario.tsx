@@ -27,16 +27,31 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const { satellites, sites } = useAppSession();
+  const { satellites, setSatellites, setSites, sites } = useAppSession();
   const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
   const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
+  const loadScenario = async () => {
+    try {
+      const { scenario, scenarioSats, scenarioSites } = await (
+        await fetch(`${LOCALHOST_URL}/${id}`)
+      ).json();
+
+      setSatellites(scenarioSats);
+      setSites(scenarioSites);
+    } catch (err: any) {}
+  };
+
   useEffect(() => {
-    satellites?.map((sat, index) => {
-      fetch(`${PROXIED_URL}/satczml`, {
+    loadScenario();
+  }, []);
+
+  useEffect(() => {
+    satellites?.map(async (sat, index) => {
+      await fetch(`${PROXIED_URL}/satczml`, {
         method: "POST",
         headers: {
           Accept: "application/json",
