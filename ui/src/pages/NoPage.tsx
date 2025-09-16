@@ -2,7 +2,7 @@ import { useAppSession } from "@/components/AppSessionProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function NoPage() {
   const [scenarioID, setScenarioID] = useState<string>("");

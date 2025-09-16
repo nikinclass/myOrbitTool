@@ -1,8 +1,5 @@
 import { LoginButton } from "./LoginButton";
 import { Logo } from "./Logo";
-import { ModeToggle } from "./mode-toggle";
-import { ScenarioTitleModal } from "./ScenarioTitleModal";
-import { ScenarioDetailsModal } from "./ScenarioDetailsModal";
 
 export function Header() {
   return (

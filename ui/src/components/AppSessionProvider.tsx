@@ -7,7 +7,6 @@ import React, {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 const PROXIED_URL = "/api";
 const LOCALHOST_URL = "http://localhost:8080/api";
