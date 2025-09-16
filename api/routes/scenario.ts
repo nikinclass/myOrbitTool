@@ -2,6 +2,7 @@ import { Request, response, Response, Router } from "express";
 import { body, checkSchema, validationResult } from "express-validator";
 import satCzmlConverter from "../satCzmlConverter";
 import siteCzmlConverter from "../siteCzmlConverter";
+import { Satellite } from "../types";
 const knex = require("knex")(
   require("../knexfile.ts")[process.env.NODE_ENV || "development"]
 );
@@ -30,6 +31,41 @@ router.post("/", async (req: Request, res: Response) => {
   //   return res.status(500).json({ error: { ...payload } });
   // }
   //return scenario id
+});
+
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    // Get all scenario info
+    const scenario_data = await knex("scenarios")
+      .select("*")
+      .where({ id: req.params.id })
+      .first();
+
+    if (!scenario_data) return res.send(400);
+
+    // Get all satellites
+    const satellites = await knex("satellites")
+      .select("*")
+      .join("scenario_entities", { "scenario_entities.id": "satellites.id" })
+      .where({ scenario_id: req.params.id });
+
+    // Get all sites
+    const sites = await knex("stations")
+      .select("*")
+      .join("scenario_entities", {
+        "scenario_entities.id": "stations.id",
+      })
+      .where({ scenario_id: req.params.id });
+
+    res.json({
+      scenario: scenario_data,
+      scenarioSats: satellites,
+      scenarioSites: sites,
+    });
+  } catch (error: unknown) {
+    console.error(error);
+    res.send(500);
+  }
 });
 
 async function refreshSpaceTrack(username: string, password: string) {
@@ -119,6 +155,20 @@ router.get("/refresh", (req, res) => {
   res.status(200);
 });
 
+router.post("/siteczml", (req, res) => {
+  var czml = siteCzmlConverter(req.body);
+  res.status(200).json(czml);
+});
+
+// RETURNS THE CZML FOR A TLE
+
+router.post("/satczml", (req, res) => {
+  var sat = req.body;
+  // console.log(sat);
+  var czml = satCzmlConverter(sat);
+  res.status(200).json(czml);
+});
+
 const createSatelliteChain = () => {
   return body(["OBJECT_NAME", "TLE_LINE1", "TLE_LINE2"])
     .notEmpty()
@@ -133,11 +183,41 @@ router.post(
     const result = validationResult(req);
     if (result.isEmpty()) {
       const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
-      const { scenario_id, ...payload } = req.body;
-      const response = await knex("satellites")
-        .insert({ ...payload, id: entity_id })
+      const {
+        scenario_id,
+        CCSDS_OMM_VERS,
+        COMMENT,
+        CREATION_DATE,
+        ORIGINATOR,
+        CENTER_NAME,
+        REF_FRAME,
+        TIME_SYSTEM,
+        MEAN_ELEMENT_THEORY,
+        SEMIMAJOR_AXIS,
+        PERIOD,
+        APOAPSIS,
+        PERIAPSIS,
+        OBJECT_TYPE,
+        RCS_SIZE,
+        COUNTRY_CODE,
+        LAUNCH_DATE,
+        SITE,
+        DECAY_DATE,
+        FILE,
+        GP_ID,
+        TLE_LINE0,
+        TLE_LINE1,
+        TLE_LINE2,
+        created_at,
+        updated_at,
+        VISIBLE,
+        ...payload
+      } = req.body;
+
+      await knex("satellites")
+        .insert({ ...payload, id: entity_id } as Satellite)
         .returning("*");
-      return res.status(200).json(response);
+      return res.sendStatus(200);
     }
     res.status(400).json({ errors: result.array() });
   }
