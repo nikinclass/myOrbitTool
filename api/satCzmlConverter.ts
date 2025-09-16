@@ -8,6 +8,7 @@ import {
 } from "satellite.js";
 import moment from "moment";
 const julian = require("julian");
+import * as cesium from "cesiumjs";
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 const satCzmlConverter = (sat: Satellite) => {
@@ -137,7 +138,7 @@ const satCzmlConverter = (sat: Satellite) => {
       description: "Insert the altitude here??",
       label: {
         fillColor: {
-          rgba: [255, 0, 255, 255],
+          rgba: [255, 255, 255, 255],
         },
         font: "11pt Lucida Console",
         horizontalOrigin: "LEFT",
@@ -161,13 +162,14 @@ const satCzmlConverter = (sat: Satellite) => {
           },
         ],
         width: 1,
-        material: {
-          solidColor: {
-            color: {
-              rgba: [255, 0, 255, 255],
-            },
-          },
-        },
+        material: cesium
+        // material: {
+        //   solidColor: {
+        //     color: {
+        //       rgba: [255, 255, 0, 255],
+        //     }
+        //   },
+        // },
         resolution: 120,
         leadTime: leadIntervalArray,
         trailTime: trailIntervalArray,
@@ -175,9 +177,7 @@ const satCzmlConverter = (sat: Satellite) => {
       point: {
         show: true,
         pixelSize: 10,
-        color: {
-          rgba: [255, 0, 255, 255],
-        },
+        color: "rgba(255, 0, 255, 255)"
       },
       position: {
         interpolationAlgorithm: "LAGRANGE",

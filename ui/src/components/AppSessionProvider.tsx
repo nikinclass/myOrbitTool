@@ -71,9 +71,16 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   useEffect(() => {
-    setSiteCzmlArray(satellites.map((sat, index) => {
-      return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
-    }))
+    if (satellites[0]) {
+      setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
+        console.log(sat)
+        let tempCZML: any[] = sat.CZML.slice()
+        tempCZML[1].path.material.solidColor.color = sat.COLOR
+        tempCZML[1].point.color = sat.COLOR
+        console.log(tempCZML[1].point.color)
+        return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
+      }))
+    }
   }, [satellites])
 
   useEffect(() => {

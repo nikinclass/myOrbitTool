@@ -84,18 +84,21 @@ export function ManageSatellitesTable() {
                     id=""
                     style={{ borderRadius: 100 }}
                     onChange={(e) => {
-                      // const newRecord: Satellite = {
-                      //   ...record,
-                      //   COLOR: e.target.value,
-                      // };
-                      console.log(e.target.value)
-                      // setSatellites(
-                      //   satellites.map((originalItem) =>
-                      //     originalItem.NORAD_CAT_ID === record.NORAD_CAT_ID
-                      //       ? newRecord
-                      //       : originalItem
-                      //   )
-                      // );
+                      var hex_code = e.target.value
+                      var red = parseInt(hex_code[1] + hex_code[2], 16);
+                      var green = parseInt(hex_code[3] + hex_code[4], 16);
+                      var blue = parseInt(hex_code[5] + hex_code[6], 16);
+                      const newRecord: Satellite = {
+                        ...record,
+                        COLOR: [red, green, blue, 255],
+                      };
+                      setSatellites(
+                        satellites.map((originalItem) =>
+                          originalItem.NORAD_CAT_ID === record.NORAD_CAT_ID
+                            ? newRecord
+                            : originalItem
+                        )
+                      );
                     }}
                   />
                 }
