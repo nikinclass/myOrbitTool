@@ -37,12 +37,11 @@ const satCzmlConverter = (sat: Satellite) => {
     at exports.jsxDEV (http://localhost:3000/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=43031535:249:30)
     at http://localhost:3000/src/pages/Scenario.tsx?t=1757960147436:66:59*/
 
-  let satrec;
-  // console.log(sat)
-  satrec = json2satrec(sat as OMMJsonObjectV3);
+  let satrec
+  satrec = json2satrec(sat as OMMJsonObjectV3)
   // satrec = twoline2satrec(sat["TLE_LINE1"], sat["TLE_LINE2"]);
   // satrec = satellite.json2satrec(sat);
-  // console.log(satrec)
+
   //to go from RAD/DAY -> REV/DAY: rad * 1440 * 0.159155
   //to go from REV/PER DAY to MINS/REV -> 1440/RevPerDay
   let totalIntervalsInDay = satrec.no * 1440 * 0.159155; //1440 = min && 0.159155 = 1turn
@@ -103,6 +102,7 @@ const satCzmlConverter = (sat: Satellite) => {
       trailIntervalArray.push(currTrail);
     }
   }
+  console.log("checking")
   for (let i = 0; i <= 86400; i++) {
     //iterates every second (86400sec in 1day)
     satrec = json2satrec(sat as OMMJsonObjectV3);
@@ -115,7 +115,7 @@ const satCzmlConverter = (sat: Satellite) => {
 
     res.push(i, positionEci.x, positionEci.y, positionEci.z);
   }
-
+  console.log("checking again")
   //set initial object start for czml
   let initialCZMLProps = [
     {
