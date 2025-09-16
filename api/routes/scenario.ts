@@ -16,7 +16,7 @@ const router = Router();
 router.post("/", async (req: Request, res: Response) => {
   //this will make a new scenario
   try {
-    const payload = await knex("scenarios").insert({}).returning("id");
+    const payload = await knex("scenarios").insert(req.body).returning("id");
     if (!payload && payload.length === 0) {
       throw new Error("No record found");
     }
@@ -64,6 +64,54 @@ router.get("/:id", async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     console.error(error);
+    res.send(500);
+  }
+});
+
+router.patch("/:id/title", async (req: Request, res: Response) => {
+  try {
+    const { owner_id, ...payload } = req.body;
+
+    // Get owner of scenario
+    const scenario = await knex("scenarios")
+      .select("*")
+      .where({ id: req.params.id })
+      .first();
+
+    if (!owner_id || scenario.owner_id !== owner_id) {
+      return res.send(401);
+    }
+
+    await knex("scenarios")
+      .update({ ...payload })
+      .where({ id: req.params.id });
+
+    res.send(200);
+  } catch (e: any) {
+    res.send(500);
+  }
+});
+
+router.patch("/:id/description", async (req: Request, res: Response) => {
+  try {
+    const { owner_id, ...payload } = req.body;
+
+    // Get owner of scenario
+    const scenario = await knex("scenarios")
+      .select("*")
+      .where({ id: req.params.id })
+      .first();
+
+    if (!owner_id || scenario.owner_id !== owner_id) {
+      return res.send(401);
+    }
+
+    await knex("scenarios")
+      .update({ ...payload })
+      .where({ id: req.params.id });
+
+    res.send(200);
+  } catch (e: any) {
     res.send(500);
   }
 });

@@ -3,7 +3,7 @@ export type Satellite = {
   OBJECT_NAME: string;
   OBJECT_ID?: string; // NOT NEEDED
   EPOCH: string; // SET TO CURRENT TIME IN JS .NOW OR SOMETHING
-  MEAN_MOTION: string; 
+  MEAN_MOTION: string;
   ECCENTRICITY: string;
   INCLINATION: string;
   RA_OF_ASC_NODE: string;
@@ -30,4 +30,9 @@ export type Site = {
   ALT: number;
   COLOR: [number, number, number, number];
   CZML: [object, object];
+};
+
+export type User = {
+  username: string;
+  id: number;
 };

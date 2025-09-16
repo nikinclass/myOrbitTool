@@ -7,7 +7,12 @@ export async function up(knex: Knex): Promise<void> {
     table.string("description");
     table.timestamps(true, true);
     //foreign keys
-    // table.integer("user_id").notNullable().references("id").inTable("users").onDelete("CASCADE");
+    table
+      .integer("owner_id")
+      .notNullable()
+      .references("id")
+      .inTable("user_table")
+      .onDelete("CASCADE");
   });
 }
 

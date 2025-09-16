@@ -9,12 +9,7 @@ export function Header() {
     <>
       <Logo className="h-16 absolute z-1 opacity-75 left-2 top-2" />
 
-      <div className="absolute top-2 left-[43%] gap-2 z-1 opacity-75 flex items-center justify-center">
-        <ScenarioTitleModal />
-        <ScenarioDetailsModal />
-      </div>
       <div className="h-16 flex absolute gap-4 z-1 opacity-75 top-2 right-2 items-center">
-        <ModeToggle />
         <LoginButton />
       </div>
     </>

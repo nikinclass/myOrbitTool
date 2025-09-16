@@ -1,4 +1,4 @@
-import type { Satellite, Site } from "@/types";
+import type { Satellite, Site, User } from "@/types";
 import React, {
   createContext,
   useContext,
@@ -7,32 +7,41 @@ import React, {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+const PROXIED_URL = "/api";
+const LOCALHOST_URL = "http://localhost:8080/api";
 
 export type AppState = {
-  username: string;
-  setUsername: Dispatch<SetStateAction<string>>;
+  user: User | undefined;
+  setUser: Dispatch<SetStateAction<User | undefined>>;
   isLoggedIn: boolean;
-  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
   satellites: Satellite[];
   setSatellites: Dispatch<SetStateAction<Satellite[]>>;
   sites: Site[];
   setSites: Dispatch<SetStateAction<Site[]>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
+  scenarioID: number;
+  setScenarioID: Dispatch<SetStateAction<number>>;
+  description: string;
+  setDescription: Dispatch<SetStateAction<string>>;
 };
 
 const initialState: AppState = {
-  username: "",
-  setUsername: () => null,
+  user: undefined,
+  setUser: () => null,
   isLoggedIn: false,
-  setIsLoggedIn: () => null,
   satellites: [],
   setSatellites: () => null,
   sites: [],
   setSites: () => null,
   title: "Scenario",
   setTitle: () => null,
+  scenarioID: 0,
+  setScenarioID: () => null,
+  description: "",
+  setDescription: () => null,
 };
 
 type AppProviderProps = {
@@ -42,11 +51,13 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState>(initialState);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  const [username, setUsername] = useState<string>("");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<User | undefined>();
+  const isLoggedIn = !!user;
   const [satellites, setSatellites] = useState<Satellite[]>([]);
   const [title, setTitle] = useState<string>("Scenario");
-  const scenario_id = useParams().id;
+  const [description, setDescription] = useState<string>("");
+
+  const [scenarioID, setScenarioID] = useState<number>(-1);
   const [sites, setSites] = useState<Site[]>([
     // {
     //   id: "1",
@@ -58,33 +69,89 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     // },
   ]);
 
+  const loadScenario = async () => {
+    try {
+      const { scenario, scenarioSats, scenarioSites } = await (
+        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}`)
+      ).json();
+
+      console.log(scenario, scenarioID);
+      if (!scenario) throw new Error("Not found");
+      setTitle(scenario.title);
+      setDescription(scenario.description);
+      setSatellites(scenarioSats);
+      setSites(scenarioSites);
+    } catch (err: any) {
+      setScenarioID(-1);
+    }
+  };
+
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      setUsername(user.username);
-      setIsLoggedIn(true);
+      setUser(user);
     }
-  }, []);
+    console.log(scenarioID);
+    loadScenario();
+  }, [scenarioID]);
 
   useEffect(() => {
-    // Update record when title changes
+    const updateTitle = async () => {
+      // Update record when title changes
+      try {
+        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}/title`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: title, owner_id: user?.id }),
+        });
+      } catch (e: any) {
+        console.error(e);
+      }
+    };
+    updateTitle();
   }, [title]);
+
+  useEffect(() => {
+    const updateDescription = async () => {
+      // Update record when title changes
+      try {
+        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}/description`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            description: description,
+            owner_id: user?.id,
+          }),
+        });
+      } catch (e: any) {
+        console.error(e);
+      }
+    };
+    updateDescription();
+  }, [description]);
 
   return (
     <AppSessionContext.Provider
       {...props}
       value={{
-        username: username,
-        setUsername: setUsername,
+        user: user,
+        setUser: setUser,
         isLoggedIn: isLoggedIn,
-        setIsLoggedIn: setIsLoggedIn,
         satellites: satellites,
         setSatellites: setSatellites,
         sites: sites,
         setSites: setSites,
         title: title,
         setTitle: setTitle,
+        scenarioID: scenarioID,
+        setScenarioID: setScenarioID,
+        setDescription: setDescription,
+        description: description,
       }}
     >
       {children}

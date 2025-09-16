@@ -27,27 +27,23 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const { satellites, setSatellites, setSites, sites } = useAppSession();
+  const {
+    satellites,
+    setSatellites,
+    setSites,
+    sites,
+    setScenarioID,
+    scenarioID,
+  } = useAppSession();
   const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
   const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
-  const loadScenario = async () => {
-    try {
-      const { scenario, scenarioSats, scenarioSites } = await (
-        await fetch(`${LOCALHOST_URL}/${id}`)
-      ).json();
-
-      setSatellites(scenarioSats);
-      setSites(scenarioSites);
-    } catch (err: any) {}
-  };
-
   useEffect(() => {
-    loadScenario();
-  }, []);
+    if (scenarioID === -1) navigate("/ScenarioNotFound");
+  }, [scenarioID]);
 
   useEffect(() => {
     satellites?.map(async (sat, index) => {
@@ -68,7 +64,6 @@ export function Scenario() {
         });
     });
   }, [satellites]);
-
 
   useEffect(() => {
     setSiteCzmlArray(null);
@@ -100,7 +95,7 @@ export function Scenario() {
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
         {satellites.map((item, index) => {
-          return (<CzmlDataSource data={item.CZML} />)
+          return <CzmlDataSource key={index} data={item.CZML} />;
         })}
         {siteCzmlArray}
       </Viewer>

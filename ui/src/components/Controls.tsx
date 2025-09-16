@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { AddEntityButton } from "./AddEntityButton";
 import { ManageSatellitesButton } from "./ManageSatellitesButton";
 import { ScenarioTitleModal } from "./ScenarioTitleModal";
+import { ScenarioDetailsModal } from "./ScenarioDetailsModal";
 
 export const Controls = () => {
   // const [stationName, setStationName] = useState<string>("");
@@ -14,6 +15,8 @@ export const Controls = () => {
   // const [tleLine2, settleLine2] = useState<string>("");
 
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   // const onSatelliteAdd = async () => {
   //   const payload = {
@@ -78,6 +81,10 @@ export const Controls = () => {
   //       }
   //     });
   // };
+
+  if (location.pathname.split("/")[1] !== "scenario") {
+    return;
+  }
 
   return (
     <>
@@ -187,6 +194,10 @@ export const Controls = () => {
               </Button>
             )}
           </div> */}
+      <div className="absolute top-2 left-0 right-0 gap-2 z-1 opacity-75 flex items-center justify-center pointer-events-none">
+        <ScenarioTitleModal />
+        <ScenarioDetailsModal />
+      </div>
 
       <AddEntityButton className="absolute z-10 top-1/3 flex flex-col opacity-75 p-4" />
       <ManageSatellitesButton className="absolute z-10 top-2/5 flex flex-col opacity-75 p-4" />

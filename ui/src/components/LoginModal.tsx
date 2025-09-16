@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 import { useAppSession } from "./AppSessionProvider";
+import type { User } from "@/types";
 
 const PROXIED_URL = "/api/user_table";
 const LOCALHOST_URL = "http://localhost:8080/api/user_table";
@@ -21,7 +22,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { setIsLoggedIn } = useAppSession();
+  const { setUser } = useAppSession();
 
   const modalRef = useRef(null);
 
@@ -51,15 +52,16 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
             },
             body: payload,
           });
+          const body = await res.json();
 
           if (!res.ok) {
-            const body = await res.json();
             throw new Error(body.error);
           }
 
-          localStorage.setItem("user", JSON.stringify({ username }));
-          setUsername(username);
-          setIsLoggedIn(true);
+          const id: number = body.id;
+          const user = { username: username, id: id };
+          localStorage.setItem("user", JSON.stringify(user));
+          setUser(user);
           closeModal();
         } catch (err: any) {
           setError(err?.message);
