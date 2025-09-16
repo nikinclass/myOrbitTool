@@ -3,6 +3,24 @@ const router = Router();
 const knex = require("knex")(
   require("../knexfile.ts")[process.env.NODE_ENV || "development"]
 );
+import satCzmlConverter from "../satCzmlConverter";
+import siteCzmlConverter from "../siteCzmlConverter";
+
+// RETURNS THE CZML FOR A LATLONGALT POSITION
+
+router.post("/siteczml", (req, res) => {
+  var czml = siteCzmlConverter(req.body);
+  res.status(200).json(czml);
+});
+
+// RETURNS THE CZML FOR A OMM SATELLITE
+
+router.post("/satczml", (req, res) => {
+  var sat = req.body
+  console.log(sat)
+  var czml = satCzmlConverter(sat);
+  res.status(200).json(czml);
+});
 
 // GET api/satellites
 router.get("/", async (req, res) => {

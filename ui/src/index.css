@@ -148,6 +148,12 @@ body,
   }
 }
 
+.cesium-sceneModePicker-dropDown-icon {
+  right: 40px;
+  left: auto;
+  margin-top: 6px;
+}
+
 .cesium-baseLayerPicker-dropDown {
   right: 40px;
   left: auto;
