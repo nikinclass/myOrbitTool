@@ -31,7 +31,7 @@ export function ManageSatellitesTable() {
     <>
       {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} />}
       {!selectedSatellite && (
-        <Table>
+        <Table className="w-full bg-secondary text-secondary-foreground opacity-75">
           <TableCaption>A list of all satellites in this scenario</TableCaption>
           <TableHeader>
             <TableRow>
@@ -56,11 +56,8 @@ export function ManageSatellitesTable() {
           <TableBody>
             {scenario?.satellites.map((sat: Satellite, index: number) => (
               <TableRow
-                className="cursor-pointer select-none"
+                className="cursor-pointer select-none hover:bg-accent-foreground/10 hover:text-accent-foreground dark:hover:bg-card"
                 key={index}
-                onClick={() => {
-                  setSelectedSatellite(sat);
-                }}
               >
                 <TableCell className="font-medium">
                   {
@@ -89,7 +86,11 @@ export function ManageSatellitesTable() {
                   }
                 </TableCell>
                 <TableCell>
-                  <MoreHorizontal />
+                  <MoreHorizontal
+                    onClick={() => {
+                      setSelectedSatellite(sat);
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -97,6 +98,5 @@ export function ManageSatellitesTable() {
         </Table>
       )}
     </>
-
   );
 }

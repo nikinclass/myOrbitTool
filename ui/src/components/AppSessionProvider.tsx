@@ -182,9 +182,49 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
 
-  const toggleVisibility = useCallback(async (s: Satellite[]) => {}, []);
+  const toggleVisibility = useCallback(
+    async (s: Satellite[]) => {
+      if (!scenario) return;
+
+      const updated = await Promise.all(
+        scenario.satellites.map(async (sat: Satellite) => {
+          if (s.some((item) => item.id === sat.id)) {
+            const { CZML, ...noCZML } = sat;
+            const converted = await convertToCZML({ ...noCZML, CZML: {} });
+
+            if (!converted) return sat;
+
+            sat.CZML = converted;
+            return { ...sat, VISIBLE: !sat.VISIBLE };
+          }
+
+          return sat;
+        })
+      );
+
+      setScenario({
+        ...scenario,
+        satellites: updated,
+      });
+    },
+    [scenario]
+  );
 
   const colorSatellite = useCallback(async () => {}, []);
+
+  const convertToCZML = async (s: Satellite) => {
+    const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(s),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    return <CzmlDataSource key={data.id} data={data} show={data.VISIBLE} />;
+  };
 
   const addSatellite = useCallback(
     async (s: Satellite) => {
