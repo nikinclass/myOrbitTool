@@ -22,7 +22,9 @@ export function AddEntityButton({ className }: { className: string }) {
           </TooltipTrigger>
           <TooltipContent side="top">
             {isLoggedIn && <p>Add an entity to the scene!</p>}
-            {!isLoggedIn && <p>Please log in to add to the scene!</p>}
+            {!isLoggedIn && (
+              <p>You must own this scenario to make edits/additions</p>
+            )}
           </TooltipContent>
         </Tooltip>
         <PopoverContent

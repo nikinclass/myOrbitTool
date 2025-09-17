@@ -4,10 +4,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
-  type Dispatch,
-  type SetStateAction,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -31,6 +28,10 @@ export type AppState = {
   setTitle: (title: string) => Promise<void>;
   setDescription: (description: string) => Promise<void>;
   createScenario: () => Promise<void>;
+  colorSatellite: (s: Satellite) => Promise<void>;
+  toggleVisibility: (s: Satellite[]) => Promise<void>;
+  addSatellite: (s: Satellite) => Promise<void>;
+  removeSatellite: (s: Satellite) => Promise<void>;
 };
 
 type AppProviderProps = {
@@ -113,7 +114,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ description: description }),
+        body: JSON.stringify({ description: description, my_id: user?.id }),
       });
       setScenario({ ...scenario, description: description });
     } catch (e: any) {}
@@ -144,6 +145,23 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
+
+  const toggleVisibility = useCallback(async (s: Satellite[]) => {}, []);
+
+  const colorSatellite = useCallback(async () => {}, []);
+
+  const addSatellite = useCallback(async (s: Satellite) => {
+    if (!scenario) return;
+    let sats = scenario.satellites.slice();
+    sats.push(s);
+    setScenario({ ...scenario, satellites: sats });
+  }, []);
+
+  useEffect(() => {
+    console.log(scenario);
+  }, [scenario]);
+
+  const removeSatellite = useCallback(async (s: Satellite) => {}, []);
 
   const state: AppState = {
     user,
@@ -184,6 +202,10 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     setTitle,
     setDescription,
     createScenario,
+    toggleVisibility,
+    colorSatellite,
+    addSatellite,
+    removeSatellite,
   };
 
   return (

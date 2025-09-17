@@ -38,25 +38,27 @@ export function Scenario() {
   //   if (scenarioID === -1) navigate("/ScenarioNotFound");
   // }, [scenarioID]);
 
-  // useEffect(() => {
-  //   satellites?.map(async (sat, index) => {
-  //     await fetch(`${PROXIED_URL}/satczml`, {
-  //       method: "POST",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(sat),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         setSatCzmlArray([
-  //           ...satCzmlArray,
-  //           <CzmlDataSource key={data.id} data={data} />,
-  //         ]);
-  //       });
-  //   });
-  // }, [satellites]);
+  useEffect(() => {
+    if (!scenario) return;
+    console.log("Converting satellites");
+    scenario.satellites.forEach(async (sat, index) => {
+      const res = await fetch(`${PROXIED_URL}/satczml`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sat),
+      });
+      const data = await res.json();
+
+      await setSatCzmlArray([
+        ...satCzmlArray,
+        <CzmlDataSource key={data.id} data={data} show={data} />,
+      ]);
+      console.log("Finished converting");
+    });
+  }, [scenario, scenario?.satellites]);
 
   // useEffect(() => {
   //   setSiteCzmlArray(null);
@@ -84,12 +86,15 @@ export function Scenario() {
   //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
   // ];
 
+  if (!scenario) return <></>;
+
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {/* {satellites.map((item, index) => {
+        {/* {satCzmlArray.map((item, index) => {
           return <CzmlDataSource key={index} data={item.CZML} />;
         })} */}
+        {satCzmlArray}
         {siteCzmlArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}

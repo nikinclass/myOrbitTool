@@ -4,20 +4,18 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Button } from "./ui/button";
-import { useRef, useState } from "react";
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 
 export function ManageSatellitesTable() {
-  const { satellites, setSatellites } = useAppSession();
+  const { scenario, toggleVisibility, removeSatellite, colorSatellite } =
+    useAppSession();
 
-  const someSatsVisible = satellites.some((item) => item.VISIBLE);
+  const someSatsVisible = scenario?.satellites.some((item) => item.VISIBLE);
 
   return (
     <Table>
@@ -28,12 +26,7 @@ export function ManageSatellitesTable() {
             <button
               className="cursor-pointer hover:bg-none flex justify-center items-center text-center"
               onClick={() => {
-                setSatellites(
-                  satellites.map((originalItem) => ({
-                    ...originalItem,
-                    visible: !someSatsVisible,
-                  }))
-                );
+                if (scenario?.satellites) toggleVisibility(scenario.satellites);
               }}
             >
               {someSatsVisible && <Eye size={20} />}
@@ -47,34 +40,23 @@ export function ManageSatellitesTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {satellites.map((record: Satellite, index: number) => (
+        {scenario?.satellites.map((sat: Satellite, index: number) => (
           <TableRow className="cursor-pointer select-none" key={index}>
             <TableCell className="font-medium">
               {
                 <button
                   className="cursor-pointer hover:bg-none flex justify-center items-center"
                   onClick={() => {
-                    const newRecord: Satellite = {
-                      ...record,
-                      VISIBLE: !record.VISIBLE,
-                    };
-
-                    setSatellites(
-                      satellites.map((originalItem) =>
-                        originalItem.NORAD_CAT_ID === record.NORAD_CAT_ID
-                          ? newRecord
-                          : originalItem
-                      )
-                    );
+                    toggleVisibility([sat]);
                   }}
                 >
-                  {record.VISIBLE && <Eye size={20} />}
-                  {!record.VISIBLE && <EyeClosed size={20} />}
+                  {sat.VISIBLE && <Eye size={20} />}
+                  {!sat.VISIBLE && <EyeClosed size={20} />}
                 </button>
               }
             </TableCell>
-            <TableCell>{record.NORAD_CAT_ID}</TableCell>
-            <TableCell>{record.OBJECT_NAME}</TableCell>
+            <TableCell>{sat.NORAD_CAT_ID}</TableCell>
+            <TableCell>{sat.OBJECT_NAME}</TableCell>
             <TableCell className="text-right">
               {
                 <input

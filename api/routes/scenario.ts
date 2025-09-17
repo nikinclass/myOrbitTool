@@ -102,7 +102,7 @@ router.patch("/:id/title", async (req: Request, res: Response) => {
 
 router.patch("/:id/description", async (req: Request, res: Response) => {
   try {
-    const { owner_id, ...payload } = req.body;
+    const { my_id, ...payload } = req.body;
 
     // Get owner of scenario
     const scenario = await knex("scenarios")
@@ -110,7 +110,7 @@ router.patch("/:id/description", async (req: Request, res: Response) => {
       .where({ id: req.params.id })
       .first();
 
-    if (!owner_id || scenario.owner_id !== owner_id) {
+    if (!my_id || scenario.owner_id !== my_id) {
       return res.send(401);
     }
 
