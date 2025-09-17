@@ -27,64 +27,57 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const {
-    satellites,
-    setSatellites,
-    setSites,
-    sites,
-    setScenarioID,
-    scenarioID,
-  } = useAppSession();
+  const { scenario } = useAppSession();
   const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
   const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
-  useEffect(() => {
-    if (scenarioID === -1) navigate("/ScenarioNotFound");
-  }, [scenarioID]);
+  // useEffect(() => {
+  //   if (scenarioID === -1) navigate("/ScenarioNotFound");
+  // }, [scenarioID]);
 
-  useEffect(() => {
-    satellites?.map(async (sat, index) => {
-      await fetch(`${PROXIED_URL}/satczml`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sat),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setSatCzmlArray([
-            ...satCzmlArray,
-            <CzmlDataSource key={data.id} data={data} />,
-          ]);
-        });
-    });
-  }, [satellites]);
+  // useEffect(() => {
+  //   satellites?.map(async (sat, index) => {
+  //     await fetch(`${PROXIED_URL}/satczml`, {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(sat),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setSatCzmlArray([
+  //           ...satCzmlArray,
+  //           <CzmlDataSource key={data.id} data={data} />,
+  //         ]);
+  //       });
+  //   });
+  // }, [satellites]);
 
-  useEffect(() => {
-    setSiteCzmlArray(null);
-    sites.map((site, index) => {
-      fetch(`${PROXIED_URL}/siteczml`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(site),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          site.CZML = data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-  }, [sites]);
+  // useEffect(() => {
+  //   setSiteCzmlArray(null);
+  //   sites.map((site, index) => {
+  //     fetch(`${PROXIED_URL}/siteczml`, {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(site),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         site.CZML = data;
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   });
+  // }, [sites]);
 
   // var testData = [
   //   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
@@ -94,9 +87,9 @@ export function Scenario() {
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {satellites.map((item, index) => {
+        {/* {satellites.map((item, index) => {
           return <CzmlDataSource key={index} data={item.CZML} />;
-        })}
+        })} */}
         {siteCzmlArray}
       </Viewer>
       {/*<div className="flex-1 h-full bg-black w-full"></div>*/}

@@ -1,158 +1,193 @@
-import type { Satellite, Site, User } from "@/types";
+import type { Satellite, Scenario, Site, User } from "@/types";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction,
 } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PROXIED_URL = "/api";
 const LOCALHOST_URL = "http://localhost:8080/api";
 
 export type AppState = {
-  user: User | undefined;
-  setUser: Dispatch<SetStateAction<User | undefined>>;
+  // Authentication
+  user: User | null;
+  login: (username: string, password: string) => void;
+  logout: () => void;
   isLoggedIn: boolean;
-  satellites: Satellite[];
-  setSatellites: Dispatch<SetStateAction<Satellite[]>>;
-  sites: Site[];
-  setSites: Dispatch<SetStateAction<Site[]>>;
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-  scenarioID: number;
-  setScenarioID: Dispatch<SetStateAction<number>>;
-  description: string;
-  setDescription: Dispatch<SetStateAction<string>>;
-};
 
-const initialState: AppState = {
-  user: undefined,
-  setUser: () => null,
-  isLoggedIn: false,
-  satellites: [],
-  setSatellites: () => null,
-  sites: [],
-  setSites: () => null,
-  title: "Scenario",
-  setTitle: () => null,
-  scenarioID: 0,
-  setScenarioID: () => null,
-  description: "",
-  setDescription: () => null,
+  // Scenario
+  scenario: Scenario | null;
+  isLoading: boolean;
+  error: string | null;
+  canEdit: boolean;
+
+  // Scenario Actions
+  setTitle: (title: string) => Promise<void>;
+  setDescription: (description: string) => Promise<void>;
+  createScenario: () => Promise<void>;
 };
 
 type AppProviderProps = {
   children: React.ReactNode;
 };
 
-const AppSessionContext = createContext<AppState>(initialState);
+const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  const [user, setUser] = useState<User | undefined>();
-  const isLoggedIn = !!user;
-  const [satellites, setSatellites] = useState<Satellite[]>([]);
-  const [title, setTitle] = useState<string>("Scenario");
-  const [description, setDescription] = useState<string>("");
+  const { id: scenarioID } = useParams();
+  const navigate = useNavigate();
+  let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  if (JSON.stringify(storedUser) === "{}") storedUser = null;
 
-  const [scenarioID, setScenarioID] = useState<number>(-1);
-  const [sites, setSites] = useState<Site[]>([
-    // {
-    //   id: "1",
-    //   OBJECT_NAME: "test site",
-    //   LAT: 0,
-    //   LONG: 0,
-    //   ALT: 0,
-    //   COLOR: [255, 0, 255, 255],
-    // },
-  ]);
+  const [user, setUser] = useState<User | null>((storedUser as User) || null);
 
-  const loadScenario = async () => {
+  const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isLoggedIn = user !== null;
+  const isOwner = (ownerId?: number | null) =>
+    ownerId != null && user?.id === ownerId;
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+
+  const fetchScenario = useCallback(async () => {
+    if (!scenarioID) {
+      setScenario(null);
+      setError(null);
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
     try {
-      const { scenario, scenarioSats, scenarioSites } = await (
+      const data = await (
         await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}`)
       ).json();
 
-      console.log(scenario, scenarioID);
-      if (!scenario) throw new Error("Not found");
-      setTitle(scenario.title);
-      setDescription(scenario.description);
-      setSatellites(scenarioSats);
-      setSites(scenarioSites);
-    } catch (err: any) {
-      setScenarioID(-1);
+      if (!data.id) throw new Error("Scenario not found");
+
+      setScenario({ ...data });
+      if (isOwner(data.owner_id)) setCanEdit(true);
+      else setCanEdit(false);
+    } catch (e: any) {
+      setError(e?.message);
+      setScenario(null);
+      navigate("ScenarioNotFound");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, scenarioID]);
+
+  useEffect(() => {
+    fetchScenario();
+  }, [fetchScenario]);
+
+  const setTitle = async (title: string) => {
+    if (!scenario || !canEdit) return;
+    try {
+      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/title`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: title, my_id: user?.id }),
+      });
+      setScenario({ ...scenario, title: title });
+    } catch (e: any) {
+      console.log(e);
     }
   };
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setUser(user);
+  const setDescription = async (description: string) => {
+    if (!scenario || !canEdit) return;
+    try {
+      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/description`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ description: description }),
+      });
+      setScenario({ ...scenario, description: description });
+    } catch (e: any) {}
+  };
+
+  const createScenario = useCallback(async () => {
+    if (!isLoggedIn || !user) {
+      return;
     }
-    console.log(scenarioID);
-    loadScenario();
-  }, [scenarioID]);
+    const response = await fetch(`${LOCALHOST_URL}/scenario`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ owner_id: user?.id }),
+    });
+    const json = await response.json();
+    await setTitle(`Scenario ${json.id}`);
+    setScenario({
+      ...scenario,
+      owner: user,
+      description: "",
+      title: "",
+      id: json.id,
+      satellites: [],
+      sites: [],
+    });
+    navigate(`/scenario/${json.id}`);
+  }, [scenario, isLoggedIn, user]);
 
-  useEffect(() => {
-    const updateTitle = async () => {
-      // Update record when title changes
-      try {
-        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}/title`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: title, owner_id: user?.id }),
-        });
-      } catch (e: any) {
-        console.error(e);
-      }
-    };
-    updateTitle();
-  }, [title]);
+  const state: AppState = {
+    user,
+    isLoggedIn: isLoggedIn,
+    login: async (username, password) => {
+      let payload = JSON.stringify({
+        username: username,
+        password: password,
+      });
 
-  useEffect(() => {
-    const updateDescription = async () => {
-      // Update record when title changes
-      try {
-        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}/description`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            description: description,
-            owner_id: user?.id,
-          }),
-        });
-      } catch (e: any) {
-        console.error(e);
+      const res = await fetch(`${PROXIED_URL}/user_table/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payload,
+      });
+      const body = await res.json();
+
+      if (!res.ok) {
+        throw new Error("Couldn't log in");
       }
-    };
-    updateDescription();
-  }, [description]);
+
+      const id: number = body.id;
+      const user = { username: username, id: id };
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+    },
+    logout: () => {
+      setUser(null);
+      localStorage.removeItem("user");
+    },
+    scenario,
+    isLoading,
+    error,
+    canEdit,
+
+    setTitle,
+    setDescription,
+    createScenario,
+  };
 
   return (
-    <AppSessionContext.Provider
-      {...props}
-      value={{
-        user: user,
-        setUser: setUser,
-        isLoggedIn: isLoggedIn,
-        satellites: satellites,
-        setSatellites: setSatellites,
-        sites: sites,
-        setSites: setSites,
-        title: title,
-        setTitle: setTitle,
-        scenarioID: scenarioID,
-        setScenarioID: setScenarioID,
-        setDescription: setDescription,
-        description: description,
-      }}
-    >
+    <AppSessionContext.Provider {...props} value={state}>
       {children}
     </AppSessionContext.Provider>
   );
@@ -161,7 +196,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 export const useAppSession = () => {
   const context = useContext(AppSessionContext);
 
-  if (context === undefined)
+  if (context === null)
     throw new Error("useAppSession must be used within a AppSessionProvider");
 
   return context;

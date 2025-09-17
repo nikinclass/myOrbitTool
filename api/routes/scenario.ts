@@ -57,10 +57,18 @@ router.get("/:id", async (req: Request, res: Response) => {
       })
       .where({ scenario_id: req.params.id });
 
+    console.log(scenario_data);
+
+    // Get owner
+    const { password, ...user } = await knex("user_table")
+      .select("*")
+      .where({ id: scenario_data.owner_id });
+
     res.json({
-      scenario: scenario_data,
-      scenarioSats: satellites,
-      scenarioSites: sites,
+      ...scenario_data,
+      owner: user,
+      satellites: satellites,
+      sites: sites,
     });
   } catch (error: unknown) {
     console.error(error);
@@ -70,7 +78,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 router.patch("/:id/title", async (req: Request, res: Response) => {
   try {
-    const { owner_id, ...payload } = req.body;
+    const { my_id, ...payload } = req.body;
 
     // Get owner of scenario
     const scenario = await knex("scenarios")
@@ -78,7 +86,7 @@ router.patch("/:id/title", async (req: Request, res: Response) => {
       .where({ id: req.params.id })
       .first();
 
-    if (!owner_id || scenario.owner_id !== owner_id) {
+    if (!my_id || scenario.owner_id !== my_id) {
       return res.send(401);
     }
 

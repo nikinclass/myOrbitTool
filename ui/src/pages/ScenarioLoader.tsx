@@ -2,32 +2,19 @@ import { useAppSession } from "@/components/AppSessionProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function ScenarioLoader() {
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useAppSession();
-  const createScenario = async () => {
-    const response = await fetch(LOCALHOST_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ owner_id: user?.id }),
-    });
-    const json = await response.json();
-    navigate(`/scenario/${json.id}`);
-  };
+  const { isLoggedIn, createScenario, scenario } = useAppSession();
 
   const [scenarioID, setScenarioID] = useState<string>("");
 
   useEffect(() => {
-    if (isLoggedIn) createScenario();
-    else console.log(user);
-  }, [user]);
+    createScenario();
+  }, [isLoggedIn]);
 
   return (
     <div className="self-center items-center text-center m-auto">

@@ -9,15 +9,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Textarea } from "./ui/textarea";
 
 export function ScenarioDetailsModal() {
-  const { isLoggedIn } = useAppSession();
   const [show, setShow] = useState(false);
   const [someDetail, setSomeDetail] = useState("");
 
-  const { setDescription, description } = useAppSession();
+  const { scenario, isLoading, error, canEdit, setDescription } =
+    useAppSession();
+
+  if (isLoading || error || !scenario) {
+    return <></>;
+  }
 
   return (
     <>
-      {!isLoggedIn && (
+      {!canEdit && (
         <Tooltip open={show} onOpenChange={setShow}>
           <TooltipTrigger
             asChild
@@ -32,8 +36,10 @@ export function ScenarioDetailsModal() {
             side="bottom"
             align="center"
           >
-            {description ? (
-              <p className="text-wrap trim text-left w-full">{description}</p>
+            {scenario.description ? (
+              <p className="text-wrap trim text-left w-full">
+                {scenario.description}
+              </p>
             ) : (
               <p className="text-wrap trim text-left w-full">
                 A scenario created by myOrbitTool
@@ -42,7 +48,7 @@ export function ScenarioDetailsModal() {
           </TooltipContent>
         </Tooltip>
       )}
-      {isLoggedIn && (
+      {canEdit && (
         <Popover open={show} onOpenChange={setShow}>
           <PopoverTrigger
             asChild
@@ -64,7 +70,7 @@ export function ScenarioDetailsModal() {
                   onFocus={(e) => {
                     e.target.select();
                   }}
-                  defaultValue={description}
+                  defaultValue={scenario.description}
                   onChange={(e) => setSomeDetail(e.target.value)}
                   placeholder="Type scenario description here."
                 />

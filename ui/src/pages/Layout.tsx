@@ -5,9 +5,6 @@ import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 
 export function Layout() {
-
-  const {user} = useAppSession()
-
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex flex-col h-full relative">

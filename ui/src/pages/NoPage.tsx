@@ -8,7 +8,7 @@ export function NoPage() {
   const [scenarioID, setScenarioID] = useState<string>("");
   const navigate = useNavigate();
 
-  const { isLoggedIn, setScenarioID: setSessionScenario } = useAppSession();
+  const { isLoggedIn } = useAppSession();
 
   return (
     <>
@@ -56,7 +56,6 @@ export function NoPage() {
                   const num = Number.parseInt(scenarioID);
                   if (Number.isNaN(num)) navigate(`/scenario/-1 `);
                   else {
-                    setSessionScenario(num);
                     navigate(`/scenario/${num}`);
                   }
                 }
@@ -68,7 +67,6 @@ export function NoPage() {
                 const num = Number.parseInt(scenarioID);
                 if (Number.isNaN(num)) navigate(`/scenario/-1 `);
                 else {
-                  setSessionScenario(num);
                   navigate(`/scenario/${num}`);
                 }
               }}

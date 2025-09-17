@@ -36,3 +36,12 @@ export type User = {
   username: string;
   id: number;
 };
+
+export type Scenario = {
+  id: number;
+  title: string;
+  description: string;
+  owner: User;
+  satellites: Satellite[];
+  sites: Site[];
+};

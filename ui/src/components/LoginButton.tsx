@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { LoginModal } from "./LoginModal";
-import { useNavigate } from "react-router-dom";
 import { useAppSession } from "./AppSessionProvider";
 
 export function LoginButton() {
   const [showLoginModal, setLoginModal] = useState(false);
-  const { isLoggedIn, setUser, user } = useAppSession();
+  const { isLoggedIn, logout } = useAppSession();
 
-  const navigate = useNavigate();
   if (!isLoggedIn) {
     return (
       <>
@@ -39,8 +37,7 @@ export function LoginButton() {
               });
 
               if (res.ok) {
-                localStorage.removeItem("user");
-                setUser(undefined);
+                logout();
               } else {
                 console.log("Logout failed.", res.status);
               }
