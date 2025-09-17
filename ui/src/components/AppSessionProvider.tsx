@@ -86,23 +86,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       if (!data.id) throw new Error("Scenario not found");
 
-      const convertToCZML = async (s: Satellite) => {
-        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        return <CzmlDataSource key={data.id} data={data} show={data} />;
-      };
-
       const convertedSatellites = await Promise.all(
         data.satellites.map(async (sat: Satellite) => {
-          const converted = convertToCZML(sat);
+          const converted = await convertToCZML(sat);
           if (!converted) return sat;
           return { ...sat, CZML: converted };
         })
@@ -189,13 +175,20 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       const updated = await Promise.all(
         scenario.satellites.map(async (sat: Satellite) => {
           if (s.some((item) => item.id === sat.id)) {
-            const { CZML, ...noCZML } = sat;
-            const converted = await convertToCZML({ ...noCZML, CZML: {} });
+            return {
+              ...sat,
+              CZML: {
+                ...sat.CZML,
+                props: { ...sat.CZML.props, show: !sat.CZML.props.show },
+              },
+            };
+            // const { CZML, ...noCZML } = sat;
+            // const converted = await convertToCZML({ ...noCZML, CZML: {} });
 
-            if (!converted) return sat;
+            // if (!converted) return sat;
 
-            sat.CZML = converted;
-            return { ...sat, VISIBLE: !sat.VISIBLE };
+            // sat.CZML = converted;
+            // return { ...sat, VISIBLE: !sat.VISIBLE };
           }
 
           return sat;
@@ -223,7 +216,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return <CzmlDataSource key={data.id} data={data} show={data.VISIBLE} />;
+    return (
+      <CzmlDataSource key={data.id} data={data} show={data.VISIBLE ?? true} />
+    );
   };
 
   const addSatellite = useCallback(
@@ -231,21 +226,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       if (!scenario) return;
       let sats = scenario.satellites.slice();
 
-      const convertToCZML = async () => {
-        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        return <CzmlDataSource key={data.id} data={data} show={data} />;
-      };
-
-      const converted = await convertToCZML();
+      const converted = await convertToCZML(s);
 
       if (!converted) return;
 

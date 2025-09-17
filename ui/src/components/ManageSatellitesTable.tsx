@@ -25,7 +25,9 @@ export function ManageSatellitesTable() {
     console.log(selectedSatellite);
   }, [selectedSatellite]);
 
-  const someSatsVisible = scenario?.satellites.some((item) => item.VISIBLE);
+  const someSatsVisible = scenario?.satellites.some(
+    (item) => item.CZML.props.show
+  );
 
   return (
     <>
@@ -67,8 +69,8 @@ export function ManageSatellitesTable() {
                         toggleVisibility([sat]);
                       }}
                     >
-                      {sat.VISIBLE && <Eye size={20} />}
-                      {!sat.VISIBLE && <EyeClosed size={20} />}
+                      {sat.CZML.props.show && <Eye size={20} />}
+                      {!sat.CZML.props.show && <EyeClosed size={20} />}
                     </button>
                   }
                 </TableCell>
