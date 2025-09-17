@@ -14,12 +14,9 @@ import { useEffect, useState } from "react";
 import { ManualSiteForm } from "./ManualSiteForm";
 
 export function ManageSitesTable() {
-  const { scenario, removeSatellite, colorSatellite } =
-    useAppSession();
+  const { scenario, removeSatellite, colorSatellite } = useAppSession();
 
-  const [selectedSite, setSelectedSite] = useState<Site | null>(
-    null
-  );
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
   useEffect(() => {
     console.log(selectedSite);
@@ -42,9 +39,7 @@ export function ManageSitesTable() {
           </TableHeader>
           <TableBody>
             {scenario?.sites.map((site: Site, index: number) => (
-              <TableRow
-                className="cursor-pointer select-none"
-              >
+              <TableRow key={index} className="cursor-pointer select-none">
                 <TableCell>{site.name}</TableCell>
                 <TableCell>{site.latitude}</TableCell>
                 <TableCell>{site.longitude}</TableCell>
@@ -60,9 +55,12 @@ export function ManageSitesTable() {
                   }
                 </TableCell>
                 <TableCell>
-                  <MoreHorizontal key={index} onClick={() => {
-                  setSelectedSite(site);
-                }} />
+                  <MoreHorizontal
+                    key={index}
+                    onClick={() => {
+                      setSelectedSite(site);
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -70,6 +68,5 @@ export function ManageSitesTable() {
         </Table>
       )}
     </>
-
   );
 }

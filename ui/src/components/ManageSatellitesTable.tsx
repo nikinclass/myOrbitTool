@@ -1,8 +1,7 @@
-import { Eye, EyeClosed, MoreHorizontal, SatelliteIcon } from "lucide-react";
+import { Eye, EyeClosed, MoreHorizontal } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,7 +11,6 @@ import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 import { useEffect, useState } from "react";
 import { ManualSatForm } from "./ManualSatelliteForm";
-import { ScrollArea } from "./ui/scroll-area";
 
 export function ManageSatellitesTable() {
   const {
@@ -39,7 +37,12 @@ export function ManageSatellitesTable() {
 
   return (
     <>
-      {selectedSatellite && <ManualSatForm satellite={selectedSatellite} closeModal={ () => setSelectedSatellite(null)} />}
+      {selectedSatellite && (
+        <ManualSatForm
+          satellite={selectedSatellite}
+          closeModal={() => setSelectedSatellite(null)}
+        />
+      )}
       {!selectedSatellite && (
         <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
           <TableHeader>

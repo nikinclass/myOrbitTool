@@ -31,7 +31,7 @@ export type AppState = {
   setDescription: (description: string) => Promise<void>;
   createScenario: () => Promise<void>;
   colorSatellite: (s: Satellite) => Promise<void>;
-  // toggleVisibility: (s: Satellite[]) => Promise<void>;
+  toggleVisibility: (s: Satellite[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
   addSite: (s: Site) => Promise<void>;
@@ -45,7 +45,6 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  
   // useEffect(() => {
   //   if (satellites[0]) {
   //     setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
@@ -92,13 +91,25 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       const convertedSatellites = await Promise.all(
         data.satellites.map(async (sat: Satellite) => {
-          const converted = await convertToCZML(sat);
+          const converted = await convertSatelliteToCZML(sat);
           if (!converted) return sat;
           return { ...sat, CZML: converted };
         })
       );
 
-      setScenario({ ...data, satellites: convertedSatellites });
+      const convertedSites = await Promise.all(
+        data.sites.map(async (site: Site) => {
+          const converted = await convertSiteToCZML(site);
+          if (!converted) return site;
+          return { ...site, CZML: converted };
+        })
+      );
+
+      setScenario({
+        ...data,
+        satellites: convertedSatellites,
+        sites: convertedSites,
+      });
       if (isOwner(data.owner_id)) setCanEdit(true);
       else setCanEdit(false);
     } catch (e: any) {
@@ -172,37 +183,32 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
 
-
   // const toggleVisibility = useCallback(async (s: Satellite[]) => {
   //   s.map((sat, index) => {sat.VISIBLE = !sat.VISIBLE})
   // }, []);
-
-  const colorSatellite = useCallback(async () => {}, []);
-
+  const convertSiteToCZML = async (s: Site) => {
+    const res = await fetch(`${PROXIED_URL}/satellites/siteczml`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(s),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    return <CzmlDataSource key={s.id} data={data} />;
+  };
   const addSite = useCallback(
     async (s: Site) => {
       if (!scenario) return;
       console.log(s);
       let sites = scenario.sites.slice();
 
-      const convertToCZML = async () => {
-        const res = await fetch(`${PROXIED_URL}/satellites/siteczml`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        return data;
-      };
-
-      const converted = await convertToCZML();
+      const converted = await convertSiteToCZML(s);
 
       if (!converted) return;
-      console.log(converted)
+
       s.CZML = converted;
 
       sites.push(s);
@@ -242,7 +248,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
   const colorSatellite = useCallback(async () => {}, []);
 
-  const convertToCZML = async (s: Satellite) => {
+  const convertSatelliteToCZML = async (s: Satellite) => {
     const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
       method: "POST",
       headers: {
@@ -263,7 +269,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       if (!scenario) return;
       let sats = scenario.satellites.slice();
 
-      const converted = await convertToCZML(s);
+      const converted = await convertSatelliteToCZML(s);
 
       if (!converted) return;
 
@@ -346,7 +352,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     setTitle,
     setDescription,
     createScenario,
-    // toggleVisibility,
+    toggleVisibility,
     colorSatellite,
     addSatellite,
     removeSatellite,

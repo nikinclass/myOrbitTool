@@ -10,8 +10,7 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-
-export function ManualSiteForm() {
+export function ManualSiteForm({ site }: { site: Site }) {
   const scenario_id = useParams().id;
 
   const LOCALHOST_URL = "http://localhost:8080/api";
@@ -32,44 +31,36 @@ export function ManualSiteForm() {
 
   const [altitude, setAltitude] = useState<number>(0);
 
-  var site: Site = {
-    id: "0",
-    OBJECT_NAME: "test",
-    LAT: 25,
-    LONG: 25,
-    ALT: 25,
-    COLOR: [255, 255, 0, 255],
-    CZML: [{}, {}],
-  };
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex gap-2 justify-center items-center">
-          <p className="text-left w-full">
-            Create Site
-          </p>
+          <p className="text-left w-full">Create Site</p>
           <Button
-            disabled={!canEdit || !site}
+            disabled={!canEdit}
             className="cursor-pointer"
             onClick={async () => {
               try {
                 // Create record in db
-                const response = await fetch(`${LOCALHOST_URL}/scenario/station`, {
-                  method: "POST",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    name: siteName,
-                    latitude: latitude,
-                    longitude: longitude,
-                    altitude: altitude,
-                    scenario_id: scenario_id,
-                  }),
-                });
+                const response = await fetch(
+                  `${LOCALHOST_URL}/scenario/station`,
+                  {
+                    method: "POST",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      name: siteName,
+                      latitude: latitude,
+                      longitude: longitude,
+                      altitude: altitude,
+                      scenario_id: scenario_id,
+                    }),
+                  }
+                );
                 const fullItem = await response.json();
-                fullItem[0].COLOR = [255, 255, 0, 255]
+                fullItem[0].COLOR = [255, 255, 0, 255];
                 await addSite(fullItem[0]);
                 toast.success("Site added!", {
                   description: `${fullItem.name} at LAT:${fullItem.latitude} LONG:${fullItem.longitude}`,
@@ -78,7 +69,7 @@ export function ManualSiteForm() {
                 console.error(error);
               }
             }}
-          // variant={"destructive"}
+            // variant={"destructive"}
           >
             <Plus className="self-center" size={16} />
           </Button>
@@ -87,11 +78,7 @@ export function ManualSiteForm() {
       <CardContent>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label
-              className="cursor-pointer"
-            >
-              Name
-            </Label>
+            <Label className="cursor-pointer">Name</Label>
             <Input
               type="text"
               defaultValue={latitude}
