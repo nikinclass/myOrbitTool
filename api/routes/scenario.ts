@@ -222,6 +222,7 @@ router.post("/satczml", (req, res) => {
   var sat = req.body;
   // console.log(sat);
   var czml = satCzmlConverter(sat);
+  console.log(czml)
   res.status(200).json(czml);
 });
 

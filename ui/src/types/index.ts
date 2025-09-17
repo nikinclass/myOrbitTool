@@ -19,7 +19,63 @@ export type Satellite = {
   MEAN_MOTION_DDOT: string;
   COLOR: [number, number, number, number]; // DEFAULT TO SOMETHING LIKE [255, 0, 255, 255] but we shoudl give this to the user somehow
   VISIBLE: boolean;
-  CZML: [object, object];
+  CZML: any;
+  // [{
+  //   id: string;
+  //   name: string;
+  //   version: string;
+  //   clock: {
+  //     interval: string;
+  //     multiplier: number;
+  //     range: string;
+  //     step: string;
+  //   }
+  // }, 
+  // {
+  //   id: string;
+  //   name: string;
+  //   availability: string;
+  //   label: {
+  //     fillcolor: {
+  //       rgba: [number, number, number, number]
+  //     }
+  //     font: string;
+  //     horizontalOrigin: string;
+  //     outlineColor: {
+  //       rgba: [number, number, number, number]
+  //     }
+  //     outlineWidth: number;
+  //     pixelOffset: {
+  //       cartestion2: [number, number]
+  //     }
+  //     show: boolean;
+  //     style: string;
+  //     text: string;
+  //     verticalOrigin: string;
+  //   }
+  //   path: {
+  //     show: [
+  //       {
+  //         interval: string;
+  //         boolean: boolean;
+  //       }
+  //     ]
+  //     width: number;
+  //     material: {
+  //       solidColor: {
+  //         color: {
+  //           rgba: [number, number, number, number]
+  //         }
+  //       }
+  //     }
+  //     resolution: number;
+  //   }
+  //   point: {
+  //     color: {
+  //       rgba: [number, number, number, number]
+  //     }
+  //   }
+  // }];
 };
 
 export type Site = {

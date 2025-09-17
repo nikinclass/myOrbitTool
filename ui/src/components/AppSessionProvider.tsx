@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
 
 const PROXIED_URL = "/api";
@@ -17,6 +18,7 @@ export type AppState = {
   login: (username: string, password: string) => void;
   logout: () => void;
   isLoggedIn: boolean;
+
 
   // Scenario
   scenario: Scenario | null;
@@ -41,6 +43,19 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
+/*
+  useEffect(() => {
+    if (satellites[0]) {
+      setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
+        console.log(sat)
+        let tempCZML: any[] = sat.CZML.slice()
+        tempCZML[1].path.material.solidColor.color = sat.COLOR
+        tempCZML[1].point.color = sat.COLOR
+        console.log(tempCZML[1].point.color)
+        return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
+      }))
+    }
+  }, [satellites])*/
   const { id: scenarioID } = useParams();
   const navigate = useNavigate();
   let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
