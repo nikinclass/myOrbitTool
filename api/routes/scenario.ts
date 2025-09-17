@@ -146,7 +146,7 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-// refreshSpaceTrack(myUsername, myPassword);
+refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
