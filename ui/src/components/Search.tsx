@@ -77,9 +77,8 @@ export function Search() {
                       const fullItem = await response.json();
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
-
                       // Create record in db
-                      await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
+                      const response2 = await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",
@@ -90,7 +89,7 @@ export function Search() {
                           scenario_id: scenario_id,
                         }),
                       });
-
+                      const serverItem = await response2.json();
                       // await fetch(`${LOCALHOST_URL}/satellites/satczml`, {
                       //   method: "POST",
                       //   headers: {
@@ -103,7 +102,7 @@ export function Search() {
                       //   .then((data) => {
                       //     fullItem.CZML = data;
                       //   });
-                      await addSatellite(fullItem);
+                      await addSatellite(serverItem);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
                       });

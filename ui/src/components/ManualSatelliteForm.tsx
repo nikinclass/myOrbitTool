@@ -9,9 +9,10 @@ import { Trash2 } from "lucide-react";
 import { useAppSession } from "./AppSessionProvider";
 
 export function ManualFieldForm({
-  satellite,
+  satellite, closeModal
 }: {
   satellite: Satellite | null;
+  closeModal: () => void;
 }) {
   const { removeSatellite, canEdit } = useAppSession();
 
@@ -40,8 +41,8 @@ export function ManualFieldForm({
           <Button
             disabled={!canEdit || !satellite}
             className="cursor-pointer"
-            onClick={() => {
-              if (satellite) removeSatellite(satellite);
+            onClick={ async () => {
+              if (satellite) {await removeSatellite(satellite); closeModal()};
             }}
             variant={"destructive"}
           >

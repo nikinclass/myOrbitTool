@@ -100,3 +100,7 @@ export type Scenario = {
   satellites: Satellite[];
   sites: Site[];
 };
+
+export type satId = {
+  id: number | string;
+}
