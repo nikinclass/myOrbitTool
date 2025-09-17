@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
+import { SceneMode } from "cesium";
 
 const PROXIED_URL = "/api";
 const LOCALHOST_URL = "http://localhost:8080/api";
@@ -33,6 +34,7 @@ export type AppState = {
   toggleVisibility: (s: Satellite[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
+  // deleteSatellite: (s: Satellite) => Promise<void>;
 };
 
 type AppProviderProps = {
@@ -214,6 +216,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     );
   };
 
+
   const addSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
@@ -236,7 +239,26 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     console.log(scenario);
   }, [scenario]);
 
-  const removeSatellite = useCallback(async (s: Satellite) => {}, []);
+
+  const deleteSatellite = useCallback(async (s: Satellite) => {
+    if (!scenario) return;
+    console.log(s.id)
+    await fetch(`${LOCALHOST_URL}/scenario/satellites/${s.id}`, {
+      method: "DELETE",
+    });
+  },[scenario])
+
+  const removeSatellite = useCallback(
+    async (s: Satellite) => {
+      if (!scenario) return;
+    
+      let sats = scenario.satellites.slice();
+      
+      sats.splice(sats.indexOf(s),1);
+
+      setScenario({ ...scenario, satellites: sats });
+      deleteSatellite(s)
+    }, [scenario]);
 
   const state: AppState = {
     user,

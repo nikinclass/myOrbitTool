@@ -39,7 +39,7 @@ export function ManageSatellitesTable() {
 
   return (
     <>
-      {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} />}
+      {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} closeModal={ () => setSelectedSatellite(null)} />}
       {!selectedSatellite && (
         <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
           <TableHeader>
