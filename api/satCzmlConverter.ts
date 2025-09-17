@@ -102,7 +102,6 @@ const satCzmlConverter = (sat: Satellite) => {
       trailIntervalArray.push(currTrail);
     }
   }
-  console.log("checking")
   for (let i = 0; i <= 86400; i++) {
     //iterates every second (86400sec in 1day)
     satrec = json2satrec(sat as OMMJsonObjectV3);
@@ -115,7 +114,6 @@ const satCzmlConverter = (sat: Satellite) => {
 
     res.push(i, positionEci.x, positionEci.y, positionEci.z);
   }
-  console.log("checking again")
   //set initial object start for czml
   let initialCZMLProps = [
     {
@@ -186,7 +184,6 @@ const satCzmlConverter = (sat: Satellite) => {
       },
     },
   ];
-  console.log("checking for final")
   return initialCZMLProps;
 };
 

@@ -4,6 +4,7 @@ import { AddEntityButton } from "./AddEntityButton";
 import { ManageSatellitesButton } from "./ManageSatellitesButton";
 import { ScenarioTitleModal } from "./ScenarioTitleModal";
 import { ScenarioDetailsModal } from "./ScenarioDetailsModal";
+import { ManageSitesButton } from "./ManageSitesButton";
 
 export const Controls = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ export const Controls = () => {
 
       <AddEntityButton className="absolute z-10 top-1/3 flex flex-col opacity-75 p-4" />
       <ManageSatellitesButton className="absolute z-10 top-2/5 flex flex-col opacity-75 p-4" />
+      <ManageSitesButton className="absolute z-10 top-2/4 flex flex-col opacity-75 p-4" />
     </>
   );
 };

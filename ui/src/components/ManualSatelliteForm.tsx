@@ -24,7 +24,7 @@ function semiMajorAxisToMeanMotion(semiMajorAxis: number | undefined){
 
 }
 
-export function ManualFieldForm({
+export function ManualSatForm({
   satellite, closeModal
 }: {
   satellite: Satellite | null;

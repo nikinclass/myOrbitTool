@@ -79,12 +79,12 @@ export type Satellite = {
 
 export type Site = {
   id: string;
-  OBJECT_NAME: string;
-  LAT: number;
-  LONG: number;
-  ALT: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
   COLOR: [number, number, number, number];
-  CZML: [object, object];
+  CZML: any;
 };
 
 export type User = {

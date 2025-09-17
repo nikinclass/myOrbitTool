@@ -92,6 +92,7 @@ export function Search() {
                         })
                       ).json();
 
+
                       fullItem.id = id;
                       await addSatellite(fullItem);
                       toast.success("Satellite added!", {

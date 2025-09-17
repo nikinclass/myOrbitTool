@@ -11,7 +11,7 @@ import {
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 import { useEffect, useState } from "react";
-import { ManualFieldForm } from "./ManualSatelliteForm";
+import { ManualSatForm } from "./ManualSatelliteForm";
 import { ScrollArea } from "./ui/scroll-area";
 
 export function ManageSatellitesTable() {
@@ -39,7 +39,7 @@ export function ManageSatellitesTable() {
 
   return (
     <>
-      {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} closeModal={ () => setSelectedSatellite(null)} />}
+      {selectedSatellite && <ManualSatForm satellite={selectedSatellite} closeModal={ () => setSelectedSatellite(null)} />}
       {!selectedSatellite && (
         <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
           <TableHeader>
