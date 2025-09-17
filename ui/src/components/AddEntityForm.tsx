@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Search } from "./Search";
-import { ManualSiteForm } from "@/components/ManualSiteForm"
+import { ManualSiteForm } from "@/components/ManualSiteForm";
 
 function EntityChoices({
   setFormType,
@@ -75,6 +75,6 @@ export function AddEntityForm() {
   const [formType, setFormType] = useState<FormType | null>(null);
   if (!formType) return <EntityChoices setFormType={setFormType} />;
   if (formType === "live-satellite") return <LiveSatForm />;
-  if (formType === "manual-station") return <ManualSiteForm />;
+  if (formType === "manual-station") return <ManualSiteForm site={null} />;
   return <></>;
 }

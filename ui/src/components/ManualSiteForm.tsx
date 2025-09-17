@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-export function ManualSiteForm({ site }: { site: Site }) {
+export function ManualSiteForm({ site }: { site: Site | null }) {
   const scenario_id = useParams().id;
 
   const LOCALHOST_URL = "http://localhost:8080/api";

@@ -219,28 +219,45 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   );
 
   const toggleVisibility = useCallback(
-    async (s: Satellite[]) => {
+    async (entities: Satellite[] | Site[]) => {
       if (!scenario) return;
 
-      const updated = await Promise.all(
-        scenario.satellites.map(async (sat: Satellite) => {
-          if (s.some((item) => item.id === sat.id)) {
+      const updatedSats = await Promise.all(
+        scenario.satellites.map(async (entity: Satellite) => {
+          if (entities.some((item) => item.id === entity.id)) {
             return {
-              ...sat,
+              ...entity,
               CZML: {
-                ...sat.CZML,
-                props: { ...sat.CZML.props, show: !sat.CZML.props.show },
+                ...entity.CZML,
+                props: { ...entity.CZML.props, show: !entity.CZML.props.show },
               },
             };
           }
 
-          return sat;
+          return entity;
+        })
+      );
+
+      const updatedSites = await Promise.all(
+        scenario.sites.map(async (entity: Site) => {
+          if (entities.some((item) => item.id === entity.id)) {
+            return {
+              ...entity,
+              CZML: {
+                ...entity.CZML,
+                props: { ...entity.CZML.props, show: !entity.CZML.props.show },
+              },
+            };
+          }
+
+          return entity;
         })
       );
 
       setScenario({
         ...scenario,
-        satellites: updated,
+        satellites: updatedSats,
+        sites: updatedSites,
       });
     },
     [scenario]
