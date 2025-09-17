@@ -78,18 +78,21 @@ export function Search() {
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
                       // Create record in db
-                      const response2 = await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
-                        method: "POST",
-                        headers: {
-                          Accept: "application/json",
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          ...fullItem,
-                          scenario_id: scenario_id,
-                        }),
-                      });
-                      const serverItem = await response2.json();
+                      const { id } = await (
+                        await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
+                          method: "POST",
+                          headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            ...fullItem,
+                            scenario_id: scenario_id,
+                          }),
+                        })
+                      ).json();
+
+                      fullItem.id = id;
                       // await fetch(`${LOCALHOST_URL}/satellites/satczml`, {
                       //   method: "POST",
                       //   headers: {

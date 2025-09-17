@@ -222,7 +222,7 @@ router.post("/satczml", (req, res) => {
   var sat = req.body;
   // console.log(sat);
   var czml = satCzmlConverter(sat);
-  console.log(czml)
+  console.log(czml);
   res.status(200).json(czml);
 });
 
@@ -271,10 +271,11 @@ router.post(
         ...payload
       } = req.body;
 
-      const serverData = await knex("satellites")
+
+      const result = await knex("satellites")
         .insert({ ...payload, id: entity_id } as Satellite)
         .returning("*");
-      return res.status(200).json(serverData);
+      return res.status(200).json(result[0]);
     }
     res.status(400).json({ errors: result.array() });
   }
