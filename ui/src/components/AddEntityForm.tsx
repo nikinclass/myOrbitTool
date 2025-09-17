@@ -1,4 +1,4 @@
-import { Satellite, SatelliteDish, SearchIcon } from "lucide-react";
+import { Satellite, SatelliteDish } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import {

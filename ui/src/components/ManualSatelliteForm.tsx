@@ -4,12 +4,17 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { Trash2 } from "lucide-react";
+import { useAppSession } from "./AppSessionProvider";
 
 export function ManualFieldForm({
   satellite,
 }: {
   satellite: Satellite | null;
 }) {
+  const { removeSatellite, canEdit } = useAppSession();
+
   const [showInclinationToggle, setInclinationToggle] =
     useState<boolean>(false);
   const [showAxisToggle, setAxisToggle] = useState<boolean>(false);
@@ -28,7 +33,21 @@ export function ManualFieldForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Edit a Satellite</CardTitle>
+        <CardTitle className="flex gap-2 justify-center items-center">
+          <p className="text-left w-full">
+            Edit {satellite ? `Sat#${satellite?.NORAD_CAT_ID}` : "Satellite"}
+          </p>
+          <Button
+            disabled={!canEdit || !satellite}
+            className="cursor-pointer"
+            onClick={() => {
+              if (satellite) removeSatellite(satellite);
+            }}
+            variant={"destructive"}
+          >
+            <Trash2 />
+          </Button>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
