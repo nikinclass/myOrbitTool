@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -12,18 +11,23 @@ import { AppSessionProvider } from "./components/AppSessionProvider";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AppSessionProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<ScenarioLoader />} />
-              <Route index path="scenario" element={<ScenarioLoader />} />
-              <Route path="scenario/:id" element={<Scenario />} />
-              <Route path="*" element={<NoPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </AppSessionProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AppSessionProvider>
+                <Layout />
+              </AppSessionProvider>
+            }
+          >
+            <Route index element={<ScenarioLoader />} />
+            <Route index path="scenario" element={<ScenarioLoader />} />
+            <Route path="scenario/:id" element={<Scenario />} />
+            <Route path="*" element={<NoPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

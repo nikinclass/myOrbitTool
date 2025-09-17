@@ -1,118 +1,276 @@
-import type { Satellite, Site } from "@/types";
+import type { Satellite, Scenario, Site, User } from "@/types";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  type Dispatch,
-  type SetStateAction,
 } from "react";
-import { useParams } from "react-router-dom";
 import { CzmlDataSource } from "resium";
+import { useNavigate, useParams } from "react-router-dom";
+
+const PROXIED_URL = "/api";
+const LOCALHOST_URL = "http://localhost:8080/api";
 
 export type AppState = {
-  username: string;
-  setUsername: Dispatch<SetStateAction<string>>;
+  // Authentication
+  user: User | null;
+  login: (username: string, password: string) => void;
+  logout: () => void;
   isLoggedIn: boolean;
-  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-  satellites: Satellite[];
-  setSatellites: Dispatch<SetStateAction<Satellite[]>>;
-  sites: Site[];
-  setSites: Dispatch<SetStateAction<Site[]>>;
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-  satCzmlArray: React.ReactNode[]
-  setSatCzmlArray: Dispatch<SetStateAction<React.ReactNode[]>>
-  siteCzmlArray: React.ReactNode[]
-  setSiteCzmlArray: Dispatch<SetStateAction<React.ReactNode[]>>
-};
 
-const initialState: AppState = {
-  username: "",
-  setUsername: () => null,
-  isLoggedIn: false,
-  setIsLoggedIn: () => null,
-  satellites: [],
-  setSatellites: () => null,
-  sites: [],
-  setSites: () => null,
-  title: "Scenario",
-  setTitle: () => null,
-  satCzmlArray: [],
-  setSatCzmlArray: () => null,
-  siteCzmlArray: [],
-  setSiteCzmlArray: () => null,
+  // Scenario
+  scenario: Scenario | null;
+  isLoading: boolean;
+  error: string | null;
+  canEdit: boolean;
+
+  // Scenario Actions
+  setTitle: (title: string) => Promise<void>;
+  setDescription: (description: string) => Promise<void>;
+  createScenario: () => Promise<void>;
+  colorSatellite: (s: Satellite) => Promise<void>;
+  toggleVisibility: (s: Satellite[]) => Promise<void>;
+  addSatellite: (s: Satellite) => Promise<void>;
+  removeSatellite: (s: Satellite) => Promise<void>;
 };
 
 type AppProviderProps = {
   children: React.ReactNode;
 };
 
-const AppSessionContext = createContext<AppState>(initialState);
+const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  const [username, setUsername] = useState<string>("");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [satellites, setSatellites] = useState<Satellite[]>([]);
-  const [title, setTitle] = useState<string>("Scenario");
-  const scenario_id = useParams().id;
-  const [sites, setSites] = useState<Site[]>([
-    {
-      id: "1",
-      OBJECT_NAME: "test site",
-      LAT: 0,
-      LONG: 0,
-      ALT: 0,
-      COLOR: [255, 0, 255, 255],
-      CZML: [{}, {}]
-    },
-  ]);
-  const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
-  const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
-
+  /*
   useEffect(() => {
-    setSiteCzmlArray(satellites.map((sat, index) => {
-      return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
-    }))
-  }, [satellites])
-
-  useEffect(() => {
-
-  }, [sites])
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setUsername(user.username);
-      setIsLoggedIn(true);
+    if (satellites[0]) {
+      setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
+        console.log(sat)
+        let tempCZML: any[] = sat.CZML.slice()
+        tempCZML[1].path.material.solidColor.color = sat.COLOR
+        tempCZML[1].point.color = sat.COLOR
+        console.log(tempCZML[1].point.color)
+        return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
+      }))
     }
-  }, []);
+  }, [satellites])*/
+  const { id: scenarioID } = useParams();
+  const navigate = useNavigate();
+  let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  if (JSON.stringify(storedUser) === "{}") storedUser = null;
+
+  const [user, setUser] = useState<User | null>((storedUser as User) || null);
+
+  const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isLoggedIn = user !== null;
+  const isOwner = (ownerId?: number | null) =>
+    ownerId != null && user?.id === ownerId;
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+
+  const fetchScenario = useCallback(async () => {
+    if (!scenarioID) {
+      setScenario(null);
+      setError(null);
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await (
+        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}`)
+      ).json();
+
+      if (!data.id) throw new Error("Scenario not found");
+
+      const convertToCZML = async (s: Satellite) => {
+        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(s),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        return <CzmlDataSource key={data.id} data={data} show={data} />;
+      };
+
+      const convertedSatellites = await Promise.all(
+        data.satellites.map(async (sat: Satellite) => {
+          const converted = convertToCZML(sat);
+          if (!converted) return sat;
+          return { ...sat, CZML: converted };
+        })
+      );
+
+      setScenario({ ...data, satellites: convertedSatellites });
+      if (isOwner(data.owner_id)) setCanEdit(true);
+      else setCanEdit(false);
+    } catch (e: any) {
+      setError(e?.message);
+      setScenario(null);
+      navigate("ScenarioNotFound");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, scenarioID]);
 
   useEffect(() => {
-    // Update record when title changes
-  }, [title]);
+    fetchScenario();
+  }, [fetchScenario]);
+
+  const setTitle = async (title: string) => {
+    if (!scenario || !canEdit) return;
+    try {
+      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/title`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: title, my_id: user?.id }),
+      });
+      setScenario({ ...scenario, title: title });
+    } catch (e: any) {
+      console.log(e);
+    }
+  };
+
+  const setDescription = async (description: string) => {
+    if (!scenario || !canEdit) return;
+    try {
+      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/description`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ description: description, my_id: user?.id }),
+      });
+      setScenario({ ...scenario, description: description });
+    } catch (e: any) {}
+  };
+
+  const createScenario = useCallback(async () => {
+    if (!isLoggedIn || !user) {
+      return;
+    }
+    const response = await fetch(`${LOCALHOST_URL}/scenario`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ owner_id: user?.id }),
+    });
+    const json = await response.json();
+    await setTitle(`Scenario ${json.id}`);
+    setScenario({
+      ...scenario,
+      owner: user,
+      description: "",
+      title: "",
+      id: json.id,
+      satellites: [],
+      sites: [],
+    });
+    navigate(`/scenario/${json.id}`);
+  }, [scenario, isLoggedIn, user]);
+
+  const toggleVisibility = useCallback(async (s: Satellite[]) => {}, []);
+
+  const colorSatellite = useCallback(async () => {}, []);
+
+  const addSatellite = useCallback(
+    async (s: Satellite) => {
+      if (!scenario) return;
+      let sats = scenario.satellites.slice();
+
+      const convertToCZML = async () => {
+        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(s),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        return <CzmlDataSource key={data.id} data={data} show={data} />;
+      };
+
+      const converted = await convertToCZML();
+
+      if (!converted) return;
+
+      s.CZML = converted;
+
+      sats.push(s);
+
+      setScenario({ ...scenario, satellites: sats });
+    },
+    [scenario]
+  );
+
+  useEffect(() => {
+    console.log(scenario);
+  }, [scenario]);
+
+  const removeSatellite = useCallback(async (s: Satellite) => {}, []);
+
+  const state: AppState = {
+    user,
+    isLoggedIn: isLoggedIn,
+    login: async (username, password) => {
+      let payload = JSON.stringify({
+        username: username,
+        password: password,
+      });
+
+      const res = await fetch(`${PROXIED_URL}/user_table/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payload,
+      });
+      const body = await res.json();
+
+      if (!res.ok) {
+        throw new Error("Couldn't log in");
+      }
+
+      const id: number = body.id;
+      const user = { username: username, id: id };
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+    },
+    logout: () => {
+      setUser(null);
+      localStorage.removeItem("user");
+    },
+    scenario,
+    isLoading,
+    error,
+    canEdit,
+
+    setTitle,
+    setDescription,
+    createScenario,
+    toggleVisibility,
+    colorSatellite,
+    addSatellite,
+    removeSatellite,
+  };
 
   return (
-    <AppSessionContext.Provider
-      {...props}
-      value={{
-        username: username,
-        setUsername: setUsername,
-        isLoggedIn: isLoggedIn,
-        setIsLoggedIn: setIsLoggedIn,
-        satellites: satellites,
-        setSatellites: setSatellites,
-        sites: sites,
-        setSites: setSites,
-        title: title,
-        setTitle: setTitle,
-        satCzmlArray: satCzmlArray,
-        setSatCzmlArray: setSatCzmlArray,
-        siteCzmlArray: siteCzmlArray,
-        setSiteCzmlArray: setSiteCzmlArray
-      }}
-    >
+    <AppSessionContext.Provider {...props} value={state}>
       {children}
     </AppSessionContext.Provider>
   );
@@ -121,7 +279,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 export const useAppSession = () => {
   const context = useContext(AppSessionContext);
 
-  if (context === undefined)
+  if (context === null)
     throw new Error("useAppSession must be used within a AppSessionProvider");
 
   return context;

@@ -1,30 +1,53 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAppSession } from "@/components/AppSessionProvider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function ScenarioLoader() {
   const navigate = useNavigate();
-  const createScenario = async () => {
-    const response = await fetch(LOCALHOST_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    });
-    const json = await response.json();
-    navigate(`/scenario/${json.id}`);
-  };
+  const { isLoggedIn, createScenario, scenario } = useAppSession();
+
+  const [scenarioID, setScenarioID] = useState<string>("");
 
   useEffect(() => {
     createScenario();
-  }, []);
+  }, [isLoggedIn]);
 
   return (
-    <div className="flex flex-col border p-4 bg-green-500">
-      <h1>Creating scenario page, you should be redirected soon </h1>
+    <div className="self-center items-center text-center m-auto">
+      {isLoggedIn && (
+        <h1>Creating scenario page, you should be redirected soon </h1>
+      )}
+      {!isLoggedIn && (
+        <div className="flex flex-col justify-center items-center gap-2">
+          <h1>
+            Please log in to create scenarios. Or enter a scenario ID to
+            continue.
+          </h1>
+          <div className="flex gap-2">
+            <Input
+              aria-controls="hidden"
+              placeholder="Scenario ID #"
+              className="max-w-[300px] justify-center items-center"
+              value={scenarioID}
+              onChange={(e) => {
+                setScenarioID(e.target.value);
+              }}
+            />
+            <Button
+              disabled={scenarioID.length < 1}
+              onClick={() => {
+                navigate(`/scenario/${scenarioID}`);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

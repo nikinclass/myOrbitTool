@@ -1,25 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { LoginModal } from "./LoginModal";
-import { useNavigate } from "react-router-dom";
 import { useAppSession } from "./AppSessionProvider";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useRef } from "react";
 
 export function LoginButton() {
   const [showLoginModal, setLoginModal] = useState(false);
-  const { username, isLoggedIn, setUsername, setIsLoggedIn } = useAppSession();
+  const { isLoggedIn, logout } = useAppSession();
 
-  const navigate = useNavigate();
   if (!isLoggedIn) {
     return (
       <>
@@ -50,10 +37,7 @@ export function LoginButton() {
               });
 
               if (res.ok) {
-                localStorage.removeItem("user");
-                setUsername("");
-                setIsLoggedIn(false);
-                navigate("/");
+                logout();
               } else {
                 console.log("Logout failed.", res.status);
               }

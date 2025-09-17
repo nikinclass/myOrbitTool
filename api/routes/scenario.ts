@@ -16,7 +16,7 @@ const router = Router();
 router.post("/", async (req: Request, res: Response) => {
   //this will make a new scenario
   try {
-    const payload = await knex("scenarios").insert({}).returning("id");
+    const payload = await knex("scenarios").insert(req.body).returning("id");
     if (!payload && payload.length === 0) {
       throw new Error("No record found");
     }
@@ -57,13 +57,69 @@ router.get("/:id", async (req: Request, res: Response) => {
       })
       .where({ scenario_id: req.params.id });
 
+    console.log(scenario_data);
+
+    // Get owner
+    const { password, ...user } = await knex("user_table")
+      .select("*")
+      .where({ id: scenario_data.owner_id });
+
     res.json({
-      scenario: scenario_data,
-      scenarioSats: satellites,
-      scenarioSites: sites,
+      ...scenario_data,
+      owner: user,
+      satellites: satellites,
+      sites: sites,
     });
   } catch (error: unknown) {
     console.error(error);
+    res.send(500);
+  }
+});
+
+router.patch("/:id/title", async (req: Request, res: Response) => {
+  try {
+    const { my_id, ...payload } = req.body;
+
+    // Get owner of scenario
+    const scenario = await knex("scenarios")
+      .select("*")
+      .where({ id: req.params.id })
+      .first();
+
+    if (!my_id || scenario.owner_id !== my_id) {
+      return res.send(401);
+    }
+
+    await knex("scenarios")
+      .update({ ...payload })
+      .where({ id: req.params.id });
+
+    res.send(200);
+  } catch (e: any) {
+    res.send(500);
+  }
+});
+
+router.patch("/:id/description", async (req: Request, res: Response) => {
+  try {
+    const { my_id, ...payload } = req.body;
+
+    // Get owner of scenario
+    const scenario = await knex("scenarios")
+      .select("*")
+      .where({ id: req.params.id })
+      .first();
+
+    if (!my_id || scenario.owner_id !== my_id) {
+      return res.send(401);
+    }
+
+    await knex("scenarios")
+      .update({ ...payload })
+      .where({ id: req.params.id });
+
+    res.send(200);
+  } catch (e: any) {
     res.send(500);
   }
 });
@@ -146,7 +202,7 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-// refreshSpaceTrack(myUsername, myPassword);
+refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 

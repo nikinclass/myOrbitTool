@@ -137,7 +137,7 @@ const satCzmlConverter = (sat: Satellite) => {
       description: "Insert the altitude here??",
       label: {
         fillColor: {
-          rgba: [255, 0, 255, 255],
+          rgba: [255, 255, 255, 255],
         },
         font: "11pt Lucida Console",
         horizontalOrigin: "LEFT",
@@ -164,8 +164,8 @@ const satCzmlConverter = (sat: Satellite) => {
         material: {
           solidColor: {
             color: {
-              rgba: [255, 0, 255, 255],
-            },
+              rgba: [255, 255, 0, 255],
+            }
           },
         },
         resolution: 120,
@@ -175,9 +175,7 @@ const satCzmlConverter = (sat: Satellite) => {
       point: {
         show: true,
         pixelSize: 10,
-        color: {
-          rgba: [255, 0, 255, 255],
-        },
+        color: "rgba(255, 0, 255, 255)"
       },
       position: {
         interpolationAlgorithm: "LAGRANGE",

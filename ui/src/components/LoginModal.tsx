@@ -1,5 +1,3 @@
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAppSession } from "./AppSessionProvider";
 
 const PROXIED_URL = "/api/user_table";
@@ -21,7 +19,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { setIsLoggedIn } = useAppSession();
+  const { login } = useAppSession();
 
   const modalRef = useRef(null);
 
@@ -38,28 +36,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
       } else {
         // Try to login
         try {
-          let payload = JSON.stringify({
-            username: username,
-            password: password,
-          });
-
-          setIsLoading(true);
-          const res = await fetch(`${PROXIED_URL}/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: payload,
-          });
-
-          if (!res.ok) {
-            const body = await res.json();
-            throw new Error(body.error);
-          }
-
-          localStorage.setItem("user", JSON.stringify({ username }));
-          setUsername(username);
-          setIsLoggedIn(true);
+          login(username, password);
           closeModal();
         } catch (err: any) {
           setError(err?.message);
@@ -129,8 +106,6 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const navigate = useNavigate();
-
     const handleSubmit = async (e: any) => {
       e.preventDefault();
       if (!username || !password) {
@@ -157,6 +132,8 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
             },
             body: payload,
           });
+
+          login(username, password);
 
           if (!res.ok) throw new Error("Failed to create account");
         } catch (err: any) {
