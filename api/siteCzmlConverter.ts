@@ -8,7 +8,6 @@ const julian = require('julian')
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 const siteCzmlConverter = (site: Site) => {
-
   //set initial object start for czml
   let initialCZMLProps = [
     {
@@ -17,10 +16,10 @@ const siteCzmlConverter = (site: Site) => {
       version: "1.0",
     },
     {
-      id: site["OBJECT_NAME"],
+      id: site["name"],
       name: "point in cartographic degrees",
       position: {
-        cartographicDegrees: [site["LAT"], site["LONG"], site["ALT"]],
+        cartographicDegrees: [site["latitude"], site["longitude"], site["altitude"]],
       },
       label: {
         fillColor: {
@@ -37,7 +36,7 @@ const siteCzmlConverter = (site: Site) => {
         },
         show: true,
         style: "FILL_AND_OUTLINE",
-        text: `${site["OBJECT_NAME"]}`,
+        text: `${site["name"]}`,
         verticalOrigin: "CENTER",
       },
       point: {
@@ -53,6 +52,7 @@ const siteCzmlConverter = (site: Site) => {
       },
     },
   ]
+  console.log(`Created CZML for ${site["name"]}`)
   return initialCZMLProps;
 }
 // 1216469.9357990976, -4736121.71856379, 4081386.8856866374

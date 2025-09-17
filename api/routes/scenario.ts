@@ -57,7 +57,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       })
       .where({ scenario_id: req.params.id });
 
-    console.log(scenario_data);
+    // console.log(scenario_data);
 
     // Get owner
     const { password, ...user } = await knex("user_table")
@@ -202,7 +202,7 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-refreshSpaceTrack(myUsername, myPassword);
+// refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
@@ -212,7 +212,9 @@ router.get("/refresh", (req, res) => {
 });
 
 router.post("/siteczml", (req, res) => {
-  var czml = siteCzmlConverter(req.body);
+  var site = req.body
+  var czml = siteCzmlConverter(site);
+  console.log(czml)
   res.status(200).json(czml);
 });
 
@@ -222,7 +224,6 @@ router.post("/satczml", (req, res) => {
   var sat = req.body;
   // console.log(sat);
   var czml = satCzmlConverter(sat);
-  console.log(czml)
   res.status(200).json(czml);
 });
 
@@ -319,7 +320,7 @@ router.post(
     if (result.isEmpty()) {
       const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
       const { scenario_id, ...payload } = req.body;
-      const response = await knex("station")
+      const response = await knex("stations")
         .insert({ ...payload, id: entity_id })
         .returning("*");
       return res.status(200).json(response);

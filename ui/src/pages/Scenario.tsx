@@ -57,7 +57,7 @@ export function Scenario() {
   if (!scenario) return <></>;
 
   const satCzmlArray = scenario.satellites.map((sat) => (<CzmlDataSource id={sat.id} data={sat.CZML} show={sat.VISIBLE}/>))
-  const siteCzmlArray = scenario.sites.map((site) => site.CZML);
+  const siteCzmlArray = scenario.sites.map((site) => (<CzmlDataSource id={site.id} data={site.CZML}/>))
 
   return (
     <div className="flex relative h-full">

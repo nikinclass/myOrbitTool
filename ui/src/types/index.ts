@@ -18,7 +18,6 @@ export type Satellite = {
   MEAN_MOTION_DOT: string;
   MEAN_MOTION_DDOT: string;
   COLOR: [number, number, number, number]; // DEFAULT TO SOMETHING LIKE [255, 0, 255, 255] but we shoudl give this to the user somehow
-  VISIBLE: boolean;
   CZML: any;
   // [{
   //   id: string;
@@ -80,12 +79,12 @@ export type Satellite = {
 
 export type Site = {
   id: string;
-  OBJECT_NAME: string;
-  LAT: number;
-  LONG: number;
-  ALT: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
   COLOR: [number, number, number, number];
-  CZML: [object, object];
+  CZML: any;
 };
 
 export type User = {

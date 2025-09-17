@@ -32,7 +32,7 @@ export function ManageSatellitesTable() {
       {selectedSatellite && <ManualSatForm satellite={selectedSatellite} />}
       {!selectedSatellite && (
         <Table>
-          <TableCaption>A list of all satellites in this scenario</TableCaption>
+          <TableCaption>A list of all sites in this scenario</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>

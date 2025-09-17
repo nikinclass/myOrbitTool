@@ -23,9 +23,10 @@ export type Satellite = {
 
 export type Site = {
   id: string;
-  OBJECT_NAME: string;
-  LAT: string;
-  LONG: string;
-  ALT: string;
+  name: string;
+  latitude: string;
+  longitude: string;
+  altitude: string;
   COLOR: [number, number, number, number];
+  CZML: any;
 };

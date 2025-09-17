@@ -91,18 +91,6 @@ export function Search() {
                         }),
                       });
 
-                      // await fetch(`${LOCALHOST_URL}/satellites/satczml`, {
-                      //   method: "POST",
-                      //   headers: {
-                      //     Accept: "application/json",
-                      //     "Content-Type": "application/json",
-                      //   },
-                      //   body: JSON.stringify(fullItem),
-                      // })
-                      //   .then((res) => res.json())
-                      //   .then((data) => {
-                      //     fullItem.CZML = data;
-                      //   });
                       await addSatellite(fullItem);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,

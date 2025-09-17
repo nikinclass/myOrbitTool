@@ -9,7 +9,9 @@ import siteCzmlConverter from "../siteCzmlConverter";
 // RETURNS THE CZML FOR A LATLONGALT POSITION
 
 router.post("/siteczml", (req, res) => {
-  var czml = siteCzmlConverter(req.body);
+  var site = req.body
+  var czml = siteCzmlConverter(site);
+  console.log(czml)
   res.status(200).json(czml);
 });
 
@@ -18,7 +20,7 @@ router.post("/siteczml", (req, res) => {
 router.post("/satczml", (req, res) => {
   var sat = req.body
   var czml = satCzmlConverter(sat);
-  console.log(czml)
+  // console.log(czml)
   res.status(200).json(czml);
 });
 
