@@ -3,12 +3,12 @@ export type Satellite = {
   OBJECT_NAME: string;
   OBJECT_ID?: string; // NOT NEEDED
   EPOCH: string; // SET TO CURRENT TIME IN JS .NOW OR SOMETHING
-  MEAN_MOTION: string;
-  ECCENTRICITY: string;
-  INCLINATION: string;
-  RA_OF_ASC_NODE: string;
-  ARG_OF_PERICENTER: string;
-  MEAN_ANOMALY: string;
+  MEAN_MOTION: number;
+  ECCENTRICITY: number;
+  INCLINATION: number;
+  RA_OF_ASC_NODE: number;
+  ARG_OF_PERICENTER: number;
+  MEAN_ANOMALY: number;
   EPHEMERIS_TYPE: string; // NOT NEEDED CAN DEFAULT TO 0
   CLASSIFICATION_TYPE?: string; // NOT NEEDED CAN DEFAULT TO U
   NORAD_CAT_ID?: string; // NOT NEEDED
@@ -29,7 +29,7 @@ export type Satellite = {
   //     range: string;
   //     step: string;
   //   }
-  // }, 
+  // },
   // {
   //   id: string;
   //   name: string;
@@ -100,3 +100,5 @@ export type Scenario = {
   satellites: Satellite[];
   sites: Site[];
 };
+
+

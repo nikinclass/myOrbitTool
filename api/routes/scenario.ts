@@ -272,10 +272,11 @@ router.post(
         ...payload
       } = req.body;
 
-      await knex("satellites")
+
+      const result = await knex("satellites")
         .insert({ ...payload, id: entity_id } as Satellite)
         .returning("*");
-      return res.sendStatus(200);
+      return res.status(200).json(result[0]);
     }
     res.status(400).json({ errors: result.array() });
   }
@@ -342,5 +343,23 @@ router.get("/:id", async (req: Request, res: Response) => {
       .json({ error: "Server error on scenario title edit" });
   }
 });
+
+
+router.delete('/satellites/:satId', async (req, res) => {
+  const { satId } = req.params;
+
+  try {
+
+    const deletedEntity = await knex('scenario_entities').where({ id:satId }).del();
+    if (!deletedEntity) return res.status(404).json({ message: 'didnt work either' })
+    res.json({ message: 'worked again' })
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({message: "fubar"})
+  }
+  
+  
+})
 
 export = router;

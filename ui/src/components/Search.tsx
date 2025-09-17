@@ -77,20 +77,23 @@ export function Search() {
                       const fullItem = await response.json();
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
-
                       // Create record in db
-                      await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
-                        method: "POST",
-                        headers: {
-                          Accept: "application/json",
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          ...fullItem,
-                          scenario_id: scenario_id,
-                        }),
-                      });
+                      const { id } = await (
+                        await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
+                          method: "POST",
+                          headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            ...fullItem,
+                            scenario_id: scenario_id,
+                          }),
+                        })
+                      ).json();
 
+
+                      fullItem.id = id;
                       await addSatellite(fullItem);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
