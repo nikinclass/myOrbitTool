@@ -11,7 +11,7 @@ import {
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 import { useEffect, useState } from "react";
-import { ManualFieldForm } from "./ManualSatelliteForm";
+import { ManualSatForm } from "./ManualSatelliteForm";
 
 export function ManageSatellitesTable() {
   const { scenario, toggleVisibility, removeSatellite, colorSatellite } =
@@ -29,7 +29,7 @@ export function ManageSatellitesTable() {
 
   return (
     <>
-      {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} />}
+      {selectedSatellite && <ManualSatForm satellite={selectedSatellite} />}
       {!selectedSatellite && (
         <Table>
           <TableCaption>A list of all satellites in this scenario</TableCaption>
@@ -57,10 +57,6 @@ export function ManageSatellitesTable() {
             {scenario?.satellites.map((sat: Satellite, index: number) => (
               <TableRow
                 className="cursor-pointer select-none"
-                key={index}
-                onClick={() => {
-                  setSelectedSatellite(sat);
-                }}
               >
                 <TableCell className="font-medium">
                   {
@@ -89,7 +85,9 @@ export function ManageSatellitesTable() {
                   }
                 </TableCell>
                 <TableCell>
-                  <MoreHorizontal />
+                  <MoreHorizontal key={index} onClick={() => {
+                  setSelectedSatellite(sat);
+                }} />
                 </TableCell>
               </TableRow>
             ))}

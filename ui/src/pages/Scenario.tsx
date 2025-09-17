@@ -56,7 +56,7 @@ export function Scenario() {
 
   if (!scenario) return <></>;
 
-  const satCzmlArray = scenario.satellites.map((sat) => sat.CZML);
+  const satCzmlArray = scenario.satellites.map((sat) => (<CzmlDataSource id={sat.id} data={sat.CZML} show={sat.VISIBLE}/>))
   const siteCzmlArray = scenario.sites.map((site) => site.CZML);
 
   return (

@@ -42,19 +42,20 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  /*
-  useEffect(() => {
-    if (satellites[0]) {
-      setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
-        console.log(sat)
-        let tempCZML: any[] = sat.CZML.slice()
-        tempCZML[1].path.material.solidColor.color = sat.COLOR
-        tempCZML[1].point.color = sat.COLOR
-        console.log(tempCZML[1].point.color)
-        return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
-      }))
-    }
-  }, [satellites])*/
+  
+  // useEffect(() => {
+  //   if (satellites[0]) {
+  //     setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
+  //       console.log(sat)
+  //       let tempCZML: any[] = sat.CZML.slice()
+  //       tempCZML[1].path.material.solidColor.color = sat.COLOR
+  //       tempCZML[1].point.color = sat.COLOR
+  //       console.log(tempCZML[1].point.color)
+  //       return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
+  //     }))
+  //   }
+  // }, [satellites])
+
   const { id: scenarioID } = useParams();
   const navigate = useNavigate();
   let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -182,7 +183,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
 
-  const toggleVisibility = useCallback(async (s: Satellite[]) => {}, []);
+  const toggleVisibility = useCallback(async (s: Satellite[]) => {
+    s.map((sat, index) => {sat.VISIBLE = !sat.VISIBLE})
+  }, []);
 
   const colorSatellite = useCallback(async () => {}, []);
 
@@ -202,7 +205,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         });
         if (!res.ok) return;
         const data = await res.json();
-        return <CzmlDataSource key={data.id} data={data} show={data} />;
+        return data;
       };
 
       const converted = await convertToCZML();

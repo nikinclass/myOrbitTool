@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
 import { useAppSession } from "./AppSessionProvider";
 
-export function ManualSatForm({
+export function ManualSiteForm({
   satellite,
 }: {
   satellite: Satellite | null;
