@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
+import { SceneMode } from "cesium";
 
 const PROXIED_URL = "/api";
 const LOCALHOST_URL = "http://localhost:8080/api";
@@ -33,6 +34,7 @@ export type AppState = {
   toggleVisibility: (s: Satellite[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
+  // deleteSatellite: (s: Satellite) => Promise<void>;
 };
 
 type AppProviderProps = {
@@ -86,23 +88,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       if (!data.id) throw new Error("Scenario not found");
 
-      const convertToCZML = async (s: Satellite) => {
-        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        return <CzmlDataSource key={data.id} data={data} show={data} />;
-      };
-
       const convertedSatellites = await Promise.all(
         data.satellites.map(async (sat: Satellite) => {
-          const converted = convertToCZML(sat);
+          const converted = await convertToCZML(sat);
           if (!converted) return sat;
           return { ...sat, CZML: converted };
         })
@@ -182,30 +170,59 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
 
-  const toggleVisibility = useCallback(async (s: Satellite[]) => {}, []);
+  const toggleVisibility = useCallback(
+    async (s: Satellite[]) => {
+      if (!scenario) return;
+
+      const updated = await Promise.all(
+        scenario.satellites.map(async (sat: Satellite) => {
+          if (s.some((item) => item.id === sat.id)) {
+            return {
+              ...sat,
+              CZML: {
+                ...sat.CZML,
+                props: { ...sat.CZML.props, show: !sat.CZML.props.show },
+              },
+            };
+          }
+
+          return sat;
+        })
+      );
+
+      setScenario({
+        ...scenario,
+        satellites: updated,
+      });
+    },
+    [scenario]
+  );
 
   const colorSatellite = useCallback(async () => {}, []);
+
+  const convertToCZML = async (s: Satellite) => {
+    const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(s),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    return (
+      <CzmlDataSource key={data.id} data={data} show={data.VISIBLE ?? true} />
+    );
+  };
+
 
   const addSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
       let sats = scenario.satellites.slice();
 
-      const convertToCZML = async () => {
-        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        return <CzmlDataSource key={data.id} data={data} show={data} />;
-      };
-
-      const converted = await convertToCZML();
+      const converted = await convertToCZML(s);
 
       if (!converted) return;
 
@@ -222,7 +239,26 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     console.log(scenario);
   }, [scenario]);
 
-  const removeSatellite = useCallback(async (s: Satellite) => {}, []);
+
+  const deleteSatellite = useCallback(async (s: Satellite) => {
+    if (!scenario) return;
+    console.log(s.id)
+    await fetch(`${LOCALHOST_URL}/scenario/satellites/${s.id}`, {
+      method: "DELETE",
+    });
+  },[scenario])
+
+  const removeSatellite = useCallback(
+    async (s: Satellite) => {
+      if (!scenario) return;
+    
+      let sats = scenario.satellites.slice();
+      
+      sats.splice(sats.indexOf(s),1);
+
+      setScenario({ ...scenario, satellites: sats });
+      deleteSatellite(s)
+    }, [scenario]);
 
   const state: AppState = {
     user,
