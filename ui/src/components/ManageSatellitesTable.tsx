@@ -29,7 +29,6 @@ export function ManageSatellitesTable() {
 
   return (
     <>
-      {" "}
       {selectedSatellite && <ManualFieldForm satellite={selectedSatellite} />}
       {!selectedSatellite && (
         <Table>
@@ -98,5 +97,6 @@ export function ManageSatellitesTable() {
         </Table>
       )}
     </>
+
   );
 }
