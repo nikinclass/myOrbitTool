@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Input } from "./ui/input";
 import { Search } from "./Search";
 
 function EntityChoices({
@@ -52,7 +51,7 @@ function EntityChoices({
   );
 }
 function LiveSatForm() {
-  return <Search items={[1, 2, 3, 4]} />;
+  return <Search />;
 }
 
 function ManualSatForm() {
@@ -65,7 +64,7 @@ function ManualSatForm() {
         <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
-        <Search items={[1, 2, 3, 4]} />
+        <Search />
       </CardContent>
     </Card>
   );

@@ -17,7 +17,7 @@ type SatItem = {
 export function Search() {
   const [search, setSearch] = useState<string>("");
   const [filteredItems, setFilteredItems] = useState<SatItem[] | null>();
-  const { setSatellites } = useAppSession();
+  const { addSatellite } = useAppSession();
 
   const scenario_id = useParams().id;
 
@@ -103,8 +103,7 @@ export function Search() {
                         .then((data) => {
                           fullItem.CZML = data;
                         });
-
-                      setSatellites((previous) => [...previous, fullItem]);
+                      addSatellite(fullItem);
                       toast.success("Satellite added!", {
                         description: `(${item.NORAD_CAT_ID}) ${item.OBJECT_NAME}`,
                       });

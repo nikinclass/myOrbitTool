@@ -34,6 +34,7 @@ router.post("/login", async (req, res) => {
     const user = await knex("user_table")
       .select("id", "password")
       .where("username", "=", username)
+      .returning("*")
       .first();
 
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
@@ -43,7 +44,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
 
     req.session.id = user.id;
-    return res.sendStatus(200);
+    return res.status(200).json(user);
   } catch (err) {
     console.log(err);
     res.status(500).json({ err: "Internal server error" });
