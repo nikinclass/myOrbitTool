@@ -19,7 +19,6 @@ export type AppState = {
   logout: () => void;
   isLoggedIn: boolean;
 
-
   // Scenario
   scenario: Scenario | null;
   isLoading: boolean;
@@ -43,7 +42,7 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-/*
+  /*
   useEffect(() => {
     if (satellites[0]) {
       setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
@@ -87,7 +86,29 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       if (!data.id) throw new Error("Scenario not found");
 
-      setScenario({ ...data });
+      const convertToCZML = async (s: Satellite) => {
+        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(s),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        return <CzmlDataSource key={data.id} data={data} show={data} />;
+      };
+
+      const convertedSatellites = await Promise.all(
+        data.satellites.map(async (sat: Satellite) => {
+          const converted = convertToCZML(sat);
+          if (!converted) return sat;
+          return { ...sat, CZML: converted };
+        })
+      );
+
+      setScenario({ ...data, satellites: convertedSatellites });
       if (isOwner(data.owner_id)) setCanEdit(true);
       else setCanEdit(false);
     } catch (e: any) {
@@ -165,12 +186,37 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
   const colorSatellite = useCallback(async () => {}, []);
 
-  const addSatellite = useCallback(async (s: Satellite) => {
-    if (!scenario) return;
-    let sats = scenario.satellites.slice();
-    sats.push(s);
-    setScenario({ ...scenario, satellites: sats });
-  }, []);
+  const addSatellite = useCallback(
+    async (s: Satellite) => {
+      if (!scenario) return;
+      let sats = scenario.satellites.slice();
+
+      const convertToCZML = async () => {
+        const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(s),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        return <CzmlDataSource key={data.id} data={data} show={data} />;
+      };
+
+      const converted = await convertToCZML();
+
+      if (!converted) return;
+
+      s.CZML = converted;
+
+      sats.push(s);
+
+      setScenario({ ...scenario, satellites: sats });
+    },
+    [scenario]
+  );
 
   useEffect(() => {
     console.log(scenario);

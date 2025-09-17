@@ -27,79 +27,44 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-
   const { scenario } = useAppSession();
-  const [satCzmlArray, setSatCzmlArray] = useState<any>([]);
-  const [siteCzmlArray, setSiteCzmlArray] = useState<any>([]);
 
   const navigate = useNavigate();
   const id = useParams().id;
 
   // useEffect(() => {
-  //   if (scenarioID === -1) navigate("/ScenarioNotFound");
-  // }, [scenarioID]);
-
-  useEffect(() => {
-    if (!scenario) return;
-    console.log("Converting satellites");
-    scenario.satellites.forEach(async (sat, index) => {
-      const res = await fetch(`${PROXIED_URL}/satczml`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sat),
-      });
-      const data = await res.json();
-
-      await setSatCzmlArray([
-        ...satCzmlArray,
-        <CzmlDataSource key={data.id} data={data} show={data} />,
-      ]);
-      console.log("Finished converting");
-    });
-  }, [scenario, scenario?.satellites]);
-
-  // useEffect(() => {
-  //   setSiteCzmlArray(null);
-  //   sites.map((site, index) => {
-  //     fetch(`${PROXIED_URL}/siteczml`, {
+  //   if (!scenario) return;
+  //   console.log("Converting satellites");
+  //   scenario.satellites.forEach(async (sat, index) => {
+  //     const res = await fetch(`${PROXIED_URL}/satczml`, {
   //       method: "POST",
   //       headers: {
   //         Accept: "application/json",
   //         "Content-Type": "application/json",
   //       },
-  //       body: JSON.stringify(site),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         site.CZML = data;
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   });
-  // }, [sites]);
+  //       body: JSON.stringify(sat),
+  //     });
+  //     const data = await res.json();
 
-  // var testData = [
-  //   "1 25544U 98067A   25252.19474949  .00008866  00000-0  16199-3 0  9990",
-  //   "2 25544  51.6325 250.6930 0004281 318.3144  41.7518 15.50201228528195",
-  // ];
+  //     await setSatCzmlArray([
+  //       ...satCzmlArray,
+  //       <CzmlDataSource key={data.id} data={data} show={data} />,
+  //     ]);
+  //     console.log("Finished converting");
+  //   });
+  // }, [scenario, scenario?.satellites]);
 
   if (!scenario) return <></>;
+
+  const satCzmlArray = scenario.satellites.map((sat) => sat.CZML);
+  const siteCzmlArray = scenario.sites.map((site) => site.CZML);
 
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-
-        {/* {satCzmlArray.map((item, index) => {
-          return <CzmlDataSource key={index} data={item.CZML} />;
-        })} */}
         {satCzmlArray}
         {siteCzmlArray}
       </Viewer>
-      {/*<div className="flex-1 h-full bg-black w-full"></div>*/}
     </div>
   );
 }
