@@ -182,13 +182,6 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
                 props: { ...sat.CZML.props, show: !sat.CZML.props.show },
               },
             };
-            // const { CZML, ...noCZML } = sat;
-            // const converted = await convertToCZML({ ...noCZML, CZML: {} });
-
-            // if (!converted) return sat;
-
-            // sat.CZML = converted;
-            // return { ...sat, VISIBLE: !sat.VISIBLE };
           }
 
           return sat;

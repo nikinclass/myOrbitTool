@@ -3,6 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/choicePopover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { AddEntityForm } from "./AddEntityForm";
 import { ManageSatellitesTable } from "./ManageSatellitesTable";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function ManageSatellitesButton({ className }: { className: string }) {
   return (
@@ -24,7 +25,7 @@ export function ManageSatellitesButton({ className }: { className: string }) {
           className="flex flex-col w-fit shadow-none"
           side="right"
         >
-          <ManageSatellitesTable />
+            <ManageSatellitesTable />
         </PopoverContent>
       </Popover>
     </div>
