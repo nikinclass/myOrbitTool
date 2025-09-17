@@ -12,15 +12,16 @@ import { SliderCombo } from "./SliderCombo";
 function meanMotionToSemiMajorAxis(mean_motion: number | undefined) {
   if (mean_motion === undefined) return undefined;
   // mean_motion is rev/day
-  console.log(mean_motion);
   const M = 3.986004418 * Math.pow(10, 14); // m^3/s^2
-  console.log(M);
   const n = (mean_motion * (2 * Math.PI)) / (24 * 60 * 60);
-  console.log(n);
 
-  console.log(M / (n * n));
-  console.log(Math.cbrt(M / (n * n)));
   return Math.cbrt(M / (n * n));
+}
+
+function semiMajorAxisToMeanMotion(semiMajorAxis: number | undefined){
+  if (semiMajorAxis === undefined) return undefined;
+  
+
 }
 
 export function ManualFieldForm({
@@ -55,8 +56,16 @@ export function ManualFieldForm({
 
   const [raan, setRAAN] = useState<number>(satellite?.RA_OF_ASC_NODE ?? 0);
 
+  useEffect(() => {
+    // update backend
+    // use res from backend to generate the CZML
+    // update the scenario with the new satellite
+
+
+  },[eccentricity, inclination, argOfPerigee, meanAnomaly, semiMajorAxis, raan])
+
   return (
-    <Card>
+    <Card className="full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
       <CardHeader>
         <CardTitle className="flex gap-2 justify-center items-center">
           <p className="text-left w-full">
