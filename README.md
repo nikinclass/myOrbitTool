@@ -1,6 +1,19 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 
-![myOrbitTool logo](./images/myOrbitToolLogo.png)
+<a id="readme-top"></a>
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![project_license][license-shield]][license-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+
+![myOrbitTool logo](./images/logo.png)
+
+</div>
 
 <!--
     <img src="https://github.com/nikinclass/myOrbitTool/blob/main/ui/src/assets/logo-dark.png" alt="Logo" width="80" height="80">
@@ -9,50 +22,63 @@
 <h3 align="center">myOrbitTool</h3>
 <div>
   <p align="center">
-    <a href="https://github.com/nikinclass/myOrbitTool">View Demo</a>
-    &middot;
+    A mission planning web-app for visualizing live/custom orbits, coverages, and look-angles
+    <br />
+    <br />
     <a href="https://github.com/nikinclass/myOrbitTool/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
     <a href="https://github.com/nikinclass/myOrbitTool/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
-##**Collaborators** 
-###**Team Lead:** Gabriel Riggs
-##Login Team:
-Dustin Jordan/Gabriel Riggs/Michael Vulpo/Josh Krutz
-##Scenario Team:
-Josh Krutz/Jeffrey Eglinsdoerfer/Anthony Marantino/Nicole Gabor
-##Spacetrack/Cesium:
-Payton Rogers/Anthony Marantino
-##UI:
-Josh Krutz/Dustin Jordan/Gabriel Riggs/Michael Vulpo/Anthony Marantino/Payton Rogers/Jeffery Eglinsdoerfer/Nicole Gabor
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#the-team">The Team</a></li>
+        <li><a href="#acknowledgments">Acknowledgments</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li>
+    <a href="#roadmap">Roadmap</a>
+    <ul>
+      <li><a href="#planning">Planning</a></li>
+      <li><a href="#future-extensions">Future Extensions</a></li>
+    </ul>
+    </li>
+  </ol>
+</details>
+
+<ul>
+  <li><a href="https://github.com/nikinclass/myOrbitTool/issues">Roadmap</a></li>
+  <li><a href= "https://github.com/users/nikinclass/projects/6/views/1?pane=issue&itemId=127645281&issue=nikinclass%7CmyOrbitTool%7C4">ERD-information</a></li>
+  <li><a href="#acknowledgments">Acknowledgments</a></li>
+  *Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.*
+</ul>
 
 ## About The Project
-  <p align="center">
-    Description
-    <br />
-    <br />
 
-[![myOrbitTool](./images/myOrbitTool.jpeg)(http://localhost:3000)]
+### Background
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-**<h3>USSF lacks an accessible and unified solution for orbital mission planning. 
-Current solutions are stove piped for specific constellations or are overclassified and 
-unavailable for simple visualizations. ​<br><br>
+**Problem:** USSF lacks an accessible and unified solution for orbital mission planning.
+Current solutions are stove piped for specific constellations or are overclassified and
+unavailable for simple visualizations.
 
-We present a mission planning web-app for visualizing live/custom orbits, coverages,
-and look-angles ​</h3>\*\*
+**Solutions:** We present a mission planning web-app for visualizing live/custom orbits, coverages,
+and look-angles ​</h3>
 
-  <ul>
-    <li> <a img src="./images/myOrbitTool.jpeg">About The Project</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool">myOrbitTool Project</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/issues">Roadmap</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/graphs/contributors">Contributing</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/blob/main/LICENSE">License</a></li>
-    <li><a href= "https://github.com/users/nikinclass/projects/6/views/1?pane=issue&itemId=127645281&issue=nikinclass%7CmyOrbitTool%7C4">ERD-information</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-    *Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.*
-  </ul>
+![myOrbitTool](/images/demo.png)
 
 ### Built With
 
@@ -61,16 +87,58 @@ and look-angles ​</h3>\*\*
 [![React][React.js]][React-url]
 [![Node.js][Node.js]][Node-url]
 
+### The Team
+
+#### **Team Lead:**
+
+- Gabriel Riggs
+
+#### Login Team:
+
+- Dustin Jordan
+- Gabriel Riggs
+- Michael Vulpo
+- Josh Krutz
+
+#### Scenario Team:
+
+- Josh Krutz
+- Jeffrey Eglinsdoerfer
+- Anthony Marantino
+- Nicole Gabor
+
+#### Spacetrack/Cesium:
+
+- Payton Rogers
+- Anthony Marantino
+
+#### UI:
+
+- Josh Krutz
+- Dustin Jordan
+- Gabriel Riggs
+- Michael Vulpo
+- Anthony Marantino
+- Payton Rogers
+- Jeffery Eglinsdoerfer
+- Nicole Gabor
+
+### Acknowledgements
+
+Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Getting Started
 
 ### Prerequisites
 
-You will need [to install Docker](https://docs.docker.com/engine/install/) to run this project. I am using Docker version 28.3.2.
+You will need [to install Docker](https://docs.docker.com/engine/install/) to run this project. We were using Docker version 28.3.2.
 
 You need your own username and password for https://www.space-track.org in order to get all the already existing satellites.
 
-- Enter your username in the docker-compose.yaml on line 10 and 41
-- Enter your password in the docker-compose.yaml on line 11 and 42
+- Enter your `SPACETRACK_USERNAME` in the .env
+- Enter your `SPACETRACK_PASSWORD` in the .env
 
 ### Installation
 
@@ -84,68 +152,28 @@ You need your own username and password for https://www.space-track.org in order
    docker compose up
    ```
 
-   git
-
-#### For running microservices independently
-
-1. Clone the repo
-
-   ```sh
-   git clone https://github.com/nikinclass/myOrbitTool.git
-   ```
-
-1. Ensure all fetches are using LOCALHOST_URL (not PROXIED_URL)
-
-1. Start the docker container
-
-   ```sh
-   docker compose up
-   ```
-
-1. Start the ui service
-
-   ```sh
-   cd ./ui
-   npm i
-   npm run dev
-   ```
-
-1. Start the api server
-   ```sh
-   cd ./api
-   npm i
-   npm run dev
-   ```
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 
-## Current Project Offerings
+## Roadmap
 
-- [ ] Modeling live satellites
-- [ ] Ground stations
-- [ ] Custom satellites
-  - [ ] Saving and sharing scenarios
+- [x] Modeling live satellites
+- [x] Ground stations
+- [x] Custom satellites
+- [x] Saving and sharing scenarios
 
 See the [open issues](https://github.com/nikinclass/myOrbitTool/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### ERD
 
-<!-- CONTRIBUTING -->
+![myOrbitTool](/images/erd.png)
 
-## Contributing
+### Future Extensions
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- [ ] Sensor radius/FOV projections
+- [ ] Scheduling based on ground station coverage needs
+- [ ] 3D rendering for SAT types/debris
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
