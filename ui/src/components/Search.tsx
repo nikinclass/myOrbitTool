@@ -74,9 +74,17 @@ export function Search() {
                         `${LOCALHOST_URL}/satellites/${item.id}`
                       );
                       // Add the data to the record
-                      const fullItem = await response.json();
+
+                      if (!response.ok) {
+                        console.log(response);
+                        return;
+                      }
+
+                      const { id: old_id, ...fullItem } = await response.json();
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
+
+                      console.log(fullItem);
                       // Create record in db
                       const { id } = await (
                         await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
@@ -92,7 +100,7 @@ export function Search() {
                         })
                       ).json();
 
-
+                      console.log(id);
                       fullItem.id = id;
                       await addSatellite(fullItem);
                       toast.success("Satellite added!", {

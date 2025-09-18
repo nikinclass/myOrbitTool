@@ -9,16 +9,17 @@ import siteCzmlConverter from "../siteCzmlConverter";
 // RETURNS THE CZML FOR A LATLONGALT POSITION
 
 router.post("/siteczml", (req, res) => {
-  var site = req.body
+  var site = req.body;
   var czml = siteCzmlConverter(site);
-  console.log(czml)
+  console.log(czml);
   res.status(200).json(czml);
 });
 
 // RETURNS THE CZML FOR A OMM SATELLITE
 
 router.post("/satczml", (req, res) => {
-  var sat = req.body
+  console.log(req.body);
+  var sat = req.body;
   var czml = satCzmlConverter(sat);
   // console.log(czml)
   res.status(200).json(czml);
@@ -52,7 +53,5 @@ router.get("/:id", async (req, res) => {
     .limit(1);
   res.json(payload[0]);
 });
-
-
 
 export = router;

@@ -202,7 +202,7 @@ async function toJSON(body: ReadableStream | null) {
   return await read();
 }
 
-// refreshSpaceTrack(myUsername, myPassword);
+refreshSpaceTrack(myUsername, myPassword);
 
 // FORCES A REFRESH OF THE SPACE-TRACK DB
 
@@ -212,9 +212,9 @@ router.get("/refresh", (req, res) => {
 });
 
 router.post("/siteczml", (req, res) => {
-  var site = req.body
+  var site = req.body;
   var czml = siteCzmlConverter(site);
-  console.log(czml)
+  console.log(czml);
   res.status(200).json(czml);
 });
 
@@ -241,6 +241,7 @@ router.post(
     const result = validationResult(req);
     if (result.isEmpty()) {
       const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+      console.log(entity_id);
       const {
         scenario_id,
         CCSDS_OMM_VERS,
@@ -272,7 +273,6 @@ router.post(
         ...payload
       } = req.body;
 
-
       const result = await knex("satellites")
         .insert({ ...payload, id: entity_id } as Satellite)
         .returning("*");
@@ -281,6 +281,28 @@ router.post(
     res.status(400).json({ errors: result.array() });
   }
 );
+
+router.patch("/satellite/:id", async (req: Request, res: Response) => {
+  const sat_id = req.params.id;
+
+  // Check if sat exists
+  const exists = await knex("satellites")
+    .select("*")
+    .where({ id: sat_id })
+    .first();
+
+  if (!exists) return res.send(401);
+
+  // Update record
+  const response = await knex("satellites")
+    .where({ id: sat_id })
+    .update({
+      ...req.body,
+    })
+    .returning("*");
+
+  res.status(200).json(response);
+});
 
 const createStationChain = () => {
   return [
@@ -344,22 +366,20 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-
-router.delete('/satellites/:satId', async (req, res) => {
+router.delete("/satellites/:satId", async (req, res) => {
   const { satId } = req.params;
 
   try {
-
-    const deletedEntity = await knex('scenario_entities').where({ id:satId }).del();
-    if (!deletedEntity) return res.status(404).json({ message: 'didnt work either' })
-    res.json({ message: 'worked again' })
-
+    const deletedEntity = await knex("scenario_entities")
+      .where({ id: satId })
+      .del();
+    if (!deletedEntity)
+      return res.status(404).json({ message: "didnt work either" });
+    res.json({ message: "worked again" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({message: "fubar"})
+    res.status(500).json({ message: "fubar" });
   }
-  
-  
-})
+});
 
 export = router;

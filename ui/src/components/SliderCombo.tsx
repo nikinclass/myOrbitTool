@@ -6,6 +6,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 export type SliderComboProps = {
   value: number;
   setValue: Dispatch<SetStateAction<number>>;
+  updateChange: Dispatch<SetStateAction<boolean>>;
   label: string;
   unit?: string;
   max: number;
@@ -16,6 +17,7 @@ export type SliderComboProps = {
 export function SliderCombo({
   value,
   setValue,
+  updateChange,
   label,
   unit = "°",
   max,
@@ -41,6 +43,7 @@ export function SliderCombo({
             defaultValue={[value]}
             onValueChange={(e) => {
               setValue(e[0]);
+              updateChange(true);
             }}
             min={min}
             max={max}
@@ -60,6 +63,7 @@ export function SliderCombo({
             const val = Number.parseFloat(e.target.value);
             if (Number.isNaN(val)) return;
             setValue(val);
+            updateChange(true);
           }}
         />
       )}

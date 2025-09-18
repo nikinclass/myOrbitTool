@@ -27,7 +27,7 @@ const PROXIED_URL = "/api/scenario";
 const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function Scenario() {
-  const { scenario } = useAppSession();
+  const { scenario, getSatelliteCZMLs } = useAppSession();
 
   const navigate = useNavigate();
   const id = useParams().id;
@@ -62,7 +62,7 @@ export function Scenario() {
   return (
     <div className="flex relative h-full">
       <Viewer className="flex-1 w-full">
-        {satCzmlArray}
+        {getSatelliteCZMLs()}
         {siteCzmlArray}
       </Viewer>
     </div>

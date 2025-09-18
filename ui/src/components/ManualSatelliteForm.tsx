@@ -18,20 +18,22 @@ function meanMotionToSemiMajorAxis(mean_motion: number | undefined) {
   return Math.cbrt(M / (n * n));
 }
 
-function semiMajorAxisToMeanMotion(semiMajorAxis: number | undefined){
-  if (semiMajorAxis === undefined) return undefined;
-  
+function semiMajorAxisToMeanMotion(semiMajorAxis: number) {
+  const M = 3.986004418 * Math.pow(10, 14); // m^3/s^2
 
+  return ((24 * 60 * 60) / Math.PI) * Math.sqrt(M / Math.pow(semiMajorAxis, 3));
 }
 
 export function ManualSatForm({
-  satellite, closeModal
+  satellite,
+  closeModal,
 }: {
   satellite: Satellite | null;
   closeModal: () => void;
 }) {
-  console.log(typeof satellite?.ECCENTRICITY);
-  const { removeSatellite, canEdit } = useAppSession();
+  const { removeSatellite, canEdit, updateSatellite } = useAppSession();
+
+  const [changesMade, setChangesMade] = useState<boolean>(false);
 
   const [eccentricity, setEccentricity] = useState<number>(
     satellite?.ECCENTRICITY ?? 0
@@ -57,12 +59,27 @@ export function ManualSatForm({
   const [raan, setRAAN] = useState<number>(satellite?.RA_OF_ASC_NODE ?? 0);
 
   useEffect(() => {
-    // update backend
-    // use res from backend to generate the CZML
-    // update the scenario with the new satellite
+    if (!changesMade) return;
 
+    if (!satellite) return;
+    console.log(changesMade);
 
-  },[eccentricity, inclination, argOfPerigee, meanAnomaly, semiMajorAxis, raan])
+    const mean_motion = semiMajorAxisToMeanMotion(semiMajorAxis);
+
+    const updatedSat: Satellite = {
+      ...satellite,
+      INCLINATION: inclination,
+      ECCENTRICITY: eccentricity,
+      ARG_OF_PERICENTER: argOfPerigee,
+      MEAN_ANOMALY: meanAnomaly,
+      MEAN_MOTION: mean_motion,
+      RA_OF_ASC_NODE: raan,
+    };
+
+    updateSatellite(updatedSat);
+    setChangesMade(false);
+    console.log(changesMade);
+  }, [changesMade]);
 
   return (
     <Card className="full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
@@ -74,8 +91,11 @@ export function ManualSatForm({
           <Button
             disabled={!canEdit || !satellite}
             className="cursor-pointer"
-            onClick={ async () => {
-              if (satellite) {await removeSatellite(satellite); closeModal()};
+            onClick={async () => {
+              if (satellite) {
+                await removeSatellite(satellite);
+                closeModal();
+              }
             }}
             variant={"destructive"}
           >
@@ -89,14 +109,16 @@ export function ManualSatForm({
             <SliderCombo
               value={eccentricity}
               setValue={setEccentricity}
+              updateChange={setChangesMade}
               label="Eccentricity"
               min={0}
-              max={1}
+              max={0.9}
               step={0.01}
             />
             <SliderCombo
               value={inclination}
               setValue={setInclination}
+              updateChange={setChangesMade}
               label="Inclination"
               min={0}
               max={360}
@@ -105,6 +127,7 @@ export function ManualSatForm({
             <SliderCombo
               value={semiMajorAxis}
               setValue={setSemiMajorAxis}
+              updateChange={setChangesMade}
               label="Semi-Major Axis"
               unit="m"
               min={1000}
@@ -114,6 +137,7 @@ export function ManualSatForm({
             <SliderCombo
               value={argOfPerigee}
               setValue={setArgOfPerigee}
+              updateChange={setChangesMade}
               label="Arg of Perigee"
               min={0}
               max={360}
@@ -122,6 +146,7 @@ export function ManualSatForm({
             <SliderCombo
               value={meanAnomaly}
               setValue={setMeanAnomaly}
+              updateChange={setChangesMade}
               label="Mean Anomaly"
               min={0}
               max={360}
@@ -130,6 +155,7 @@ export function ManualSatForm({
             <SliderCombo
               value={raan}
               setValue={setRAAN}
+              updateChange={setChangesMade}
               label="RAAN"
               min={0}
               max={360}

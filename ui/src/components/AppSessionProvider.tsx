@@ -33,7 +33,9 @@ export type AppState = {
   colorSatellite: (s: Satellite) => Promise<void>;
   toggleVisibility: (s: Satellite[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
+  updateSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
+  getSatelliteCZMLs: () => any[];
   addSite: (s: Site) => Promise<void>;
   removeSite: (s: Site) => Promise<void>;
 };
@@ -202,7 +204,6 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const addSite = useCallback(
     async (s: Site) => {
       if (!scenario) return;
-      console.log(s);
       let sites = scenario.sites.slice();
 
       const converted = await convertSiteToCZML(s);
@@ -277,7 +278,11 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     if (!res.ok) return;
     const data = await res.json();
     return (
-      <CzmlDataSource key={s.id} data={data} show={data.VISIBLE ?? true} />
+      <CzmlDataSource
+        key={Date.now()}
+        data={data}
+        show={data.VISIBLE ?? true}
+      />
     );
   };
 
@@ -299,14 +304,70 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     [scenario]
   );
 
+  const updateSatellite = useCallback(
+    async (s: Satellite | null) => {
+      if (!s || !scenario) return;
+      // update backend
+      try {
+        const updates = {
+          ECCENTRICITY: s.ECCENTRICITY,
+          INCLINATION: s.INCLINATION,
+          ARG_OF_PERICENTER: s.ARG_OF_PERICENTER,
+          MEAN_ANOMALY: s.MEAN_ANOMALY,
+          // MEAN_MOTION: s.MEAN_MOTION,
+          RA_OF_ASC_NODE: s.RA_OF_ASC_NODE,
+        };
+
+        const response = await fetch(
+          `${LOCALHOST_URL}/scenario/satellite/${s.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ ...updates }),
+          }
+        );
+
+        const updatedRecord: Satellite = (await response.json())[0];
+        //updatedRecord.OBJECT_NAME = s.OBJECT_NAME + " ";
+
+        // Get new CZML
+        const converted = await convertSatelliteToCZML(updatedRecord);
+        if (!converted) {
+          return;
+        }
+
+        updatedRecord.CZML = converted;
+
+        // update the scenario with the new satellite
+        const new_satellites = await Promise.all(
+          scenario.satellites.map(async (sat) => {
+            if (sat.id === updatedRecord.id) return updatedRecord;
+            return sat;
+          })
+        );
+
+        setScenario({ ...scenario, satellites: new_satellites });
+      } catch (e: any) {
+        console.error(e);
+      }
+    },
+    [scenario]
+  );
+  const getSatelliteCZMLs = useCallback(() => {
+    if (!scenario) return [];
+    return scenario.satellites.map((sat) => sat.CZML);
+  }, [scenario]);
+
   useEffect(() => {
-    console.log(scenario);
+    console.log("Scenario Updated", scenario);
   }, [scenario]);
 
   const deleteSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
-      console.log(s.id);
       await fetch(`${LOCALHOST_URL}/scenario/satellites/${s.id}`, {
         method: "DELETE",
       });
@@ -373,8 +434,10 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     colorSatellite,
     addSatellite,
     removeSatellite,
+    updateSatellite,
     addSite,
     removeSite,
+    getSatelliteCZMLs,
   };
 
   return (

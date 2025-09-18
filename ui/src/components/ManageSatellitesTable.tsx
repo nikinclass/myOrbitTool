@@ -26,8 +26,19 @@ export function ManageSatellitesTable() {
   );
 
   useEffect(() => {
-    console.log(selectedSatellite);
-  }, [selectedSatellite]);
+    if (!scenario) return;
+    if (!selectedSatellite) return;
+    const foundSat = scenario.satellites.find(
+      (item) => item.id === selectedSatellite.id
+    );
+    if (!foundSat) return;
+    setSelectedSatellite(foundSat);
+
+    console.log(
+      "Scenario changed, updated selected satellite",
+      selectedSatellite
+    );
+  }, [scenario]);
 
   const someSatsVisible = scenario?.satellites.some(
     (item) => item.CZML.props.show
