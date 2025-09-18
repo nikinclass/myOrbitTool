@@ -214,7 +214,6 @@ router.get("/refresh", (req, res) => {
 router.post("/siteczml", (req, res) => {
   var site = req.body;
   var czml = siteCzmlConverter(site);
-  console.log(czml);
   res.status(200).json(czml);
 });
 
@@ -227,19 +226,11 @@ router.post("/satczml", (req, res) => {
   res.status(200).json(czml);
 });
 
-const createSatelliteChain = () => {
-  return body(["OBJECT_NAME", "TLE_LINE1", "TLE_LINE2"])
-    .notEmpty()
-    .withMessage("TLE line cannot be empty!");
-};
 
 router.post(
   "/satellite",
-  createSatelliteChain(),
   async (req: Request, res: Response) => {
     //this will make a new satellite
-    const result = validationResult(req);
-    if (result.isEmpty()) {
       const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
       console.log(entity_id);
       const {
@@ -277,8 +268,6 @@ router.post(
         .insert({ ...payload, id: entity_id } as Satellite)
         .returning("*");
       return res.status(200).json(result[0]);
-    }
-    res.status(400).json({ errors: result.array() });
   }
 );
 

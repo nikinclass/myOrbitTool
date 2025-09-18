@@ -10,6 +10,7 @@ import {
 } from "./ui/card";
 import { Search } from "./Search";
 import { ManualSiteForm } from "@/components/ManualSiteForm";
+import { ManualSatForm } from "@/components/ManualSatelliteForm";
 
 function EntityChoices({
   setFormType,
@@ -55,26 +56,27 @@ function LiveSatForm() {
   return <Search />;
 }
 
-function ManualSatForm() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="w-fit">
-          Add Live Satellite From Space-Track
-        </CardTitle>
-        <CardDescription></CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Search />
-      </CardContent>
-    </Card>
-  );
-}
+// function ManualSatForm() {
+//   return (
+//     <Card>
+//       <CardHeader>
+//         <CardTitle className="w-fit">
+//           Add Live Satellite From Space-Track
+//         </CardTitle>
+//         <CardDescription></CardDescription>
+//       </CardHeader>
+//       <CardContent>
+//         <Search />
+//       </CardContent>
+//     </Card>
+//   );
+// }
 type FormType = "live-satellite" | "manual-satellite" | "manual-station";
 export function AddEntityForm() {
   const [formType, setFormType] = useState<FormType | null>(null);
   if (!formType) return <EntityChoices setFormType={setFormType} />;
   if (formType === "live-satellite") return <LiveSatForm />;
+  if (formType === "manual-satellite") return <ManualSatForm />;
   if (formType === "manual-station") return <ManualSiteForm site={null} />;
   return <></>;
 }

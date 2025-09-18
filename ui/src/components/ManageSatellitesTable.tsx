@@ -10,7 +10,7 @@ import {
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 import { useEffect, useState } from "react";
-import { ManualSatForm } from "./ManualSatelliteForm";
+import { EditSatForm } from "@/components/EditSatelliteForm";
 
 export function ManageSatellitesTable() {
   const {
@@ -49,7 +49,7 @@ export function ManageSatellitesTable() {
   return (
     <>
       {selectedSatellite && (
-        <ManualSatForm
+        <EditSatForm
           satellite={selectedSatellite}
           closeModal={() => setSelectedSatellite(null)}
         />

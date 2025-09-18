@@ -17,7 +17,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
 
   const { addSite, canEdit } = useAppSession();
 
-  const [siteName, setSiteName] = useState<string>("site");
+  const [siteName, setSiteName] = useState<string>("Default Name");
 
   const [showLatitudeToggle, setLatitudeToggle] = useState<boolean>(false);
 
@@ -63,7 +63,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                 fullItem[0].COLOR = [255, 255, 0, 255];
                 await addSite(fullItem[0]);
                 toast.success("Site added!", {
-                  description: `${fullItem.name} at LAT:${fullItem.latitude} LONG:${fullItem.longitude}`,
+                  description: `${siteName} at LAT:${latitude} LONG:${longitude}`,
                 });
               } catch (error: any) {
                 console.error(error);
@@ -81,7 +81,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
             <Label className="cursor-pointer">Name</Label>
             <Input
               type="text"
-              defaultValue={"Default Name"}
+              defaultValue={siteName}
               onChange={(e) => {
                 setSiteName(e.target.value);
               }}

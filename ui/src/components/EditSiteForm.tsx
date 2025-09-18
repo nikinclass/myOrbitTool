@@ -23,21 +23,21 @@ export function EditSiteForm({
 
   const { removeSite, updateSite, canEdit } = useAppSession();
 
-  const [siteName, setSiteName] = useState<string>("site");
+  const [siteName, setSiteName] = useState<string>(site?.name ?? "site");
 
   const [changesMade, setChangesMade] = useState<boolean>(false);
 
   const [showLatitudeToggle, setLatitudeToggle] = useState<boolean>(false);
 
-  const [latitude, setLatitude] = useState<number>(0);
+  const [latitude, setLatitude] = useState<number>(site?.latitude ?? 0);
 
   const [showLongitudeToggle, setLongitudeToggle] = useState<boolean>(false);
 
-  const [longitude, setLongitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(site?.longitude ?? 0);
 
   const [showAltitudeToggle, setAltitudeToggle] = useState<boolean>(false);
 
-  const [altitude, setAltitude] = useState<number>(0);
+  const [altitude, setAltitude] = useState<number>(site?.altitude ?? 0);
 
   useEffect(() => {
     if (!changesMade) return;
@@ -48,6 +48,7 @@ export function EditSiteForm({
 
     const updatedSite: Site = {
       ...site,
+      name: siteName,
       latitude: latitude,
       longitude: longitude,
       altitude: altitude
@@ -60,7 +61,7 @@ export function EditSiteForm({
 
 
   return (
-    <Card>
+    <Card className="opacity-75">
       <CardHeader>
         <CardTitle className="flex gap-2 justify-center items-center">
           <p className="text-left w-full">Edit Site</p>
@@ -85,9 +86,10 @@ export function EditSiteForm({
             <Label className="cursor-pointer">Name</Label>
             <Input
               type="text"
-              defaultValue={site.name}
+              defaultValue={site?.name}
               onChange={(e) => {
                 setSiteName(e.target.value);
+                setChangesMade(true);
               }}
             />
           </div>

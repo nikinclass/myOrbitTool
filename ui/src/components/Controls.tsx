@@ -22,7 +22,6 @@ export const Controls = () => {
 
       <AddEntityButton className="absolute z-10 top-1/13 flex flex-col opacity-75 p-4" />
       <ManageSatellitesButton className="absolute z-10 top-2/13 flex flex-col opacity-75 p-4" />
-      <ManageSatellitesButton className="absolute z-10 top-2/13 flex flex-col opacity-75 p-4" />
       <ManageSitesButton className="absolute z-10 top-3/13 flex flex-col opacity-75 p-4" />
     </>
   );

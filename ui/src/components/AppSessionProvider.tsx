@@ -200,7 +200,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return <CzmlDataSource key={s.id} data={data} />;
+    return <CzmlDataSource key={Date.now()} data={data} />;
   };
   const addSite = useCallback(
     async (s: Site) => {
@@ -311,13 +311,14 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       // update backend
       try {
         const updates = {
+          name: s.name,
           latitude: s.latitude,
           longitude: s.longitude,
           altitude: s.altitude
         };
 
         const response = await fetch(
-          `${LOCALHOST_URL}/scenario/satellite/${s.id}`,
+          `${LOCALHOST_URL}/scenario/sites/${s.id}`,
           {
             method: "PATCH",
             headers: {
@@ -327,8 +328,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
             body: JSON.stringify({ ...updates })
           }
         );
-
+        console.log(response)
         const updatedRecord: Site = (await response.json())[0];
+        console.log(updatedRecord);
         
         // Get new CZML
         const converted = await convertSiteToCZML(updatedRecord);
@@ -363,7 +365,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           INCLINATION: s.INCLINATION,
           ARG_OF_PERICENTER: s.ARG_OF_PERICENTER,
           MEAN_ANOMALY: s.MEAN_ANOMALY,
-          // MEAN_MOTION: s.MEAN_MOTION,
+          MEAN_MOTION: s.MEAN_MOTION,
           RA_OF_ASC_NODE: s.RA_OF_ASC_NODE,
         };
 
@@ -460,7 +462,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       setScenario({ ...scenario, sites: sites})
       deleteSite(s);
 
-  }, []);
+  }, [scenario]);
 
   const state: AppState = {
     user,
