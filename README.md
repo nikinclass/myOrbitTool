@@ -60,6 +60,13 @@
   </ol>
 </details>
 
+<ul>
+  <li><a href="https://github.com/nikinclass/myOrbitTool/issues">Roadmap</a></li>
+  <li><a href= "https://github.com/users/nikinclass/projects/6/views/1?pane=issue&itemId=127645281&issue=nikinclass%7CmyOrbitTool%7C4">ERD-information</a></li>
+  <li><a href="#acknowledgments">Acknowledgments</a></li>
+  *Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.*
+</ul>
+
 ## About The Project
 
 ### Background
