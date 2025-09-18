@@ -10,8 +10,7 @@ import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
 import { SceneMode } from "cesium";
 
-const PROXIED_URL = "/api";
-const LOCALHOST_URL = "http://localhost:8080/api";
+const URL = "/api";
 
 export type AppState = {
   // Authentication
@@ -85,9 +84,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await (
-        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}`)
-      ).json();
+      const data = await (await fetch(`${URL}/scenario/${scenarioID}`)).json();
 
       if (!data.id) throw new Error("Scenario not found");
 
@@ -130,7 +127,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const setTitle = async (title: string) => {
     if (!scenario || !canEdit) return;
     try {
-      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/title`, {
+      await fetch(`${URL}/scenario/${scenario.id}/title`, {
         method: "PATCH",
         headers: {
           Accept: "application/json",
@@ -147,7 +144,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const setDescription = async (description: string) => {
     if (!scenario || !canEdit) return;
     try {
-      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/description`, {
+      await fetch(`${URL}/scenario/${scenario.id}/description`, {
         method: "PATCH",
         headers: {
           Accept: "application/json",
@@ -163,7 +160,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     if (!isLoggedIn || !user) {
       return;
     }
-    const response = await fetch(`${LOCALHOST_URL}/scenario`, {
+    const response = await fetch(`${URL}/scenario`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -189,7 +186,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   //   s.map((sat, index) => {sat.VISIBLE = !sat.VISIBLE})
   // }, []);
   const convertSiteToCZML = async (s: Site) => {
-    const res = await fetch(`${PROXIED_URL}/satellites/siteczml`, {
+    const res = await fetch(`${URL}/satellites/siteczml`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -267,7 +264,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const colorSatellite = useCallback(async () => {}, []);
 
   const convertSatelliteToCZML = async (s: Satellite) => {
-    const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+    const res = await fetch(`${URL}/satellites/satczml`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -318,17 +315,14 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           RA_OF_ASC_NODE: s.RA_OF_ASC_NODE,
         };
 
-        const response = await fetch(
-          `${LOCALHOST_URL}/scenario/satellite/${s.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ ...updates }),
-          }
-        );
+        const response = await fetch(`${URL}/scenario/satellite/${s.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ...updates }),
+        });
 
         const updatedRecord: Satellite = (await response.json())[0];
         //updatedRecord.OBJECT_NAME = s.OBJECT_NAME + " ";
@@ -368,7 +362,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const deleteSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
-      await fetch(`${LOCALHOST_URL}/scenario/satellites/${s.id}`, {
+      await fetch(`${URL}/scenario/satellites/${s.id}`, {
         method: "DELETE",
       });
     },
@@ -395,28 +389,33 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     user,
     isLoggedIn: isLoggedIn,
     login: async (username, password) => {
-      let payload = JSON.stringify({
-        username: username,
-        password: password,
-      });
+      try {
+        let payload = JSON.stringify({
+          username: username,
+          password: password,
+        });
 
-      const res = await fetch(`${PROXIED_URL}/user_table/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: payload,
-      });
-      const body = await res.json();
+        const res = await fetch(`${URL}/user_table/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: payload,
+        });
 
-      if (!res.ok) {
-        throw new Error("Couldn't log in");
+        if (!res.ok) {
+          throw new Error("Invalid credentials");
+        }
+
+        const body = await res.json();
+
+        const id: number = body.id;
+        const user = { username: username, id: id };
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+      } catch (e: any) {
+        throw new Error("Invalid credentials");
       }
-
-      const id: number = body.id;
-      const user = { username: username, id: id };
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
     },
     logout: () => {
       setUser(null);
