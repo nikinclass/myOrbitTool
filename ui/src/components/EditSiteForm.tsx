@@ -3,21 +3,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useAppSession } from "./AppSessionProvider";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-export function ManualSiteForm({ site }: { site: Site | null }) {
+export function EditSiteForm({
+  site,
+  closeModal,
+}: {
+  site: Site | null;
+  closeModal: () => void;
+}) {
   const scenario_id = useParams().id;
 
   const LOCALHOST_URL = "http://localhost:8080/api";
 
-  const { addSite, canEdit } = useAppSession();
+  const { removeSite, updateSite, canEdit } = useAppSession();
 
   const [siteName, setSiteName] = useState<string>("site");
+
+  const [changesMade, setChangesMade] = useState<boolean>(false);
 
   const [showLatitudeToggle, setLatitudeToggle] = useState<boolean>(false);
 
@@ -31,47 +39,43 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
 
   const [altitude, setAltitude] = useState<number>(0);
 
+  useEffect(() => {
+    if (!changesMade) return;
+
+    if (!site) return;
+    console.log(changesMade);
+    console.log(site)
+
+    const updatedSite: Site = {
+      ...site,
+      latitude: latitude,
+      longitude: longitude,
+      altitude: altitude
+    };
+
+    updateSite(updatedSite);
+    setChangesMade(false);
+    console.log(changesMade);
+  }, [changesMade]);
+
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex gap-2 justify-center items-center">
-          <p className="text-left w-full">Create Site</p>
+          <p className="text-left w-full">Edit Site</p>
           <Button
             disabled={!canEdit}
             className="cursor-pointer"
             onClick={async () => {
-              try {
-                // Create record in db
-                const response = await fetch(
-                  `${LOCALHOST_URL}/scenario/station`,
-                  {
-                    method: "POST",
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      name: siteName,
-                      latitude: latitude,
-                      longitude: longitude,
-                      altitude: altitude,
-                      scenario_id: scenario_id,
-                    }),
-                  }
-                );
-                const fullItem = await response.json();
-                fullItem[0].COLOR = [255, 255, 0, 255];
-                await addSite(fullItem[0]);
-                toast.success("Site added!", {
-                  description: `${fullItem.name} at LAT:${fullItem.latitude} LONG:${fullItem.longitude}`,
-                });
-              } catch (error: any) {
-                console.error(error);
+              if (site) {
+                await removeSite(site);
+                closeModal();
               }
             }}
-            // variant={"destructive"}
+            variant={"destructive"}
           >
-            <Plus className="self-center" size={16} />
+            <Trash2 className="self-center" size={16} />
           </Button>
         </CardTitle>
       </CardHeader>
@@ -81,7 +85,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
             <Label className="cursor-pointer">Name</Label>
             <Input
               type="text"
-              defaultValue={"Default Name"}
+              defaultValue={site.name}
               onChange={(e) => {
                 setSiteName(e.target.value);
               }}
@@ -101,6 +105,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   defaultValue={[latitude]}
                   onValueChange={(e) => {
                     setLatitude(e[0]);
+                    setChangesMade(true)
                   }}
                   max={360}
                   step={0.1}
@@ -116,6 +121,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   const val = Number.parseFloat(e.target.value);
                   if (Number.isNaN(val)) return;
                   setLatitude(val);
+                  setChangesMade(true)
                 }}
               />
             )}
@@ -134,6 +140,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   defaultValue={[longitude]}
                   onValueChange={(e) => {
                     setLongitude(e[0]);
+                    setChangesMade(true)
                   }}
                   max={360}
                   step={0.1}
@@ -149,6 +156,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   const val = Number.parseFloat(e.target.value);
                   if (Number.isNaN(val)) return;
                   setLongitude(val);
+                  setChangesMade(true)
                 }}
               />
             )}
@@ -167,6 +175,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   defaultValue={[altitude]}
                   onValueChange={(e) => {
                     setAltitude(e[0]);
+                    setChangesMade(true)
                   }}
                   max={5000}
                   step={0.1}
@@ -182,6 +191,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
                   const val = Number.parseFloat(e.target.value);
                   if (Number.isNaN(val)) return;
                   setAltitude(val);
+                  setChangesMade(true)
                 }}
               />
             )}
