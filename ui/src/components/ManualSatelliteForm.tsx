@@ -50,7 +50,7 @@ export function ManualSatForm() {
         7.4906
     );
 
-    const [semiMajorAxis, setSemiMajorAxis] = useState<number>(
+    const [ meanMotion, setMeanMotion ] = useState<number>(
         //satellite?.MEAN_MOTION ?? 0
         // 6793.789 * 1000
         15.50367586
@@ -87,7 +87,7 @@ export function ManualSatForm() {
                                             ECCENTRICITY: eccentricity,
                                             ARG_OF_PERICENTER: argOfPerigee,
                                             MEAN_ANOMALY: meanAnomaly,
-                                            MEAN_MOTION: semiMajorAxis,//semiMajorAxisToMeanMotion(semiMajorAxis)
+                                            MEAN_MOTION: meanMotion,//semiMajorAxisToMeanMotion(semiMajorAxis)
                                             RA_OF_ASC_NODE: raan,
                                             OBJECT_NAME: name,
                                             OBJECT_ID: '', // NOT NEEDED
@@ -141,10 +141,10 @@ export function ManualSatForm() {
                             step={1}
                         />
                         <SliderCombo
-                            value={semiMajorAxis}
-                            setValue={setSemiMajorAxis}
+                            value={meanMotion}
+                            setValue={setMeanMotion}
                             updateChange={() => {}}
-                            label="Semi-Major Axis"
+                            label="Mean Motion"
                             unit="m"
                             min={1000}
                             max={10000000000}
