@@ -304,6 +304,29 @@ router.patch("/satellite/:id", async (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
+router.patch("/sites/:id", async (req: Request, res: Response) => {
+  const site_id = req.params.id;
+
+  // Check if sat exists
+  const exists = await knex("stations")
+    .select("*")
+    .where({ id: site_id })
+    .first();
+
+  if (!exists) return res.send(401);
+
+  // Update record
+  const response = await knex("stations")
+    .where({ id: site_id })
+    .update({
+      ...req.body,
+    })
+    .returning("*");
+
+  res.status(200).json(response);
+});
+
+
 const createStationChain = () => {
   return [
     body(["name"])
@@ -372,6 +395,22 @@ router.delete("/satellites/:satId", async (req, res) => {
   try {
     const deletedEntity = await knex("scenario_entities")
       .where({ id: satId })
+      .del();
+    if (!deletedEntity)
+      return res.status(404).json({ message: "didnt work either" });
+    res.json({ message: "worked again" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "fubar" });
+  }
+});
+
+router.delete("/sites/:siteId", async (req, res) => {
+  const { siteId } = req.params;
+
+  try {
+    const deletedEntity = await knex("scenario_entities")
+      .where({ id: siteId })
       .del();
     if (!deletedEntity)
       return res.status(404).json({ message: "didnt work either" });
