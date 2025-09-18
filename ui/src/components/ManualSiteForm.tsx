@@ -32,7 +32,7 @@ export function ManualSiteForm({ site }: { site: Site | null }) {
   const [altitude, setAltitude] = useState<number>(0);
 
   return (
-    <Card>
+    <Card className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
       <CardHeader>
         <CardTitle className="flex gap-2 justify-center items-center">
           <p className="text-left w-full">Create Site</p>

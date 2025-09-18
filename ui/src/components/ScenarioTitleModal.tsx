@@ -45,7 +45,7 @@ export function ScenarioTitleModal() {
             {/* </Button> */}
           </PopoverTrigger>
           <PopoverContent
-            className="flex flex-col w-fit shadow-none"
+            className="flex flex-col w-fit shadow-none opacity-75"
             side="bottom"
             align="center"
           >

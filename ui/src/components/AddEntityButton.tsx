@@ -5,14 +5,14 @@ import { AddEntityForm } from "./AddEntityForm";
 import { useAppSession } from "./AppSessionProvider";
 
 export function AddEntityButton({ className }: { className: string }) {
-  const { isLoggedIn } = useAppSession();
+  const { canEdit } = useAppSession();
   return (
     <div className={className}>
       <Popover>
         <Tooltip delayDuration={500}>
           <TooltipTrigger asChild>
             <PopoverTrigger
-              disabled={!isLoggedIn}
+              disabled={!canEdit}
               className="flex justify-center disabled:cursor-not-allowed items-center rounded-full h-8 w-8 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 cursor-pointer"
             >
               {/* <Button variant="secondary" className="rounded-full w-8 h-8"> */}
@@ -21,8 +21,8 @@ export function AddEntityButton({ className }: { className: string }) {
             </PopoverTrigger>
           </TooltipTrigger>
           <TooltipContent side="top">
-            {isLoggedIn && <p>Add an entity to the scene!</p>}
-            {!isLoggedIn && (
+            {canEdit && <p>Add an entity to the scene!</p>}
+            {!canEdit && (
               <p>You must own this scenario to make edits/additions</p>
             )}
           </TooltipContent>

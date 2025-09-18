@@ -26,8 +26,8 @@ export function ManageSitesTable() {
     <>
       {selectedSite && <ManualSiteForm site={selectedSite} />}
       {!selectedSite && (
-        <Table>
-          <TableCaption>A list of all satellites in this scenario</TableCaption>
+        <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
+          <TableCaption className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">A list of all ground stations in this scenario</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
@@ -39,7 +39,7 @@ export function ManageSitesTable() {
           </TableHeader>
           <TableBody>
             {scenario?.sites.map((site: Site, index: number) => (
-              <TableRow key={index} className="cursor-pointer select-none">
+              <TableRow key={index} className="cursor-pointer select-none hover:bg-accent-foreground/10 hover:text-accent-foreground dark:hover:bg-card">
                 <TableCell>{site.name}</TableCell>
                 <TableCell>{site.latitude}</TableCell>
                 <TableCell>{site.longitude}</TableCell>

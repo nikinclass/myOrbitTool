@@ -61,7 +61,7 @@ export function ScenarioDetailsModal() {
             side="bottom"
             align="center"
           >
-            <Card className="min-w-[300px] rounded-xl shadow-lg gap-1 pt-3">
+            <Card className="min-w-[300px] rounded-xl shadow-lg gap-1 pt-3 opacity-75">
               <CardHeader className="font-bold">Edit Description</CardHeader>
               <CardContent className="flex flex-col gap-3 ">
                 <Textarea
