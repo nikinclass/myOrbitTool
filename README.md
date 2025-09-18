@@ -8,7 +8,7 @@
 
 <h3 align="center">myOrbitTool</h3>
 <div>
-
+  <p align="center">
     <a href="https://github.com/nikinclass/myOrbitTool">View Demo</a>
     &middot;
     <a href="https://github.com/nikinclass/myOrbitTool/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
