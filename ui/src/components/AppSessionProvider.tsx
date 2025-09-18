@@ -38,6 +38,7 @@ export type AppState = {
   getSatelliteCZMLs: () => any[];
   addSite: (s: Site) => Promise<void>;
   removeSite: (s: Site) => Promise<void>;
+  updateSite: (s: Site) => Promise<void>;
 };
 
 type AppProviderProps = {
@@ -304,6 +305,54 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     [scenario]
   );
 
+  const updateSite = useCallback(
+    async (s: Site | null) => {
+      if (!s || !scenario) return;
+      // update backend
+      try {
+        const updates = {
+          latitude: s.latitude,
+          longitude: s.longitude,
+          altitude: s.altitude
+        };
+
+        const response = await fetch(
+          `${LOCALHOST_URL}/scenario/satellite/${s.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ ...updates })
+          }
+        );
+
+        const updatedRecord: Site = (await response.json())[0];
+        
+        // Get new CZML
+        const converted = await convertSiteToCZML(updatedRecord);
+        if (!converted) {
+          return;
+        }
+
+        updatedRecord.CZML = converted;
+
+        const new_sites = await Promise.all(
+          scenario.sites.map(async (site) => {
+            if (site.id === updatedRecord.id) return updatedRecord;
+            return site;
+          })
+        );
+
+        setScenario({ ...scenario, sites: new_sites });
+      } catch (e: any) {
+        console.error(e);
+      }
+    },
+    [scenario]
+  );
+
   const updateSatellite = useCallback(
     async (s: Satellite | null) => {
       if (!s || !scenario) return;
@@ -356,6 +405,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     },
     [scenario]
   );
+
   const getSatelliteCZMLs = useCallback(() => {
     if (!scenario) return [];
     return scenario.satellites.map((sat) => sat.CZML);
@@ -375,6 +425,16 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     [scenario]
   );
 
+  const deleteSite = useCallback(
+    async (s: Site) => {
+      if (!scenario) return;
+      await fetch(`${LOCALHOST_URL}/scenario/sites/${s.id}`, {
+        method: "DELETE"
+      })
+    },
+    [scenario]
+  )
+
   const removeSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
@@ -389,7 +449,18 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     [scenario]
   );
 
-  const removeSite = useCallback(async (s: Site) => {}, []);
+  const removeSite = useCallback(
+    async (s: Site) => {
+      if (!scenario) return;
+
+      let sites = scenario.sites.slice();
+
+      sites.splice(sites.indexOf(s), 1);
+
+      setScenario({ ...scenario, sites: sites})
+      deleteSite(s);
+
+  }, []);
 
   const state: AppState = {
     user,
@@ -438,6 +509,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     addSite,
     removeSite,
     getSatelliteCZMLs,
+    updateSite,
   };
 
   return (

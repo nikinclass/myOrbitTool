@@ -11,7 +11,7 @@ import {
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite, Site } from "@/types";
 import { useEffect, useState } from "react";
-import { ManualSiteForm } from "./ManualSiteForm";
+import { EditSiteForm } from "./EditSiteForm";
 
 export function ManageSitesTable() {
   const { scenario, removeSatellite, colorSatellite } = useAppSession();
@@ -24,7 +24,7 @@ export function ManageSitesTable() {
 
   return (
     <>
-      {selectedSite && <ManualSiteForm site={selectedSite} />}
+      {selectedSite && <EditSiteForm site={selectedSite} closeModal={() => {}}/>}
       {!selectedSite && (
         <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
           <TableCaption className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">A list of all ground stations in this scenario</TableCaption>
