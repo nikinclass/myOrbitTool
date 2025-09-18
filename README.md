@@ -8,10 +8,7 @@
 
 <h3 align="center">myOrbitTool</h3>
 <div>
-  <p align="center">
-    Description
-    <br />
-    <br />
+
     <a href="https://github.com/nikinclass/myOrbitTool">View Demo</a>
     &middot;
     <a href="https://github.com/nikinclass/myOrbitTool/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
@@ -28,18 +25,12 @@ Josh Krutz/Jeffrey Eglinsdoerfer/Anthony Marantino/Nicole Gabor
 Payton Rogers/Anthony Marantino
 ##UI:
 Josh Krutz/Dustin Jordan/Gabriel Riggs/Michael Vulpo/Anthony Marantino/Payton Rogers/Jeffery Eglinsdoerfer/Nicole Gabor
-  <ul>
-    <li> <a img src="./images/myOrbitTool.jpeg">About The Project</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool">myOrbitTool Project</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/issues">Roadmap</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/graphs/contributors">Contributing</a></li>
-    <li><a href="https://github.com/nikinclass/myOrbitTool/blob/main/LICENSE">License</a></li>
-    <li><a href= "https://github.com/users/nikinclass/projects/6/views/1?pane=issue&itemId=127645281&issue=nikinclass%7CmyOrbitTool%7C4">ERD-information</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-    *Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.*
-  </ol>
+
 ## About The Project
+  <p align="center">
+    Description
+    <br />
+    <br />
 
 [![myOrbitTool](./images/myOrbitTool.jpeg)(http://localhost:3000)]
 
@@ -50,6 +41,18 @@ unavailable for simple visualizations. ​<br><br>
 
 We present a mission planning web-app for visualizing live/custom orbits, coverages,
 and look-angles ​</h3>\*\*
+
+  <ul>
+    <li> <a img src="./images/myOrbitTool.jpeg">About The Project</a></li>
+    <li><a href="https://github.com/nikinclass/myOrbitTool">myOrbitTool Project</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="https://github.com/nikinclass/myOrbitTool/issues">Roadmap</a></li>
+    <li><a href="https://github.com/nikinclass/myOrbitTool/graphs/contributors">Contributing</a></li>
+    <li><a href="https://github.com/nikinclass/myOrbitTool/blob/main/LICENSE">License</a></li>
+    <li><a href= "https://github.com/users/nikinclass/projects/6/views/1?pane=issue&itemId=127645281&issue=nikinclass%7CmyOrbitTool%7C4">ERD-information</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    *Special thanks to Space Track, React, Docker, shadcn, and we send our gratitude out to Supra Coders (specifically Matt, Jeff, and Marcus for their support) and for the opportunity to work together on this project.*
+  </ul>
 
 ### Built With
 
