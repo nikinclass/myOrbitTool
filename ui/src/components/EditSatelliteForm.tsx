@@ -113,7 +113,7 @@ export function EditSatForm({
               value={meanMotion}
               setValue={setMeanMotion}
               updateChange={setChangesMade}
-              label="Semi-Major Axis"
+              label="Mean Motion"
               unit="Rev/Day"
               min={0}
               max={20}
