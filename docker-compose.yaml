@@ -1,9 +1,11 @@
 volumes:
   pgdatasource:
+  api_node_modules:
+  ui_node_modules:
 
 services:
   db:
-    image: postgres
+    image: postgres:17-alpine
     container_name: myOrbitTool-db
     restart: always
     env_file:
@@ -17,13 +19,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    # volumes:
-    #   - pgdatasource:/var/lib/postgresql/data
+    volumes:
+      - pgdatasource:/var/lib/postgresql/data
 
   api:
-    build: api/
+    build:
+      context: ./api
+      target: dev
     container_name: myOrbitTool-api
-    restart: always
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -33,29 +37,33 @@ services:
       - app-network
     env_file:
       - .env
-  # volumes:
-  #   - type: bind
-  #     source: ./api
-  #     target: /app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./api:/app
+      - api_node_modules:/app/node_modules
 
   ui:
-    build: ui/
+    build:
+      context: ./ui
+      target: dev
     tty: true
     container_name: myOrbitTool-ui
     depends_on:
-      - "api"
+      - api
     ports:
       - "3000:3000"
     networks:
       - app-network
     env_file:
       - .env
-  # Uncomment the following lines to enable live code updates
-  # volumes:
-  #   - type: bind
-  #     source: ./ui
-  #     target: /app
-  #   - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./ui:/app
+      - ui_node_modules:/app/node_modules
 
 networks:
   app-network:

@@ -44,20 +44,26 @@ export function Search() {
       >
         <SearchIcon size={16} />
         <input
-          onFocus={(e) => {
-            e.target.select();
-          }}
           placeholder="Search by SATNO or name"
-          className="border-none outline-none flex-1"
+          className="border-none outline-none flex-1 text-sm"
           autoFocus
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
           }}
+          onFocus={(e) => {
+            e.target.select();
+          }}
+          onMouseDown={(e) => {
+            if (document.activeElement !== e.target) {
+              (e.target as HTMLInputElement).focus();
+              e.preventDefault();
+            }
+          }}
         />
       </div>
       {search && search.length > 0 && (
-        <div className="flex flex-col gap-1 text-sm bg-secondary text-secondary-foreground p-2 w-full ">
+        <div className="flex flex-col gap-1 text-sm bg-secondary text-secondary-foreground p-2 w-full">
           {filteredItems &&
             filteredItems.length > 0 &&
             filteredItems.map((item, index) => {
@@ -83,7 +89,6 @@ export function Search() {
                       fullItem.COLOR = [255, 0, 255, 255];
                       fullItem.VISIBLE = true;
 
-                      console.log(fullItem);
                       // Create record in db
                       const { id } = await (
                         await fetch(`${URL}/scenario/satellite`, {
@@ -99,7 +104,6 @@ export function Search() {
                         })
                       ).json();
 
-                      console.log(id);
                       fullItem.id = id;
                       await addSatellite(fullItem);
                       toast.success("Satellite added!", {

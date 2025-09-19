@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
-import { SceneMode } from "cesium";
+import { v4 as randomUUID } from "uuid";
 
 const URL = "/api";
 
@@ -47,19 +47,6 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  // useEffect(() => {
-  //   if (satellites[0]) {
-  //     setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
-  //       console.log(sat)
-  //       let tempCZML: any[] = sat.CZML.slice()
-  //       tempCZML[1].path.material.solidColor.color = sat.COLOR
-  //       tempCZML[1].point.color = sat.COLOR
-  //       console.log(tempCZML[1].point.color)
-  //       return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
-  //     }))
-  //   }
-  // }, [satellites])
-
   const { id: scenarioID } = useParams();
   const navigate = useNavigate();
   let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -197,7 +184,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return <CzmlDataSource key={Date.now()} data={data} />;
+    return <CzmlDataSource key={randomUUID()} data={data} />;
   };
   const addSite = useCallback(
     async (s: Site) => {
@@ -275,21 +262,15 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return (
-      <CzmlDataSource
-        key={Date.now()}
-        data={data}
-        show={data.VISIBLE ?? true}
-      />
-    );
+    return <CzmlDataSource key={randomUUID()} data={data} show={true} />;
   };
 
   const addSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
       let sats = scenario.satellites.slice();
-
       const converted = await convertSatelliteToCZML(s);
+      s.COLOR = [255, 0, 255, 255];
 
       if (!converted) return;
 
@@ -311,24 +292,21 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           name: s.name,
           latitude: s.latitude,
           longitude: s.longitude,
-          altitude: s.altitude
+          altitude: s.altitude,
         };
 
-        const response = await fetch(
-          `${LOCALHOST_URL}/scenario/sites/${s.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ ...updates })
-          }
-        );
-        console.log(response)
+        const response = await fetch(`${URL}/scenario/sites/${s.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ...updates }),
+        });
+        console.log(response);
         const updatedRecord: Site = (await response.json())[0];
         console.log(updatedRecord);
-        
+
         // Get new CZML
         const converted = await convertSiteToCZML(updatedRecord);
         if (!converted) {
@@ -358,6 +336,8 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       // update backend
       try {
         const updates = {
+          NORAD_CAT_ID: "CUSTOM",
+          OBJECT_NAME: s.OBJECT_NAME,
           ECCENTRICITY: s.ECCENTRICITY,
           INCLINATION: s.INCLINATION,
           ARG_OF_PERICENTER: s.ARG_OF_PERICENTER,
@@ -424,12 +404,12 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const deleteSite = useCallback(
     async (s: Site) => {
       if (!scenario) return;
-      await fetch(`${LOCALHOST_URL}/scenario/sites/${s.id}`, {
-        method: "DELETE"
-      })
+      await fetch(`${URL}/scenario/sites/${s.id}`, {
+        method: "DELETE",
+      });
     },
     [scenario]
-  )
+  );
 
   const removeSatellite = useCallback(
     async (s: Satellite) => {
@@ -453,10 +433,11 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       sites.splice(sites.indexOf(s), 1);
 
-      setScenario({ ...scenario, sites: sites})
+      setScenario({ ...scenario, sites: sites });
       deleteSite(s);
-
-  }, [scenario]);
+    },
+    [scenario]
+  );
 
   const state: AppState = {
     user,

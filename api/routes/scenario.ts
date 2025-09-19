@@ -57,8 +57,6 @@ router.get("/:id", async (req: Request, res: Response) => {
       })
       .where({ scenario_id: req.params.id });
 
-    // console.log(scenario_data);
-
     // Get owner
     const { password, ...user } = await knex("user_table")
       .select("*")
@@ -216,55 +214,49 @@ router.post("/siteczml", (req, res) => {
 
 router.post("/satczml", (req, res) => {
   var sat = req.body;
-  // console.log(sat);
   var czml = satCzmlConverter(sat);
   res.status(200).json(czml);
 });
 
+router.post("/satellite", async (req: Request, res: Response) => {
+  //this will make a new satellite
+  const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+  const {
+    scenario_id,
+    CCSDS_OMM_VERS,
+    COMMENT,
+    CREATION_DATE,
+    ORIGINATOR,
+    CENTER_NAME,
+    REF_FRAME,
+    TIME_SYSTEM,
+    MEAN_ELEMENT_THEORY,
+    SEMIMAJOR_AXIS,
+    PERIOD,
+    APOAPSIS,
+    PERIAPSIS,
+    OBJECT_TYPE,
+    RCS_SIZE,
+    COUNTRY_CODE,
+    LAUNCH_DATE,
+    SITE,
+    DECAY_DATE,
+    FILE,
+    GP_ID,
+    TLE_LINE0,
+    TLE_LINE1,
+    TLE_LINE2,
+    created_at,
+    updated_at,
+    VISIBLE,
+    ...payload
+  } = req.body;
 
-router.post(
-  "/satellite",
-  async (req: Request, res: Response) => {
-    //this will make a new satellite
-      const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
-      console.log(entity_id);
-      const {
-        scenario_id,
-        CCSDS_OMM_VERS,
-        COMMENT,
-        CREATION_DATE,
-        ORIGINATOR,
-        CENTER_NAME,
-        REF_FRAME,
-        TIME_SYSTEM,
-        MEAN_ELEMENT_THEORY,
-        SEMIMAJOR_AXIS,
-        PERIOD,
-        APOAPSIS,
-        PERIAPSIS,
-        OBJECT_TYPE,
-        RCS_SIZE,
-        COUNTRY_CODE,
-        LAUNCH_DATE,
-        SITE,
-        DECAY_DATE,
-        FILE,
-        GP_ID,
-        TLE_LINE0,
-        TLE_LINE1,
-        TLE_LINE2,
-        created_at,
-        updated_at,
-        VISIBLE,
-        ...payload
-      } = req.body;
-
-      const result = await knex("satellites")
-        .insert({ ...payload, id: entity_id } as Satellite)
-        .returning("*");
-      return res.status(200).json(result[0]);
-  }
-);
+  const result = await knex("satellites")
+    .insert({ ...payload, id: entity_id } as Satellite)
+    .returning("*");
+  return res.status(200).json(result[0]);
+});
 
 router.patch("/satellite/:id", async (req: Request, res: Response) => {
   const sat_id = req.params.id;
@@ -309,7 +301,6 @@ router.patch("/sites/:id", async (req: Request, res: Response) => {
 
   res.status(200).json(response);
 });
-
 
 const createStationChain = () => {
   return [

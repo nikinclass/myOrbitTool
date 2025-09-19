@@ -1,13 +1,6 @@
 import { Satellite, SatelliteDish } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
 import { Search } from "./Search";
 import { ManualSiteForm } from "@/components/ManualSiteForm";
 import { ManualSatForm } from "@/components/ManualSatelliteForm";
@@ -52,31 +45,15 @@ function EntityChoices({
     </>
   );
 }
-function LiveSatForm() {
-  return <Search />;
-}
 
-// function ManualSatForm() {
-//   return (
-//     <Card>
-//       <CardHeader>
-//         <CardTitle className="w-fit">
-//           Add Live Satellite From Space-Track
-//         </CardTitle>
-//         <CardDescription></CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         <Search />
-//       </CardContent>
-//     </Card>
-//   );
-// }
 type FormType = "live-satellite" | "manual-satellite" | "manual-station";
-export function AddEntityForm() {
+export function AddEntityForm({ closeModal }: { closeModal: () => void }) {
   const [formType, setFormType] = useState<FormType | null>(null);
   if (!formType) return <EntityChoices setFormType={setFormType} />;
-  if (formType === "live-satellite") return <LiveSatForm />;
-  if (formType === "manual-satellite") return <ManualSatForm />;
-  if (formType === "manual-station") return <ManualSiteForm site={null} />;
+  if (formType === "live-satellite") return <Search />;
+  if (formType === "manual-satellite")
+    return <ManualSatForm closeModal={closeModal} />;
+  if (formType === "manual-station")
+    return <ManualSiteForm closeModal={closeModal} />;
   return <></>;
 }

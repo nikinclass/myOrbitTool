@@ -11,20 +11,6 @@ const knex = require("knex")(
 
 const SALT_ROUNDS = 12;
 
-// router.get("/me", async (req, res) => {
-//   console.log(req.session);
-//   if (!req.session || !req.session.id) {
-//     return res.status(401).json({ error: "Unauthorized request" });
-//   }
-
-//   const payload = await knex("user_table")
-//     .select("*")
-//     .where("id", "=", req.session.id)
-//     .first();
-
-//   res.status(200).json(payload);
-// });
-
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body || {};

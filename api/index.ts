@@ -1,9 +1,8 @@
 // @ts-nocheck
 import express from "express";
-import exampleRoute from "./routes/example";
 import scenarioRoute from "./routes/scenario";
 import cookieSession from "cookie-session";
-import cors from "cors";
+// import cors from "cors";
 import userRoutes from "./routes/users";
 import spaceTrackRoute from "./routes/satellites";
 
@@ -24,12 +23,12 @@ var testData = [
 const app = express();
 const port = 8080;
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     credentials: true,
+//   })
+// );
 
 app.set("trust proxy", 1);
 app.use(express.json());
@@ -70,7 +69,6 @@ app.delete("/api/sessions", (req, res) => {
 
 // const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-app.use("/api/example", exampleRoute);
 app.use("/api/scenario", scenarioRoute);
 app.use("/api/satellites", spaceTrackRoute);
 
@@ -90,6 +88,6 @@ app.get("/api/user_table/:username", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Listening on port ${port}...`);
 });
