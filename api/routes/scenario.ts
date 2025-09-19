@@ -302,22 +302,23 @@ router.patch("/sites/:id", async (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
-const createStationChain = () => {
-  return [
-    body(["name"])
-      .notEmpty()
-      .withMessage("Ground station name cannot be empty!"),
-    body("latitude")
-      .isFloat()
-      .withMessage("Latitude must be a floating point number"),
-    body("longitude")
-      .isFloat()
-      .withMessage("Longitude must be a floating point number"),
-    body("altitude")
-      .isFloat()
-      .withMessage("Altitude must be a floating point number"),
-  ];
-};
+// const createStationChain = () => {
+//   return [
+//     body(["name"])
+//       .notEmpty()
+//       .withMessage("Ground station name cannot be empty!"),
+//     body("latitude")
+//       .isFloat()
+//       .withMessage("Latitude must be a floating point number"),
+//     body("longitude")
+//       .isFloat()
+//       .withMessage("Longitude must be a floating point number"),
+//     body("altitude")
+//       .isFloat()
+//       .withMessage("Altitude must be a floating point number"),
+//     body("COLOR").isString(),
+//   ];
+// };
 
 const createEntityScenarioRecord = async (scenario_id: number) => {
   try {
@@ -332,23 +333,19 @@ const createEntityScenarioRecord = async (scenario_id: number) => {
   }
 };
 
-router.post(
-  "/station",
-  createStationChain(),
-  async (req: Request, res: Response) => {
-    //this will make a new station
-    const result = validationResult(req);
-    if (result.isEmpty()) {
-      const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
-      const { scenario_id, ...payload } = req.body;
-      const response = await knex("stations")
-        .insert({ ...payload, id: entity_id })
-        .returning("*");
-      return res.status(200).json(response);
-    }
-    res.status(400).json({ errors: result.array() });
+router.post("/station", async (req: Request, res: Response) => {
+  //this will make a new station
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+    const { scenario_id, ...payload } = req.body;
+    const response = await knex("stations")
+      .insert({ ...payload, id: entity_id })
+      .returning("*");
+    return res.status(200).json(response);
   }
-);
+  res.status(400).json({ errors: result.array() });
+});
 
 // SCENARIO TITLE EDIT
 router.get("/:id", async (req: Request, res: Response) => {

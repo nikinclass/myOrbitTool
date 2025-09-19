@@ -14,6 +14,15 @@ const satCzmlConverter = (sat: Satellite) => {
   let res = []; //result for position
   //Set satrec
 
+  if (Array.isArray(sat.COLOR)) {
+    var rgba = sat.COLOR;
+  } else {
+    const fixed = sat.COLOR.replace(/{/g, "[").replace(/}/g, "]");
+    rgba = JSON.parse(fixed).map(Number);
+  }
+
+  var rgba_lighter = [rgba[0], rgba[1], rgba[2], 200];
+
   const omm = {
     OBJECT_NAME: sat["OBJECT_NAME"],
     OBJECT_ID: "2004-049A",
@@ -135,14 +144,14 @@ const satCzmlConverter = (sat: Satellite) => {
       description: "Click the camera icon to follow this satellites path",
       label: {
         fillColor: {
-          rgba: [255, 255, 255, 255],
+          rgba: rgba,
         },
-        font: "11pt Lucida Console",
+        font: "bold 16px sans-serif",
         horizontalOrigin: "LEFT",
         outlineColor: {
-          rgba: [0, 0, 0, 255],
+          rgba: [255, 255, 255, 255],
         },
-        outlineWidth: 2,
+        outlineWidth: 0,
         pixelOffset: {
           cartesian2: [12, 0],
         },
@@ -162,7 +171,7 @@ const satCzmlConverter = (sat: Satellite) => {
         material: {
           solidColor: {
             color: {
-              rgba: [255, 255, 0, 255],
+              rgba: rgba_lighter,
             },
           },
         },
@@ -173,7 +182,9 @@ const satCzmlConverter = (sat: Satellite) => {
       point: {
         show: true,
         pixelSize: 10,
-        color: "rgba(255, 0, 255, 255)",
+        color: {
+          rgba: rgba,
+        },
       },
       position: {
         interpolationAlgorithm: "LAGRANGE",

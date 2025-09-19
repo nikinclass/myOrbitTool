@@ -8,6 +8,14 @@ const julian = require("julian");
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 const siteCzmlConverter = (site: Site) => {
+  if (Array.isArray(site.COLOR)) {
+    var rgba = site.COLOR;
+  } else {
+    const fixed = site.COLOR.replace(/{/g, "[").replace(/}/g, "]");
+    rgba = JSON.parse(fixed).map(Number);
+  }
+  var rgba_lighter = [rgba[0], rgba[1], rgba[2], 200];
+
   //set initial object start for czml
   let initialCZMLProps = [
     {
@@ -27,14 +35,14 @@ const siteCzmlConverter = (site: Site) => {
       },
       label: {
         fillColor: {
-          rgba: site["COLOR"],
+          rgba: rgba,
         },
-        font: "11pt Lucida Console",
+        font: "bold 16px sans-serif",
         horizontalOrigin: "LEFT",
         outlineColor: {
           rgba: [0, 0, 0, 255],
         },
-        outlineWidth: 2,
+        outlineWidth: 0,
         pixelOffset: {
           cartesian2: [12, 0],
         },
@@ -45,10 +53,10 @@ const siteCzmlConverter = (site: Site) => {
       },
       point: {
         color: {
-          rgba: site["COLOR"],
+          rgba: rgba_lighter,
         },
         outlineColor: {
-          rgba: site["COLOR"],
+          rgba: rgba,
         },
         pixelSize: {
           number: 10,

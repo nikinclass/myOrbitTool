@@ -117,6 +117,7 @@ export function ManualSiteForm({ closeModal }: { closeModal: () => void }) {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                  COLOR: [255, 255, 0, 255],
                   name: siteName,
                   latitude: latitude,
                   longitude: longitude,
@@ -125,7 +126,6 @@ export function ManualSiteForm({ closeModal }: { closeModal: () => void }) {
                 }),
               });
               const fullItem = await response.json();
-              fullItem[0].COLOR = [255, 255, 0, 255];
               await addSite(fullItem[0]);
               toast.success("Site added!", {
                 description: `${siteName} at LAT:${latitude.toFixed(

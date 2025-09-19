@@ -3,9 +3,11 @@ import { useAppSession } from "./AppSessionProvider";
 import type { Site } from "@/types";
 import { useState } from "react";
 import { EditSiteForm } from "./EditSiteForm";
+import rgbHex from "rgb-hex";
+import hexRgb from "hex-rgb";
 
 export function ManageSitesTable({ closeModal }: { closeModal: () => void }) {
-  const { scenario, toggleVisibility } = useAppSession();
+  const { scenario, toggleVisibility, updateSite } = useAppSession();
 
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
@@ -46,52 +48,75 @@ export function ManageSitesTable({ closeModal }: { closeModal: () => void }) {
             )}
             {scenario &&
               scenario.sites.length > 0 &&
-              scenario?.sites.map((site: Site, index: number) => (
-                <div
-                  key={index}
-                  className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
-                >
-                  <div className="w-[30px] flex justify-center items-center pr-1">
-                    <button
-                      className="cursor-pointer hover:bg-none flex justify-center items-center"
-                      onClick={() => {
-                        toggleVisibility([site]);
-                      }}
-                    >
-                      {site.CZML.props.show && <Eye className="w-5 h-5" />}
-                      {!site.CZML.props.show && (
-                        <EyeClosed className="w-5 h-5" />
-                      )}
-                    </button>
+              scenario?.sites.map((site: Site, index: number) => {
+                if (Array.isArray(site.COLOR)) {
+                  var rgba = site.COLOR;
+                } else {
+                  const fixed = site.COLOR.replace(/{/g, "[").replace(
+                    /}/g,
+                    "]"
+                  );
+                  rgba = JSON.parse(fixed).map(Number);
+                }
+                return (
+                  <div
+                    key={index}
+                    className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
+                  >
+                    <div className="w-[30px] flex justify-center items-center pr-1">
+                      <button
+                        className="cursor-pointer hover:bg-none flex justify-center items-center"
+                        onClick={() => {
+                          toggleVisibility([site]);
+                        }}
+                      >
+                        {site.CZML.props.show && <Eye className="w-5 h-5" />}
+                        {!site.CZML.props.show && (
+                          <EyeClosed className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                    <p className="w-[100px] self-center truncate overflow-hidden pr-1">
+                      {site.name}
+                    </p>
+                    <p className="w-[70px] self-center truncate overflow-hidden pr-1">
+                      {site.latitude}
+                    </p>
+                    <p className="w-[70px] self-center truncate overflow-hidden pr-1">
+                      {site.longitude}
+                    </p>
+                    <div className="w-[50px] self-center flex truncate overflow-hidden justify-center items-center">
+                      <input
+                        className="rounded-full w-5 h-5 opacity-100"
+                        type="color"
+                        defaultValue={"#" + rgbHex(rgba[0], rgba[1], rgba[2])}
+                        name=""
+                        id=""
+                        onChange={async (e) => {
+                          const color = hexRgb(e.target.value);
+                          const colorArr: [number, number, number, number] = [
+                            color.red,
+                            color.green,
+                            color.blue,
+                            255,
+                          ];
+                          site.COLOR = colorArr;
+                          await updateSite(site);
+                        }}
+                        style={{ borderRadius: 100 }}
+                      />
+                    </div>
+                    <div className="w-[30px] self-center truncate overflow-hidden cursor-pointer">
+                      <MoreHorizontal
+                        key={index}
+                        onClick={() => {
+                          setSelectedSite(site);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <p className="w-[100px] self-center truncate overflow-hidden pr-1">
-                    {site.name}
-                  </p>
-                  <p className="w-[70px] self-center truncate overflow-hidden pr-1">
-                    {site.latitude}
-                  </p>
-                  <p className="w-[70px] self-center truncate overflow-hidden pr-1">
-                    {site.longitude}
-                  </p>
-                  <div className="w-[50px] self-center flex truncate overflow-hidden justify-center items-center">
-                    <input
-                      className="rounded-full w-5 h-5"
-                      type="color"
-                      name=""
-                      id=""
-                      style={{ borderRadius: 100 }}
-                    />
-                  </div>
-                  <div className="w-[30px] self-center truncate overflow-hidden cursor-pointer">
-                    <MoreHorizontal
-                      key={index}
-                      onClick={() => {
-                        setSelectedSite(site);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       )}

@@ -17,7 +17,7 @@ export type Satellite = {
   BSTAR: string;
   MEAN_MOTION_DOT: string;
   MEAN_MOTION_DDOT: string;
-  COLOR: [number, number, number, number]; // DEFAULT TO SOMETHING LIKE [255, 0, 255, 255] but we shoudl give this to the user somehow
+  COLOR: any;
   CZML: any;
   // [{
   //   id: string;
@@ -83,7 +83,7 @@ export type Site = {
   latitude: number;
   longitude: number;
   altitude: number;
-  COLOR: [number, number, number, number];
+  COLOR: any;
   CZML: any;
 };
 
@@ -100,5 +100,3 @@ export type Scenario = {
   satellites: Satellite[];
   sites: Site[];
 };
-
-

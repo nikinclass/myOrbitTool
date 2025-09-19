@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.float("latitude").notNullable();
     table.float("longitude").notNullable();
     table.float("altitude").notNullable();
+    table.string("COLOR").notNullable();
 
     //foreign keys
     table

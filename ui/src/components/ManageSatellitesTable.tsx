@@ -3,9 +3,12 @@ import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
 import { useState } from "react";
 import { EditSatForm } from "@/components/EditSatelliteForm";
+import hexRgb from "hex-rgb";
+import rgbHex from "rgb-hex";
 
 export function ManageSatellitesTable() {
-  const { scenario, toggleVisibility, isLoading } = useAppSession();
+  const { scenario, toggleVisibility, updateSatellite, isLoading } =
+    useAppSession();
 
   const [selectedSatellite, setSelectedSatellite] = useState<Satellite | null>(
     null
@@ -53,49 +56,69 @@ export function ManageSatellitesTable() {
             )}
             {scenario &&
               scenario.satellites.length > 0 &&
-              scenario?.satellites.map((sat: Satellite, index: number) => (
-                <div
-                  key={index}
-                  className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
-                >
-                  <div className="w-[30px] flex justify-center items-center pr-1">
-                    <button
-                      className="cursor-pointer hover:bg-none flex justify-center items-center"
-                      onClick={() => {
-                        toggleVisibility([sat]);
-                      }}
-                    >
-                      {sat.CZML.props.show && <Eye className="w-5 h-5" />}
-                      {!sat.CZML.props.show && (
-                        <EyeClosed className="w-5 h-5" />
-                      )}
-                    </button>
+              scenario?.satellites.map((sat: Satellite, index: number) => {
+                if (Array.isArray(sat.COLOR)) {
+                  var rgba = sat.COLOR;
+                } else {
+                  const fixed = sat.COLOR.replace(/{/g, "[").replace(/}/g, "]");
+                  rgba = JSON.parse(fixed).map(Number);
+                }
+                return (
+                  <div
+                    key={index}
+                    className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
+                  >
+                    <div className="w-[30px] flex justify-center items-center pr-1">
+                      <button
+                        className="cursor-pointer hover:bg-none flex justify-center items-center"
+                        onClick={() => {
+                          toggleVisibility([sat]);
+                        }}
+                      >
+                        {sat.CZML.props.show && <Eye className="w-5 h-5" />}
+                        {!sat.CZML.props.show && (
+                          <EyeClosed className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                    <p className="w-[70px] self-center truncate overflow-hidden pr-1">
+                      {sat.NORAD_CAT_ID}
+                    </p>
+                    <p className="w-[120px] self-center truncate overflow-hidden pr-1">
+                      {sat.OBJECT_NAME}
+                    </p>
+                    <div className="w-[50px] self-center flex truncate overflow-hidden justify-center items-center">
+                      <input
+                        className="rounded-full w-5 h-5 opacity-100"
+                        type="color"
+                        defaultValue={"#" + rgbHex(rgba[0], rgba[1], rgba[2])}
+                        name=""
+                        id=""
+                        onChange={async (e) => {
+                          const color = hexRgb(e.target.value);
+                          const colorArr: [number, number, number, number] = [
+                            color.red,
+                            color.green,
+                            color.blue,
+                            255,
+                          ];
+                          sat.COLOR = colorArr;
+                          await updateSatellite(sat);
+                        }}
+                        style={{ borderRadius: 100 }}
+                      />
+                    </div>
+                    <div className="w-[30px] self-center truncate overflow-hidden cursor-pointer">
+                      <MoreHorizontal
+                        key={index}
+                        onClick={() => {
+                          setSelectedSatellite(sat);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <p className="w-[70px] self-center truncate overflow-hidden pr-1">
-                    {sat.NORAD_CAT_ID}
-                  </p>
-                  <p className="w-[120px] self-center truncate overflow-hidden pr-1">
-                    {sat.OBJECT_NAME}
-                  </p>
-                  <div className="w-[50px] self-center flex truncate overflow-hidden justify-center items-center">
-                    <input
-                      className="rounded-full w-5 h-5"
-                      type="color"
-                      name=""
-                      id=""
-                      style={{ borderRadius: 100 }}
-                    />
-                  </div>
-                  <div className="w-[30px] self-center truncate overflow-hidden cursor-pointer">
-                    <MoreHorizontal
-                      key={index}
-                      onClick={() => {
-                        setSelectedSatellite(sat);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       )}

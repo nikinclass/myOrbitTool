@@ -17,7 +17,7 @@ export type Satellite = {
   BSTAR: string;
   MEAN_MOTION_DOT: string;
   MEAN_MOTION_DDOT: string;
-  COLOR: [number, number, number, number];
+  COLOR: any;
   VISIBLE: boolean;
 };
 
@@ -27,6 +27,6 @@ export type Site = {
   latitude: string;
   longitude: string;
   altitude: string;
-  COLOR: [number, number, number, number];
+  COLOR: any;
   CZML: any;
 };

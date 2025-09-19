@@ -29,7 +29,7 @@ export type AppState = {
   setTitle: (title: string) => Promise<void>;
   setDescription: (description: string) => Promise<void>;
   createScenario: () => Promise<void>;
-  colorSatellite: (s: Satellite) => Promise<void>;
+  changeColor: (s: Satellite | Site) => Promise<void>;
   toggleVisibility: (s: Satellite[] | Site[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   updateSatellite: (s: Satellite) => Promise<void>;
@@ -170,9 +170,6 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     navigate(`/scenario/${json.id}`);
   }, [scenario, isLoggedIn, user]);
 
-  // const toggleVisibility = useCallback(async (s: Satellite[]) => {
-  //   s.map((sat, index) => {sat.VISIBLE = !sat.VISIBLE})
-  // }, []);
   const convertSiteToCZML = async (s: Site) => {
     const res = await fetch(`${URL}/satellites/siteczml`, {
       method: "POST",
@@ -194,6 +191,8 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       const converted = await convertSiteToCZML(s);
 
       if (!converted) return;
+
+      s.COLOR = [255, 255, 0, 255];
 
       s.CZML = converted;
 
@@ -249,7 +248,96 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     [scenario]
   );
 
-  const colorSatellite = useCallback(async () => {}, []);
+  const changeColor = useCallback(
+    async (item: Satellite | Site) => {
+      if (!scenario) return;
+
+      const updatedSats = await Promise.all(
+        scenario.satellites.map(async (entity: Satellite) => {
+          if (item.id === entity.id) {
+            return {
+              ...entity,
+              CZML: {
+                ...entity.CZML,
+                // key: randomUUID(),
+                props: {
+                  ...entity.CZML.props,
+                  data: entity.CZML.props.data.map((d: any, idx: number) =>
+                    idx === 1
+                      ? {
+                          ...d,
+                          path: {
+                            ...d.path,
+                            material: {
+                              ...d.path.material,
+                              solidColor: {
+                                ...d.path.material.solidColor,
+                                color: {
+                                  ...d.path.material.solidColor.color,
+                                  rgba: item.COLOR,
+                                },
+                              },
+                            },
+                          },
+                        }
+                      : d
+                  ),
+                },
+              },
+            };
+          }
+
+          return entity;
+        })
+      );
+
+      const updatedSites = await Promise.all(
+        scenario.sites.map(async (entity: Site) => {
+          if (item.id === entity.id) {
+            return {
+              ...entity,
+              CZML: {
+                ...entity.CZML,
+                // key: randomUUID(),
+                props: {
+                  ...entity.CZML.props,
+                  data: entity.CZML.props.data.map((d: any, idx: number) =>
+                    idx === 1
+                      ? {
+                          ...d,
+                          path: {
+                            ...d.path,
+                            material: {
+                              ...d.path.material,
+                              solidColor: {
+                                ...d.path.material.solidColor,
+                                color: {
+                                  ...d.path.material.solidColor.color,
+                                  rgba: item.COLOR,
+                                },
+                              },
+                            },
+                          },
+                        }
+                      : d
+                  ),
+                },
+              },
+            };
+          }
+
+          return entity;
+        })
+      );
+
+      setScenario({
+        ...scenario,
+        satellites: updatedSats,
+        sites: updatedSites,
+      });
+    },
+    [scenario]
+  );
 
   const convertSatelliteToCZML = async (s: Satellite) => {
     const res = await fetch(`${URL}/satellites/satczml`, {
@@ -289,6 +377,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       // update backend
       try {
         const updates = {
+          COLOR: s.COLOR,
           name: s.name,
           latitude: s.latitude,
           longitude: s.longitude,
@@ -338,6 +427,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
         const updates = {
           NORAD_CAT_ID: "CUSTOM",
           OBJECT_NAME: s.OBJECT_NAME,
+          COLOR: s.COLOR,
           ECCENTRICITY: s.ECCENTRICITY,
           INCLINATION: s.INCLINATION,
           ARG_OF_PERICENTER: s.ARG_OF_PERICENTER,
@@ -387,9 +477,9 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     return scenario.satellites.map((sat) => sat.CZML);
   }, [scenario]);
 
-  useEffect(() => {
-    console.log("Scenario Updated", scenario);
-  }, [scenario]);
+  // useEffect(() => {
+  //   console.log("Scenario Updated", scenario);
+  // }, [scenario]);
 
   const deleteSatellite = useCallback(
     async (s: Satellite) => {
@@ -484,7 +574,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     setDescription,
     createScenario,
     toggleVisibility,
-    colorSatellite,
+    changeColor,
     addSatellite,
     removeSatellite,
     updateSatellite,
