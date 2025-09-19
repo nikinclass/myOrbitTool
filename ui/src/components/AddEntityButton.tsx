@@ -3,12 +3,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/choicePopover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { AddEntityForm } from "./AddEntityForm";
 import { useAppSession } from "./AppSessionProvider";
+import { useState } from "react";
 
 export function AddEntityButton({ className }: { className: string }) {
   const { canEdit } = useAppSession();
+  const [open, setOpen] = useState<boolean>(true)
   return (
     <div className={className}>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <Tooltip delayDuration={500}>
           <TooltipTrigger asChild>
             <PopoverTrigger
@@ -31,7 +33,7 @@ export function AddEntityButton({ className }: { className: string }) {
           className="flex flex-col w-fit shadow-none"
           side="right"
         >
-          <AddEntityForm />
+          <AddEntityForm closeModal={()=>{setOpen(false)}} />
         </PopoverContent>
       </Popover>
     </div>

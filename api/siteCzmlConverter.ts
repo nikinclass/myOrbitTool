@@ -1,10 +1,10 @@
-import { Site } from "./types"
+import { Site } from "./types";
 
-const satellite = require('satellite.js')
-const fs = require('fs')
-const path = require('path')
-const moment = require('moment')
-const julian = require('julian')
+const satellite = require("satellite.js");
+const fs = require("fs");
+const path = require("path");
+const moment = require("moment");
+const julian = require("julian");
 // https://github.com/r3lek/tle2czml/blob/master/index.js#L105
 
 const siteCzmlConverter = (site: Site) => {
@@ -19,7 +19,11 @@ const siteCzmlConverter = (site: Site) => {
       id: site["name"],
       name: "point in cartographic degrees",
       position: {
-        cartographicDegrees: [site["latitude"], site["longitude"], site["altitude"]],
+        cartographicDegrees: [
+          site["longitude"],
+          site["latitude"],
+          site["altitude"],
+        ],
       },
       label: {
         fillColor: {
@@ -51,9 +55,9 @@ const siteCzmlConverter = (site: Site) => {
         },
       },
     },
-  ]
-  console.log(`Created CZML for ${site["name"]}`)
+  ];
+  // console.log(`Created CZML for ${site["name"]}`)
   return initialCZMLProps;
-}
+};
 // 1216469.9357990976, -4736121.71856379, 4081386.8856866374
-export default siteCzmlConverter
+export default siteCzmlConverter;

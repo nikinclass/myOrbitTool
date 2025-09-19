@@ -8,7 +8,6 @@ exports.seed = async function (knex) {
   await knex("user_table").del();
 
   const hashedPassword1 = await bcrypt.hash("password1", 12);
-  console.log(`pass: ${hashedPassword1}`);
   await knex("user_table").insert([
     { username: "user1", password: String(hashedPassword1) },
   ]);

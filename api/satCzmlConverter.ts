@@ -37,8 +37,8 @@ const satCzmlConverter = (sat: Satellite) => {
     at exports.jsxDEV (http://localhost:3000/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=43031535:249:30)
     at http://localhost:3000/src/pages/Scenario.tsx?t=1757960147436:66:59*/
 
-  let satrec
-  satrec = json2satrec(sat as OMMJsonObjectV3)
+  let satrec;
+  satrec = json2satrec(sat as OMMJsonObjectV3);
   // satrec = twoline2satrec(sat["TLE_LINE1"], sat["TLE_LINE2"]);
   // satrec = satellite.json2satrec(sat);
 
@@ -60,7 +60,7 @@ const satCzmlConverter = (sat: Satellite) => {
   let leadIntervalArray = [];
   let trailIntervalArray = [];
 
-  console.log(`Setting intervals for ${sat["OBJECT_NAME"]}...`);
+  // console.log(`Setting intervals for ${sat["OBJECT_NAME"]}...`);
   for (let i = 0; i <= 1440; i += minsPerInterval) {
     //1440===24hours===1days(which is our end time)
     if (i === 0) {
@@ -132,7 +132,7 @@ const satCzmlConverter = (sat: Satellite) => {
       id: `${sat["OBJECT_NAME"]}`,
       name: `${sat["OBJECT_NAME"]}`,
       availability: `${initialTime}/${endTime}`,
-      description: "Insert the altitude here??",
+      description: "Click the camera icon to follow this satellites path",
       label: {
         fillColor: {
           rgba: [255, 255, 255, 255],
@@ -163,7 +163,7 @@ const satCzmlConverter = (sat: Satellite) => {
           solidColor: {
             color: {
               rgba: [255, 255, 0, 255],
-            }
+            },
           },
         },
         resolution: 120,
@@ -173,7 +173,7 @@ const satCzmlConverter = (sat: Satellite) => {
       point: {
         show: true,
         pixelSize: 10,
-        color: "rgba(255, 0, 255, 255)"
+        color: "rgba(255, 0, 255, 255)",
       },
       position: {
         interpolationAlgorithm: "LAGRANGE",

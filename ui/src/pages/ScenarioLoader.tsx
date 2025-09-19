@@ -2,13 +2,11 @@ import { useAppSession } from "@/components/AppSessionProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-const PROXIED_URL = "/api/scenario";
-const LOCALHOST_URL = "http://localhost:8080/api/scenario";
+import { useNavigate } from "react-router-dom";
 
 export function ScenarioLoader() {
   const navigate = useNavigate();
-  const { isLoggedIn, createScenario, scenario } = useAppSession();
+  const { isLoggedIn, createScenario } = useAppSession();
 
   const [scenarioID, setScenarioID] = useState<string>("");
 

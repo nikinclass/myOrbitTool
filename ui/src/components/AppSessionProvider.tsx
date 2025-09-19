@@ -8,10 +8,9 @@ import React, {
 } from "react";
 import { CzmlDataSource } from "resium";
 import { useNavigate, useParams } from "react-router-dom";
-import { SceneMode } from "cesium";
+import { v4 as randomUUID } from "uuid";
 
-const PROXIED_URL = "/api";
-const LOCALHOST_URL = "http://localhost:8080/api";
+const URL = "/api";
 
 export type AppState = {
   // Authentication
@@ -31,7 +30,7 @@ export type AppState = {
   setDescription: (description: string) => Promise<void>;
   createScenario: () => Promise<void>;
   colorSatellite: (s: Satellite) => Promise<void>;
-  toggleVisibility: (s: Satellite[]) => Promise<void>;
+  toggleVisibility: (s: Satellite[] | Site[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   updateSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
@@ -48,19 +47,6 @@ type AppProviderProps = {
 const AppSessionContext = createContext<AppState | null>(null);
 
 export function AppSessionProvider({ children, ...props }: AppProviderProps) {
-  // useEffect(() => {
-  //   if (satellites[0]) {
-  //     setSiteCzmlArray(satellites.map((sat: Satellite, index) => {
-  //       console.log(sat)
-  //       let tempCZML: any[] = sat.CZML.slice()
-  //       tempCZML[1].path.material.solidColor.color = sat.COLOR
-  //       tempCZML[1].point.color = sat.COLOR
-  //       console.log(tempCZML[1].point.color)
-  //       return (<CzmlDataSource data={sat.CZML} show={sat.VISIBLE} />)
-  //     }))
-  //   }
-  // }, [satellites])
-
   const { id: scenarioID } = useParams();
   const navigate = useNavigate();
   let storedUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -86,9 +72,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await (
-        await fetch(`${LOCALHOST_URL}/scenario/${scenarioID}`)
-      ).json();
+      const data = await (await fetch(`${URL}/scenario/${scenarioID}`)).json();
 
       if (!data.id) throw new Error("Scenario not found");
 
@@ -131,7 +115,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const setTitle = async (title: string) => {
     if (!scenario || !canEdit) return;
     try {
-      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/title`, {
+      await fetch(`${URL}/scenario/${scenario.id}/title`, {
         method: "PATCH",
         headers: {
           Accept: "application/json",
@@ -148,7 +132,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const setDescription = async (description: string) => {
     if (!scenario || !canEdit) return;
     try {
-      await fetch(`${LOCALHOST_URL}/scenario/${scenario.id}/description`, {
+      await fetch(`${URL}/scenario/${scenario.id}/description`, {
         method: "PATCH",
         headers: {
           Accept: "application/json",
@@ -164,7 +148,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     if (!isLoggedIn || !user) {
       return;
     }
-    const response = await fetch(`${LOCALHOST_URL}/scenario`, {
+    const response = await fetch(`${URL}/scenario`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -190,7 +174,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   //   s.map((sat, index) => {sat.VISIBLE = !sat.VISIBLE})
   // }, []);
   const convertSiteToCZML = async (s: Site) => {
-    const res = await fetch(`${PROXIED_URL}/satellites/siteczml`, {
+    const res = await fetch(`${URL}/satellites/siteczml`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -200,7 +184,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return <CzmlDataSource key={Date.now()} data={data} />;
+    return <CzmlDataSource key={randomUUID()} data={data} show={true} />;
   };
   const addSite = useCallback(
     async (s: Site) => {
@@ -268,7 +252,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const colorSatellite = useCallback(async () => {}, []);
 
   const convertSatelliteToCZML = async (s: Satellite) => {
-    const res = await fetch(`${PROXIED_URL}/satellites/satczml`, {
+    const res = await fetch(`${URL}/satellites/satczml`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -278,21 +262,15 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return (
-      <CzmlDataSource
-        key={Date.now()}
-        data={data}
-        show={data.VISIBLE ?? true}
-      />
-    );
+    return <CzmlDataSource key={randomUUID()} data={data} show={true} />;
   };
 
   const addSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
       let sats = scenario.satellites.slice();
-
       const converted = await convertSatelliteToCZML(s);
+      s.COLOR = [255, 0, 255, 255];
 
       if (!converted) return;
 
@@ -314,24 +292,21 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           name: s.name,
           latitude: s.latitude,
           longitude: s.longitude,
-          altitude: s.altitude
+          altitude: s.altitude,
         };
 
-        const response = await fetch(
-          `${LOCALHOST_URL}/scenario/sites/${s.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ ...updates })
-          }
-        );
-        console.log(response)
+        const response = await fetch(`${URL}/scenario/sites/${s.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ...updates }),
+        });
+        console.log(response);
         const updatedRecord: Site = (await response.json())[0];
         console.log(updatedRecord);
-        
+
         // Get new CZML
         const converted = await convertSiteToCZML(updatedRecord);
         if (!converted) {
@@ -361,6 +336,8 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
       // update backend
       try {
         const updates = {
+          NORAD_CAT_ID: "CUSTOM",
+          OBJECT_NAME: s.OBJECT_NAME,
           ECCENTRICITY: s.ECCENTRICITY,
           INCLINATION: s.INCLINATION,
           ARG_OF_PERICENTER: s.ARG_OF_PERICENTER,
@@ -369,17 +346,14 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
           RA_OF_ASC_NODE: s.RA_OF_ASC_NODE,
         };
 
-        const response = await fetch(
-          `${LOCALHOST_URL}/scenario/satellite/${s.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ ...updates }),
-          }
-        );
+        const response = await fetch(`${URL}/scenario/satellite/${s.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ...updates }),
+        });
 
         const updatedRecord: Satellite = (await response.json())[0];
         //updatedRecord.OBJECT_NAME = s.OBJECT_NAME + " ";
@@ -420,7 +394,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const deleteSatellite = useCallback(
     async (s: Satellite) => {
       if (!scenario) return;
-      await fetch(`${LOCALHOST_URL}/scenario/satellites/${s.id}`, {
+      await fetch(`${URL}/scenario/satellites/${s.id}`, {
         method: "DELETE",
       });
     },
@@ -430,12 +404,12 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
   const deleteSite = useCallback(
     async (s: Site) => {
       if (!scenario) return;
-      await fetch(`${LOCALHOST_URL}/scenario/sites/${s.id}`, {
-        method: "DELETE"
-      })
+      await fetch(`${URL}/scenario/sites/${s.id}`, {
+        method: "DELETE",
+      });
     },
     [scenario]
-  )
+  );
 
   const removeSatellite = useCallback(
     async (s: Satellite) => {
@@ -459,37 +433,43 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
 
       sites.splice(sites.indexOf(s), 1);
 
-      setScenario({ ...scenario, sites: sites})
+      setScenario({ ...scenario, sites: sites });
       deleteSite(s);
-
-  }, [scenario]);
+    },
+    [scenario]
+  );
 
   const state: AppState = {
     user,
     isLoggedIn: isLoggedIn,
     login: async (username, password) => {
-      let payload = JSON.stringify({
-        username: username,
-        password: password,
-      });
+      try {
+        let payload = JSON.stringify({
+          username: username,
+          password: password,
+        });
 
-      const res = await fetch(`${PROXIED_URL}/user_table/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: payload,
-      });
-      const body = await res.json();
+        const res = await fetch(`${URL}/user_table/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: payload,
+        });
 
-      if (!res.ok) {
-        throw new Error("Couldn't log in");
+        if (!res.ok) {
+          throw new Error("Invalid credentials");
+        }
+
+        const body = await res.json();
+
+        const id: number = body.id;
+        const user = { username: username, id: id };
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+      } catch (e: any) {
+        throw new Error("Invalid credentials");
       }
-
-      const id: number = body.id;
-      const user = { username: username, id: id };
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
     },
     logout: () => {
       setUser(null);

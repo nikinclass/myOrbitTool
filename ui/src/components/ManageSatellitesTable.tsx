@@ -1,44 +1,15 @@
 import { Eye, EyeClosed, MoreHorizontal } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
 import { useAppSession } from "./AppSessionProvider";
 import type { Satellite } from "@/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EditSatForm } from "@/components/EditSatelliteForm";
 
 export function ManageSatellitesTable() {
-  const {
-    scenario,
-    toggleVisibility,
-    removeSatellite,
-    colorSatellite,
-    isLoading,
-  } = useAppSession();
+  const { scenario, toggleVisibility, isLoading } = useAppSession();
 
   const [selectedSatellite, setSelectedSatellite] = useState<Satellite | null>(
     null
   );
-
-  useEffect(() => {
-    if (!scenario) return;
-    if (!selectedSatellite) return;
-    const foundSat = scenario.satellites.find(
-      (item) => item.id === selectedSatellite.id
-    );
-    if (!foundSat) return;
-    setSelectedSatellite(foundSat);
-
-    console.log(
-      "Scenario changed, updated selected satellite",
-      selectedSatellite
-    );
-  }, [scenario]);
 
   const someSatsVisible = scenario?.satellites.some(
     (item) => item.CZML.props.show
@@ -55,78 +26,78 @@ export function ManageSatellitesTable() {
         />
       )}
       {!selectedSatellite && (
-        <Table className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg">
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <button
-                  className="cursor-pointer hover:bg-none flex justify-center items-center text-center"
-                  onClick={() => {
-                    if (scenario?.satellites)
-                      toggleVisibility(scenario.satellites);
-                  }}
-                >
-                  {someSatsVisible && <Eye size={20} />}
-                  {!someSatsVisible && <EyeClosed size={20} />}
-                </button>
-              </TableHead>
-              <TableHead>SATNO</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="">Color</TableHead>
-              <TableHead className=""></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="">
-            {scenario?.satellites.length === 0 && (
-              <TableRow className="">
-                <td className="p-4">
-                  There are no satellites in the scenario.
-                </td>
-              </TableRow>
+        <div className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg overflow-hidden">
+          <div className="flex gap-1 bg-card font-bold text-sm p-3">
+            <div className="w-[30px] flex justify-center items-center pr-1">
+              <button
+                className="cursor-pointer hover:bg-none flex justify-center items-center text-center"
+                onClick={() => {
+                  if (scenario?.satellites)
+                    toggleVisibility(scenario.satellites);
+                }}
+              >
+                {someSatsVisible && <Eye className="w-5 h-5" />}
+                {!someSatsVisible && <EyeClosed className="w-5 h-5" />}
+              </button>
+            </div>
+            <p className="w-[70px] self-center pr-1">SATNO</p>
+            <p className="w-[120px] self-center pr-1">Name</p>
+            <div className="w-[50px] self-center pr-1">Color</div>
+            <div className="w-[30px] self-center pr-1"></div>
+          </div>
+          <div className="flex flex-col text-sm gap-2 p-2">
+            {!(scenario && scenario.satellites.length > 0) && (
+              <p className="p-2 text-center w-full">
+                No satellites have been added to the scenario yet!
+              </p>
             )}
-            {scenario?.satellites.length !== 0 &&
+            {scenario &&
+              scenario.satellites.length > 0 &&
               scenario?.satellites.map((sat: Satellite, index: number) => (
-                <TableRow
-                  className="cursor-pointer select-none hover:bg-accent-foreground/10 hover:text-accent-foreground dark:hover:bg-card"
+                <div
                   key={index}
+                  className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
                 >
-                  <TableCell className="font-medium">
-                    {
-                      <button
-                        className="cursor-pointer hover:bg-none flex justify-center items-center"
-                        onClick={() => {
-                          toggleVisibility([sat]);
-                        }}
-                      >
-                        {sat.CZML.props.show && <Eye size={20} />}
-                        {!sat.CZML.props.show && <EyeClosed size={20} />}
-                      </button>
-                    }
-                  </TableCell>
-                  <TableCell>{sat.NORAD_CAT_ID}</TableCell>
-                  <TableCell>{sat.OBJECT_NAME}</TableCell>
-                  <TableCell className="text-right">
-                    {
-                      <input
-                        className="rounded-full w-5 h-5"
-                        type="color"
-                        name=""
-                        id=""
-                        style={{ borderRadius: 100 }}
-                      />
-                    }
-                  </TableCell>
-                  <TableCell>
+                  <div className="w-[30px] flex justify-center items-center pr-1">
+                    <button
+                      className="cursor-pointer hover:bg-none flex justify-center items-center"
+                      onClick={() => {
+                        toggleVisibility([sat]);
+                      }}
+                    >
+                      {sat.CZML.props.show && <Eye className="w-5 h-5" />}
+                      {!sat.CZML.props.show && (
+                        <EyeClosed className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="w-[70px] self-center truncate overflow-hidden pr-1">
+                    {sat.NORAD_CAT_ID}
+                  </p>
+                  <p className="w-[120px] self-center truncate overflow-hidden pr-1">
+                    {sat.OBJECT_NAME}
+                  </p>
+                  <div className="w-[50px] self-center flex truncate overflow-hidden justify-center items-center">
+                    <input
+                      className="rounded-full w-5 h-5"
+                      type="color"
+                      name=""
+                      id=""
+                      style={{ borderRadius: 100 }}
+                    />
+                  </div>
+                  <div className="w-[30px] self-center truncate overflow-hidden cursor-pointer">
                     <MoreHorizontal
+                      key={index}
                       onClick={() => {
                         setSelectedSatellite(sat);
                       }}
                     />
-                  </TableCell>
-                </TableRow>
+                  </div>
+                </div>
               ))}
-          </TableBody>
-        </Table>
+          </div>
+        </div>
       )}
     </>
   );

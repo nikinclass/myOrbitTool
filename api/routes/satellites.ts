@@ -11,17 +11,14 @@ import siteCzmlConverter from "../siteCzmlConverter";
 router.post("/siteczml", (req, res) => {
   var site = req.body;
   var czml = siteCzmlConverter(site);
-  console.log(czml);
   res.status(200).json(czml);
 });
 
 // RETURNS THE CZML FOR A OMM SATELLITE
 
 router.post("/satczml", (req, res) => {
-  console.log(req.body);
   var sat = req.body;
   var czml = satCzmlConverter(sat);
-  // console.log(czml)
   res.status(200).json(czml);
 });
 

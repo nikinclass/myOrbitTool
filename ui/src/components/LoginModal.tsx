@@ -11,8 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useRef, useState } from "react";
 import { useAppSession } from "./AppSessionProvider";
 
-const PROXIED_URL = "/api/user_table";
-const LOCALHOST_URL = "http://localhost:8080/api/user_table";
+const URL = "api/user_table";
 
 export function LoginModal({ closeModal }: { closeModal: () => void }) {
   const [accountStage, setAccountStage] = useState<"login" | "create">("login");
@@ -36,7 +35,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
       } else {
         // Try to login
         try {
-          login(username, password);
+          await login(username, password);
           closeModal();
         } catch (err: any) {
           setError(err?.message);
@@ -125,7 +124,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
           });
           setIsLoading(true);
 
-          const res = await fetch(`${LOCALHOST_URL}/create`, {
+          const res = await fetch(`${URL}/create`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

@@ -4,8 +4,6 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  console.log("Migrating...space track table");
-
   return knex.schema.createTable("space_track", (table) => {
     table.increments("id");
     table.string("CCSDS_OMM_VERS");

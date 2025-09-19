@@ -57,8 +57,6 @@ router.get("/:id", async (req: Request, res: Response) => {
       })
       .where({ scenario_id: req.params.id });
 
-    // console.log(scenario_data);
-
     // Get owner
     const { password, ...user } = await knex("user_table")
       .select("*")
@@ -125,61 +123,56 @@ router.patch("/:id/description", async (req: Request, res: Response) => {
 });
 
 async function refreshSpaceTrack(username: string, password: string) {
-  await fetch("https://www.space-track.org/ajaxauth/login", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  try {
+    const auth_response = await fetch(
+      "https://www.space-track.org/ajaxauth/login",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
 
-    body: JSON.stringify({
-      identity: username,
-      password: password,
-    }),
-  })
-    .then((response) => {
-      // console.log(response);
-      // console.log(response.status);
-      return response.headers.getSetCookie();
-    })
-    .then(async (cookies) => {
-      await knex("space_track").del();
-      console.log("Updating Space-Track Database!");
-      fetch(
-        `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Cookie: cookies[0].split(";")[0],
-          },
-        }
-      ).then((response) => {
-        return toJSON(response.body)
-          .then((data) => {
-            let length = data.length;
-            return knex
-              .batchInsert("space_track", data, 100)
-              .catch((err: unknown) => {
-                console.log(err);
-              });
-            // for (var item in data) {
-            //   console.log(`Adding ${item} of ${length} to database`);
-            //   await knex("space_track")
-            //     .insert(data[item])
-            //     .catch((err: unknown) => {
-            //       console.log(err);
-            //     });
-            // }
-          })
-          .then(() => {
-            console.log("Database Updated!");
-          });
-      });
-    });
+        body: JSON.stringify({
+          identity: username,
+          password: password,
+        }),
+      }
+    );
+
+    if (!auth_response.ok) {
+      console.error(
+        "Could not connect to Space Track. Have you configured the env with SPACETRACK_USERNAME and SPACETRACK_PASSWORD?"
+      );
+      return;
+    }
+
+    const cookies = auth_response.headers.getSetCookie();
+
+    await knex("space_track").del();
+    console.log("Updating Space-Track Database!");
+    const space_data = await fetch(
+      `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Cookie: cookies[0].split(";")[0],
+        },
+      }
+    );
+
+    const data = await space_data.json();
+
+    await knex.batchInsert("space_track", data, 500);
+
+    console.log("Database Updated!");
+  } catch (e: any) {
+    console.error("Could not load database!");
+  }
 }
 
 async function toJSON(body: ReadableStream | null) {
@@ -221,55 +214,49 @@ router.post("/siteczml", (req, res) => {
 
 router.post("/satczml", (req, res) => {
   var sat = req.body;
-  // console.log(sat);
   var czml = satCzmlConverter(sat);
   res.status(200).json(czml);
 });
 
+router.post("/satellite", async (req: Request, res: Response) => {
+  //this will make a new satellite
+  const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
+  const {
+    scenario_id,
+    CCSDS_OMM_VERS,
+    COMMENT,
+    CREATION_DATE,
+    ORIGINATOR,
+    CENTER_NAME,
+    REF_FRAME,
+    TIME_SYSTEM,
+    MEAN_ELEMENT_THEORY,
+    SEMIMAJOR_AXIS,
+    PERIOD,
+    APOAPSIS,
+    PERIAPSIS,
+    OBJECT_TYPE,
+    RCS_SIZE,
+    COUNTRY_CODE,
+    LAUNCH_DATE,
+    SITE,
+    DECAY_DATE,
+    FILE,
+    GP_ID,
+    TLE_LINE0,
+    TLE_LINE1,
+    TLE_LINE2,
+    created_at,
+    updated_at,
+    VISIBLE,
+    ...payload
+  } = req.body;
 
-router.post(
-  "/satellite",
-  async (req: Request, res: Response) => {
-    //this will make a new satellite
-      const entity_id = await createEntityScenarioRecord(req.body.scenario_id);
-      console.log(entity_id);
-      const {
-        scenario_id,
-        CCSDS_OMM_VERS,
-        COMMENT,
-        CREATION_DATE,
-        ORIGINATOR,
-        CENTER_NAME,
-        REF_FRAME,
-        TIME_SYSTEM,
-        MEAN_ELEMENT_THEORY,
-        SEMIMAJOR_AXIS,
-        PERIOD,
-        APOAPSIS,
-        PERIAPSIS,
-        OBJECT_TYPE,
-        RCS_SIZE,
-        COUNTRY_CODE,
-        LAUNCH_DATE,
-        SITE,
-        DECAY_DATE,
-        FILE,
-        GP_ID,
-        TLE_LINE0,
-        TLE_LINE1,
-        TLE_LINE2,
-        created_at,
-        updated_at,
-        VISIBLE,
-        ...payload
-      } = req.body;
-
-      const result = await knex("satellites")
-        .insert({ ...payload, id: entity_id } as Satellite)
-        .returning("*");
-      return res.status(200).json(result[0]);
-  }
-);
+  const result = await knex("satellites")
+    .insert({ ...payload, id: entity_id } as Satellite)
+    .returning("*");
+  return res.status(200).json(result[0]);
+});
 
 router.patch("/satellite/:id", async (req: Request, res: Response) => {
   const sat_id = req.params.id;
@@ -314,7 +301,6 @@ router.patch("/sites/:id", async (req: Request, res: Response) => {
 
   res.status(200).json(response);
 });
-
 
 const createStationChain = () => {
   return [
