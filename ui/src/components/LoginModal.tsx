@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useRef, useState } from "react";
 import { useAppSession } from "./AppSessionProvider";
 
-const URL = "api/user_table";
+const URL = "/api/user_table";
 
 export function LoginModal({ closeModal }: { closeModal: () => void }) {
   const [accountStage, setAccountStage] = useState<"login" | "create">("login");
@@ -133,6 +133,7 @@ export function LoginModal({ closeModal }: { closeModal: () => void }) {
           });
 
           login(username, password);
+          closeModal();
 
           if (!res.ok) throw new Error("Failed to create account");
         } catch (err: any) {
