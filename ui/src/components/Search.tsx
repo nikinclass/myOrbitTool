@@ -5,8 +5,7 @@ import { useAppSession } from "./AppSessionProvider";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 
-const PROXIED_URL = "/api";
-const LOCALHOST_URL = "http://localhost:8080/api";
+const URL = "/api";
 
 type SatItem = {
   id: number;
@@ -25,7 +24,7 @@ export function Search() {
     const getSearchItems = async () => {
       try {
         const response = await fetch(
-          `${LOCALHOST_URL}/satellites?filter=${search?.toLowerCase()}`
+          `${URL}/satellites?filter=${search?.toLowerCase()}`
         );
         const payload = await response.json();
         setFilteredItems(payload);
@@ -71,7 +70,7 @@ export function Search() {
                     try {
                       // Get entire record
                       const response = await fetch(
-                        `${LOCALHOST_URL}/satellites/${item.id}`
+                        `${URL}/satellites/${item.id}`
                       );
                       // Add the data to the record
 
@@ -87,7 +86,7 @@ export function Search() {
                       console.log(fullItem);
                       // Create record in db
                       const { id } = await (
-                        await fetch(`${LOCALHOST_URL}/scenario/satellite`, {
+                        await fetch(`${URL}/scenario/satellite`, {
                           method: "POST",
                           headers: {
                             Accept: "application/json",

@@ -125,61 +125,56 @@ router.patch("/:id/description", async (req: Request, res: Response) => {
 });
 
 async function refreshSpaceTrack(username: string, password: string) {
-  await fetch("https://www.space-track.org/ajaxauth/login", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  try {
+    const auth_response = await fetch(
+      "https://www.space-track.org/ajaxauth/login",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
 
-    body: JSON.stringify({
-      identity: username,
-      password: password,
-    }),
-  })
-    .then((response) => {
-      // console.log(response);
-      // console.log(response.status);
-      return response.headers.getSetCookie();
-    })
-    .then(async (cookies) => {
-      await knex("space_track").del();
-      console.log("Updating Space-Track Database!");
-      fetch(
-        `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Cookie: cookies[0].split(";")[0],
-          },
-        }
-      ).then((response) => {
-        return toJSON(response.body)
-          .then((data) => {
-            let length = data.length;
-            return knex
-              .batchInsert("space_track", data, 100)
-              .catch((err: unknown) => {
-                console.log(err);
-              });
-            // for (var item in data) {
-            //   console.log(`Adding ${item} of ${length} to database`);
-            //   await knex("space_track")
-            //     .insert(data[item])
-            //     .catch((err: unknown) => {
-            //       console.log(err);
-            //     });
-            // }
-          })
-          .then(() => {
-            console.log("Database Updated!");
-          });
-      });
-    });
+        body: JSON.stringify({
+          identity: username,
+          password: password,
+        }),
+      }
+    );
+
+    if (!auth_response.ok) {
+      console.error(
+        "Could not connect to Space Track. Have you configured the env with SPACETRACK_USERNAME and SPACETRACK_PASSWORD?"
+      );
+      return;
+    }
+
+    const cookies = auth_response.headers.getSetCookie();
+
+    await knex("space_track").del();
+    console.log("Updating Space-Track Database!");
+    const space_data = await fetch(
+      `https://www.space-track.org/basicspacedata/query/class/gp/MEAN_MOTION/-100--100/format/json`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Cookie: cookies[0].split(";")[0],
+        },
+      }
+    );
+
+    const data = await space_data.json();
+
+    await knex.batchInsert("space_track", data, 500);
+
+    console.log("Database Updated!");
+  } catch (e: any) {
+    console.error("Could not load database!");
+  }
 }
 
 async function toJSON(body: ReadableStream | null) {

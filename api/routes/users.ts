@@ -69,12 +69,4 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Logout
-// router.use("/logout", (req, res) => {
-//   req.session = null;
-// });
-
-// const PROXIED_URL = "/api/scenario";
-// const LOCALHOST_URL = "http://localhost:8080/api/scenario";
-
 module.exports = router;

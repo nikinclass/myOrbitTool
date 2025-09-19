@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-const PROXIED_URL = "/api/scenario";
-const LOCALHOST_URL = "http://localhost:8080/api/scenario";
 
 export function ScenarioLoader() {
   const navigate = useNavigate();

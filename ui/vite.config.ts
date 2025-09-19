@@ -5,23 +5,37 @@ import tailwindcss from "@tailwindcss/vite";
 import cesium from "vite-plugin-cesium";
 
 // https://vite.dev/config/
-export default defineConfig({
-  // server: {
-  //   host: true,
-  //   port: 3000,
-  //   proxy: {
-  //     "/api": {
-  //       target: "http://myOrbitTool-api:8080",
-  //       changeOrigin: true,
-  //     },
-  //   },
-  // },
-  server: { proxy: { "/api": "http://localhost:8080" } },
+export default defineConfig(() => {
+  if (true) {
+    return {
+      server: {
+        host: true,
+        port: 3000,
+        proxy: {
+          "/api": {
+            target: "http://myOrbitTool-api:8080",
+            changeOrigin: true,
+          },
+        },
+      },
 
-  plugins: [react(), cesium(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+      plugins: [react(), cesium(), tailwindcss()],
+      resolve: {
+        alias: {
+          "@": path.resolve(__dirname, "./src"),
+        },
+      },
+    };
+  }
+
+  return {
+    server: { proxy: { "/api": "http://localhost:8080" } },
+
+    plugins: [react(), cesium(), tailwindcss()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
+  };
 });
