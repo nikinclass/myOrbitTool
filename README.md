@@ -142,7 +142,7 @@ You need your own username and password for https://www.space-track.org in order
 1. Start the docker container
 
    ```sh
-   docker compose up
+   docker compose up --build
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
