@@ -132,7 +132,7 @@ const satCzmlConverter = (sat: Satellite) => {
       id: `${sat["OBJECT_NAME"]}`,
       name: `${sat["OBJECT_NAME"]}`,
       availability: `${initialTime}/${endTime}`,
-      description: "Insert the altitude here??",
+      description: "Click the camera icon to follow this satellites path",
       label: {
         fillColor: {
           rgba: [255, 255, 255, 255],

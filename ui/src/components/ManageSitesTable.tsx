@@ -1,17 +1,17 @@
-import { Eye, MoreHorizontal } from "lucide-react";
+import { Eye, EyeClosed, MoreHorizontal } from "lucide-react";
 import { useAppSession } from "./AppSessionProvider";
 import type { Site } from "@/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EditSiteForm } from "./EditSiteForm";
 
 export function ManageSitesTable({ closeModal }: { closeModal: () => void }) {
-  const { scenario } = useAppSession();
+  const { scenario, toggleVisibility } = useAppSession();
 
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
-  useEffect(() => {
-    console.log(selectedSite);
-  }, [selectedSite]);
+  const someSitesVisible = scenario?.satellites.some(
+    (item) => item.CZML.props.show
+  );
 
   return (
     <>
@@ -22,7 +22,15 @@ export function ManageSitesTable({ closeModal }: { closeModal: () => void }) {
         <div className="w-full bg-secondary text-secondary-foreground opacity-75 rounded-lg overflow-hidden">
           <div className="flex gap-1 bg-card font-bold text-sm p-3">
             <div className="w-[30px] flex justify-center items-center pr-1">
-              <Eye className="w-5 h-5" />
+              <button
+                className="cursor-pointer hover:bg-none flex justify-center items-center text-center"
+                onClick={() => {
+                  if (scenario?.sites) toggleVisibility(scenario.sites);
+                }}
+              >
+                {someSitesVisible && <Eye className="w-5 h-5" />}
+                {!someSitesVisible && <EyeClosed className="w-5 h-5" />}
+              </button>
             </div>
             <p className="w-[100px] self-center pr-1">Name</p>
             <p className="w-[70px] self-center pr-1">Lat</p>
@@ -44,7 +52,17 @@ export function ManageSitesTable({ closeModal }: { closeModal: () => void }) {
                   className="select-none hover:bg-accent-foreground/10 hover:rounded-lg dark:hover:bg-card/80 p-1 flex gap-1"
                 >
                   <div className="w-[30px] flex justify-center items-center pr-1">
-                    <Eye className="w-5 h-5" />
+                    <button
+                      className="cursor-pointer hover:bg-none flex justify-center items-center"
+                      onClick={() => {
+                        toggleVisibility([site]);
+                      }}
+                    >
+                      {site.CZML.props.show && <Eye className="w-5 h-5" />}
+                      {!site.CZML.props.show && (
+                        <EyeClosed className="w-5 h-5" />
+                      )}
+                    </button>
                   </div>
                   <p className="w-[100px] self-center truncate overflow-hidden pr-1">
                     {site.name}

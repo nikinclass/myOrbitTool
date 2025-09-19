@@ -30,7 +30,7 @@ export type AppState = {
   setDescription: (description: string) => Promise<void>;
   createScenario: () => Promise<void>;
   colorSatellite: (s: Satellite) => Promise<void>;
-  toggleVisibility: (s: Satellite[]) => Promise<void>;
+  toggleVisibility: (s: Satellite[] | Site[]) => Promise<void>;
   addSatellite: (s: Satellite) => Promise<void>;
   updateSatellite: (s: Satellite) => Promise<void>;
   removeSatellite: (s: Satellite) => Promise<void>;
@@ -184,7 +184,7 @@ export function AppSessionProvider({ children, ...props }: AppProviderProps) {
     });
     if (!res.ok) return;
     const data = await res.json();
-    return <CzmlDataSource key={randomUUID()} data={data} />;
+    return <CzmlDataSource key={randomUUID()} data={data} show={true} />;
   };
   const addSite = useCallback(
     async (s: Site) => {
